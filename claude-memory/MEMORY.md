@@ -85,3 +85,7 @@
 **永远先观察，再假设。** 详见 [debugging-lessons.md](./debugging-lessons.md)
 
 遇到 Bug 时的第一件事：加日志，打印相关变量，观察实际值。
+
+### obsidian-vault 同步规则
+
+obsidian-vault 仓库**只保存全局记忆**，不保存项目记忆。
