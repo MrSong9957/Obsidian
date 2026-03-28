@@ -170,9 +170,9 @@ init_settings() {
 {
   "env": {
     "ANTHROPIC_BASE_URL": "https://open.bigmodel.cn/api/anthropic",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-5",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-5",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-5.1",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-5.1",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5.1",
     "API_TIMEOUT_MS": "3000000",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
   }
@@ -205,32 +205,37 @@ exec "$@"
 创建 `docker/Dockerfile`：
 
 ```dockerfile
-FROM debian:bookworm-slim
+FROM docker.1ms.run/library/debian:bookworm-slim
 
-# 安装系统依赖
+# Accept proxy as build arg
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+
+# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bash curl git ca-certificates sudo \
     && rm -rf /var/lib/apt/lists/*
 
-# 安装 Node.js 20.x
+# Install Node.js 20.x
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-# 安装 Claude Code 和 OpenCode
-RUN npm install -g @anthropic-ai/claude-code opencode-ai
+# Install Claude Code and OpenCode (use npm mirror)
+RUN npm config set registry https://registry.npmmirror.com \
+    && npm install -g @anthropic-ai/claude-code opencode-ai
 
-# 创建非 root 用户 app（sudo 无密码）
+# Create non-root user app (passwordless sudo)
 RUN groupadd -g 1000 app && \
     useradd -r -u 1000 -g app -s /bin/bash -d /home/app app && \
     echo 'app ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 
-# 设置权限
+# Set permissions
 RUN mkdir -p /home/app/project /home/app/.claude/backups /home/app/.config/opencode && \
     chown -R app:app /home/app
 
-# 复制 entrypoint 脚本
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+# Copy entrypoint script
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 WORKDIR /home/app/project
@@ -251,27 +256,27 @@ services:
       context: ..
       dockerfile: docker/Dockerfile
     container_name: ${PROJECT_NAME:-dev-container}
-    # 初始化配置（首次启动时以 root 运行 entrypoint）
+    # Initialize config (run entrypoint as root on first start)
     user: "0:0"
     environment:
-      # 智谱 AI 配置（从 .env 读取）
+      # Zhipu AI config (from .env)
       - ANTHROPIC_BASE_URL=https://open.bigmodel.cn/api/anthropic
       - ANTHROPIC_AUTH_TOKEN=${ANTHROPIC_API_KEY}
-      - ANTHROPIC_DEFAULT_HAIKU_MODEL=glm-5
-      - ANTHROPIC_DEFAULT_SONNET_MODEL=glm-5
-      - ANTHROPIC_DEFAULT_OPUS_MODEL=glm-5
+      - ANTHROPIC_DEFAULT_HAIKU_MODEL=glm-5.1
+      - ANTHROPIC_DEFAULT_SONNET_MODEL=glm-5.1
+      - ANTHROPIC_DEFAULT_OPUS_MODEL=glm-5.1
       - API_TIMEOUT_MS=3000000
       - CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
-      # GitHub Token（从 .env 读取）
-      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
-      # 网络代理（可选，用于访问外网）
-      - HTTP_PROXY=${HTTP_PROXY:-}
-      - HTTPS_PROXY=${HTTPS_PROXY:-}
+      # GitHub Token (from .env)
+      - GITHUB_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN:-}
+      # Network proxy (via host Docker proxy)
+      - HTTP_PROXY=http://host.docker.internal:7890
+      - HTTPS_PROXY=http://host.docker.internal:7890
       - NO_PROXY=localhost,127.0.0.1
     volumes:
-      # 项目目录（双向同步）
+      # Project directory (two-way sync)
       - ..:/home/app/project
-      # 配置目录（Docker Volume，与宿主机隔离）
+      # Config directories (Docker Volumes, isolated from host)
       - claude-config:/home/app/.claude
       - opencode-config:/home/app/.config/opencode
 
@@ -286,25 +291,25 @@ volumes:
 
 ```bash
 # ============================================================
-# Docker 开发容器配置
+# Docker Dev Container Configuration
 # ============================================================
 #
-# .env 文件不会被 git 追踪，API Key 安全
+# .env is NOT tracked by git - API keys are safe
 #
 # ============================================================
 
-# 项目名称
+# Project name
 PROJECT_NAME=dev-container
 
-# 智谱 AI API Key（从 https://open.bigmodel.cn 获取）
+# Zhipu AI API Key (get from https://open.bigmodel.cn)
 ANTHROPIC_API_KEY=your-api-key-here
 
-# GitHub Token（用于 git 插件，从 https://github.com/settings/tokens 获取）
-GITHUB_TOKEN=your-github-token-here
+# GitHub Token (for git plugin, get from https://github.com/settings/tokens)
+GITHUB_PERSONAL_ACCESS_TOKEN=your-github-token-here
 
-# 网络代理（可选，留空则不使用代理）
-HTTP_PROXY=
-HTTPS_PROXY=
+# Network proxy (container uses host proxy via host.docker.internal)
+HTTP_PROXY=http://host.docker.internal:7890
+HTTPS_PROXY=http://host.docker.internal:7890
 ```
 
 ### 6. 生成 Claude Code 配置模板
@@ -316,9 +321,9 @@ HTTPS_PROXY=
   "env": {
     "ANTHROPIC_BASE_URL": "https://open.bigmodel.cn/api/anthropic",
     "ANTHROPIC_API_KEY": "YOUR_API_KEY_HERE",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-5",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-5",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5"
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-5.1",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-5.1",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5.1"
   }
 }
 ```
@@ -406,7 +411,7 @@ docker volume ls                # 查看卷
 ```bash
 # 1. 编辑 .env 文件，填入凭证
 # ANTHROPIC_API_KEY=your-api-key-here
-# GITHUB_TOKEN=your-github-token-here  # 可选，用于 git 插件
+# GITHUB_PERSONAL_ACCESS_TOKEN=your-github-token-here  # 可选，用于 git 插件
 
 # 2. 构建并启动容器
 cd docker
@@ -444,5 +449,5 @@ claude -p "hello"
 - [ ] docker-compose.yml 配置正确
 - [ ] 项目目录双向同步
 - [ ] 配置目录与宿主机隔离
-- [ ] Claude Code 可正常使用 GLM-5
+- [ ] Claude Code 可正常使用 GLM-5.1
 - [ ] Git 插件可正常访问 GitHub
