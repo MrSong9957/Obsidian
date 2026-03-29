@@ -59,3 +59,4 @@ obsidian-vault/
 - 📄 [状态栏配置](./statusline-setup.md)
 - 📄 [调试经验](./debugging-lessons.md)
 - 📄 [用户偏好](./user-preferences.md)
+- 📖 [Learn Claude Code](./learn-claude-code.md) — shareAI-lab/learn-claude-code 仓库学习笔记
