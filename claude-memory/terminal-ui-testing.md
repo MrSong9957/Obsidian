@@ -1,3 +1,9 @@
+---
+name: 终端 UI 自动化测试
+description: VHS + AI 评估器方案，融入四角色框架
+type: reference
+---
+
 # 终端 UI 自动化测试方案
 
 **触发词：** "终端测试"、"TUI 测试"、"VHS"、"终端截图"

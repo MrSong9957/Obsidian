@@ -1,3 +1,9 @@
+---
+name: 状态栏配置
+description: Python 版 statusline 安装指南
+type: reference
+---
+
 # Claude Code 状态栏安装指南
 
 ## 步骤 1：创建脚本
