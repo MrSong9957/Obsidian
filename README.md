@@ -42,6 +42,7 @@ obsidian-vault/
 | [[References/ui-design\|UI 设计]] | 前端设计原则 |
 | [[References/playwright-cli-guide\|Playwright]] | 测试指南 |
 | [[References/harness-engineering\|Harness Engineering]] | AI Agent-First 开发方法论 |
+| [[References/natural-language-programming\|人话编程]] | 自然语言编程规范 — 人话↔代码双向翻译 |
 | [[References/terminal-ui-testing\|终端 UI 测试]] | VHS + AI 评估器方案 |
 | [[References/cli-tools-productivity\|CLI 工具]] | 10 个提升生产力的 CLI 工具 |
 
