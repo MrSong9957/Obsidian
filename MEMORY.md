@@ -26,6 +26,7 @@
 - [Playwright CLI](References/playwright-cli-guide.md) — 测试指南
 - [UI 设计](References/ui-design.md) — 前端设计原则
 - [终端 UI 测试](References/terminal-ui-testing.md) — VHS + AI 评估器方案
+- [系统提示词](claude-code-system-prompts/) — 250 个 Claude Code 系统提示词完整集合
 
 ### 学习笔记
 
