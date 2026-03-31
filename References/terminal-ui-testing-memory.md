@@ -1,7 +1,6 @@
 ---
 name: 终端 UI 自动化测试
-description: VHS + AI 评估器方案，融入四角色框架
-type: reference
+description: VHS + AI 评估器方案，融入四角色框架 — 实施终端 UI 测试方案时参考
 ---
 
 # 终端 UI 自动化测试方案

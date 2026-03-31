@@ -1,3 +1,8 @@
+---
+name: 终端 UI 自动化测试研究
+description: VHS + AI 评估器方案深入研究和多智能体协作 — 研究或实施终端 UI 测试方案时参考
+---
+
 # 终端 UI 自动化测试深入研究
 
 > 相关文档：[[claude-memory/terminal-ui-testing|终端 UI 测试精要]] · [[multi-agent-framework|多智能体框架]] · [[ui-design|UI 设计]]

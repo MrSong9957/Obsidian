@@ -1,3 +1,8 @@
+---
+name: Superpowers 技能系统
+description: 预定义技能集，规范需求分析到代码审查完整开发流程 — 配置或使用 Superpowers 技能时参考
+---
+
 # Superpowers 使用指南
 
 > 相关文档：[[Everything-Claude-Code|ECC 技能集总览]]

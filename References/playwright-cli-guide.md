@@ -1,3 +1,8 @@
+---
+name: Playwright CLI 指南
+description: CLI 工具让 Claude Code 高效完成 UI 测试 — 用 Playwright 进行 UI 自动化测试时参考
+---
+
 # Playwright CLI 快速指南
 
 > 轻量级 CLI 工具，让 Claude Code 高效完成 UI 测试

@@ -1,3 +1,8 @@
+---
+name: Safety Net 安全网
+description: Claude Code 安全插件，拦截危险命令 — 配置安全拦截规则时使用
+---
+
 # Safety Net 使用手册
 
 > Claude Code 插件 - 在危险命令执行前拦截它们

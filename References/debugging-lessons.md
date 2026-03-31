@@ -1,7 +1,6 @@
 ---
 name: 调试教训
-description: 调试方法论 — 先观察再假设、日志先行
-type: feedback
+description: 调试方法论 — 先观察再假设、日志先行 — 遇到调试问题或总结调试经验时查阅
 ---
 
 # 调试教训

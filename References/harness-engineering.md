@@ -1,3 +1,8 @@
+---
+name: Harness Engineering
+description: AI Agent-First 软件开发实践，来自 OpenAI 团队 — 了解 AI 驱动开发模式时阅读
+---
+
 # Harness Engineering: AI Agent-First 软件开发
 
 > 相关文档：[[multi-agent-framework|多智能体框架]] · [[claude-memory/MEMORY|Claude 记忆索引]]

@@ -1,3 +1,8 @@
+---
+name: UI 设计原则
+description: 避免 AI 泛滥美学，制作有创意独特的前端 — 设计前端界面或评估 UI 质量时参考
+---
+
 # UI 设计原则
 
 > 相关文档：[[Everything-Claude-Code|ECC 技能集]]

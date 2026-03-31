@@ -1,3 +1,8 @@
+---
+name: ECC 智能体使用说明
+description: 25 个专业智能体、108 项技能、57 条指令 — 选择和使用专业智能体时查阅
+---
+
 # 全能 Claude 代码框架（ECC）——智能体使用说明
 
 > 相关文档：[[Everything-Claude-Code|ECC 技能集总览]] | [[Superpowers|Superpowers 技能系统]]

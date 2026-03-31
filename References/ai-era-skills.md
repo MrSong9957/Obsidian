@@ -1,7 +1,6 @@
 ---
 name: AI 时代人类技能发展
-description: L2 最高 ROI 技能体系 — 验证能力、系统思维、工程判断
-type: reference
+description: L2 最高 ROI 技能体系 — 验证能力、系统思维、工程判断 — 规划 AI 时代个人技能发展时参考
 ---
 
 # AI 时代人类技能发展

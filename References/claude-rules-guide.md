@@ -1,3 +1,8 @@
+---
+name: .claude/rules 指南
+description: 模块化规则目录完整参考 — 配置 .claude/rules 规则文件时使用
+---
+
 # .claude/rules/ 完整指南
 
 > 官方文档：https://code.claude.com/docs/en/memory

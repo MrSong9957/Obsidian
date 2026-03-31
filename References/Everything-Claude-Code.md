@@ -1,3 +1,8 @@
+---
+name: ECC 技能集总览
+description: Claude Code 扩展技能集，110+ Skills/Rules/MCP 配置 — 需要了解技能全貌或查找特定技能时查阅
+---
+
 # Everything Claude Code (ECC)
 
 > Claude Code 扩展技能集，包含 110+ Skills、Rules、MCP 配置和项目模板。

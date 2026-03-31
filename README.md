@@ -54,6 +54,7 @@ obsidian-vault/
 | [[References/multi-agent-framework\|多智能体框架]] | 迭代框架精要 |
 | [[References/ai-era-skills\|AI 时代技能]] | L2-L6 技能体系 |
 | [[References/科学提升智商：六大核心习惯与实践指南\|科学提升智商]] | 六大核心习惯与实践指南 |
+| [[References/learning-methods\|学习方法论]] | 两条学习路径、螺旋上升、教材难懂的根因 |
 
 ### 经验与偏好
 

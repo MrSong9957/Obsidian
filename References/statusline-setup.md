@@ -1,7 +1,6 @@
 ---
 name: 状态栏配置
-description: Python 版 statusline 安装指南
-type: reference
+description: Python 版 statusline 安装指南 — 用 Python 配置 Claude Code 状态栏时参考
 ---
 
 # Claude Code 状态栏安装指南

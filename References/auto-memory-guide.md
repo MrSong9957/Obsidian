@@ -1,7 +1,6 @@
 ---
 name: Auto Memory 指南
-description: Claude Code Auto Memory（MEMORY.md）完整参考：加载机制、存储规则、最佳实践
-type: reference
+description: Claude Code Auto Memory（MEMORY.md）完整参考：加载机制、存储规则、最佳实践 — 理解或配置记忆系统时参考
 ---
 
 # Claude Code Auto Memory 完整指南

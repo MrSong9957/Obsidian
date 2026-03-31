@@ -1,3 +1,8 @@
+---
+name: CLAUDE.md 指南
+description: CLAUDE.md 持久化指令文件完整参考 — 编写或优化 CLAUDE.md 时参考
+---
+
 # CLAUDE.md 完整指南
 
 > 官方文档：https://code.claude.com/docs/en/memory

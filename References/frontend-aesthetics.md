@@ -1,7 +1,6 @@
 ---
 name: 前端美学
-description: 避免 AI 泛滥美学，制作有创意、独特的前端
-type: feedback
+description: 避免 AI 泛滥美学，制作有创意、独特的前端 — 设计前端界面风格时参考
 ---
 
 # 前端美学原则

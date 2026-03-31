@@ -1,3 +1,8 @@
+---
+name: ECC 安装指南
+description: everything-claude-code 安装步骤 — 首次安装或更新 ECC 时参考
+---
+
 # ECC (everything-claude-code) 安装指南
 
 > 返回 [[Everything-Claude-Code|ECC 技能集总览]]

@@ -1,3 +1,8 @@
+---
+name: 状态栏插件安装
+description: Claude Code 状态栏内置功能配置说明 — 首次安装或配置状态栏时参考
+---
+
 # Claude Code 状态栏插件安装指南
 
 > 相关文档：[[safety-net-guide|Safety Net 安全网]] | [[Everything-Claude-Code|ECC 技能集]]
