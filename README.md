@@ -4,80 +4,86 @@
 
 ```
 obsidian-vault/
-├── MEMORY.md                    # 全仓库文档索引
-├── References/                  # 所有参考材料 + 学习笔记（24 篇）
-└── claude-code-system-prompts/  # Claude Code 系统提示词提取（110+ 篇）
+├── MEMORY.md                    # 记忆索引 + 管理规则
+├── README.md                    # 知识库导航索引
+├── sources/                     # 原始资料层（LLM 只读）
+│   ├── claude-code-system-prompts/  # 系统提示词提取（250 篇）
+│   └── learn-claude-code/       # 学习笔记（s01-s12）
+├── wiki/                        # Wiki 层（LLM 可读写）
+│   ├── *.md                     # 概念页 + 摘要页
+│   └── contradictions/          # 矛盾标注
+└── templates/                   # 页面模板
 ```
 
 ---
 
 ## 快速导航
 
-### 参考文档
-
-#### Claude Code 技能系统
+### Claude Code 技能系统
 
 | 文档 | 说明 |
 |------|------|
-| [[References/Everything-Claude-Code\|ECC 技能集]] | 110+ Skills 完整索引 |
-| [[References/ECC-Agent-Usage-Instructions\|ECC 智能体]] | 25 个专业智能体使用说明 |
-| [[References/Superpowers\|Superpowers]] | 开发流程技能系统 |
+| [[wiki/Everything-Claude-Code\|ECC 技能集]] | 110+ Skills 完整索引 |
+| [[wiki/ECC-Agent-Usage-Instructions\|ECC 智能体]] | 25 个专业智能体使用说明 |
+| [[wiki/Superpowers\|Superpowers]] | 开发流程技能系统 |
 
-#### 安装与配置
-
-| 文档 | 说明 |
-|------|------|
-| [[References/ecc-install\|ECC 安装]] | 安装指南 |
-| [[References/statusline-install\|状态栏]] | 状态栏配置 |
-| [[References/statusline-setup\|状态栏 Python 版]] | Python 版状态栏配置 |
-| [[References/safety-net-guide\|Safety Net]] | 安全插件指南 |
-| [[References/auto-memory-guide\|Auto Memory 指南]] | MEMORY.md 完整参考：加载机制、存储规则 |
-| [[References/claudemd-guide\|CLAUDE.md 指南]] | 加载机制、三级作用域、compaction 行为、最佳实践 |
-| [[References/claude-rules-guide\|.claude/rules/ 指南]] | 无条件/Scoped 规则、触发机制、glob 模式、最佳实践 |
-
-#### 开发指南
+### 安装与配置
 
 | 文档 | 说明 |
 |------|------|
-| [[References/ui-design\|UI 设计]] | 前端设计原则 |
-| [[References/playwright-cli-guide\|Playwright]] | 测试指南 |
-| [[References/harness-engineering\|Harness Engineering]] | AI Agent-First 开发方法论 |
-| [[References/natural-language-programming\|人话编程]] | 自然语言编程规范 — 人话↔代码双向翻译 |
-| [[References/terminal-ui-testing\|终端 UI 测试]] | VHS + AI 评估器方案 |
-| [[References/cli-tools-productivity\|CLI 工具]] | 10 个提升生产力的 CLI 工具 |
+| [[wiki/ecc-install\|ECC 安装]] | 安装指南 |
+| [[wiki/statusline-install\|状态栏]] | 状态栏配置 |
+| [[wiki/statusline-setup\|状态栏 Python 版]] | Python 版状态栏配置 |
+| [[wiki/safety-net-guide\|Safety Net]] | 安全插件指南 |
+| [[wiki/auto-memory-guide\|Auto Memory 指南]] | MEMORY.md 完整参考 |
+| [[wiki/claudemd-guide\|CLAUDE.md 指南]] | 加载机制、三级作用域 |
+| [[wiki/claude-rules-guide\|.claude/rules/ 指南]] | 规则触发机制 |
+
+### 开发指南
+
+| 文档 | 说明 |
+|------|------|
+| [[wiki/ui-design\|UI 设计]] | 前端设计原则 |
+| [[wiki/playwright-cli-guide\|Playwright]] | 测试指南 |
+| [[wiki/harness-engineering\|Harness Engineering]] | AI Agent-First 开发方法论 |
+| [[wiki/natural-language-programming\|人话编程]] | 自然语言编程规范 |
+| [[wiki/terminal-ui-testing\|终端 UI 测试]] | VHS + AI 评估器方案 |
+| [[wiki/cli-tools-productivity\|CLI 工具]] | 10 个提升生产力的 CLI 工具 |
 
 ### 学习笔记
 
 | 文档 | 说明 |
 |------|------|
-| [[References/learn-claude-code\|Learn Claude Code]] | shareAI-lab 仓库学习笔记 |
-| [[References/multi-agent-framework\|多智能体框架]] | 迭代框架精要 |
-| [[References/ai-era-skills\|AI 时代技能]] | L2-L6 技能体系 |
-| [[References/科学提升智商：六大核心习惯与实践指南\|科学提升智商]] | 六大核心习惯与实践指南 |
-| [[References/learning-methods\|学习方法论]] | 两条学习路径、螺旋上升、教材难懂的根因 |
+| [[wiki/summary-learn-claude-code\|Learn Claude Code 摘要]] | 12 个渐进式脚本的 4 阶段摘要 |
+| [[wiki/summary-claude-code-system-prompts\|系统提示词摘要]] | 250 个提示词的 6 大分类与格式 |
+| [[wiki/claude-code-agent-architecture\|Agent 架构]] | 教学版 vs 生产版交叉验证 |
+| [[wiki/multi-agent-framework\|多智能体框架]] | 迭代框架精要 |
+| [[wiki/ai-era-skills\|AI 时代技能]] | L2-L6 技能体系 |
+| [[wiki/learning-methods\|学习方法论]] | 学习路径与螺旋上升 |
 
 ### 经验与偏好
 
 | 文档 | 说明 |
 |------|------|
-| [[References/debugging-lessons\|调试经验]] | 调试教训记录 |
-| [[References/frontend-aesthetics\|前端美学]] | 设计原则 |
-| [[References/code-quality\|代码质量]] | 质量约束 |
-| [[References/terminal-ui-testing-memory\|终端 UI 测试笔记]] | 测试方案记忆 |
-| [[References/claude-memory-old\|旧 Memory 索引]] | 历史记忆索引存档 |
+| [[wiki/debugging-lessons\|调试经验]] | 调试教训记录 |
+| [[wiki/frontend-aesthetics\|前端美学]] | 设计原则 |
+| [[wiki/code-quality\|代码质量]] | 质量约束 |
+| [[wiki/terminal-ui-testing-memory\|终端 UI 测试笔记]] | 测试方案记忆 |
 
-### Claude Code 系统提示词
+### 原始资料
 
-> 外部仓库：110+ Claude Code 系统提示词提取
+> 只读层：外部仓库和原始学习材料
 
-[[claude-code-system-prompts/README|查看完整目录]]
+[[sources/claude-code-system-prompts/README\|Claude Code 系统提示词]]（250 篇）
 
 ---
 
 ## 管理方法
 
-### 核心原则
+### 三层架构
 
-1. **根目录保持简洁** -- MEMORY.md + README.md
-2. **单一文档池** -- 所有文档放 References/，通过 MEMORY.md 索引分类
-3. **索引驱动** -- MEMORY.md 是唯一的文档入口
+1. **原始资料层** (`sources/`) — 外部仓库、原始材料，LLM 只读
+2. **Wiki 层** (`wiki/`) — 结构化知识，LLM 可读写
+3. **Schema 层** (`.claude/CLAUDE.md`) — LLM 行为规则
+
+详见 [[LLM-WIKI-ARCHITECTURE|架构设计文档]]

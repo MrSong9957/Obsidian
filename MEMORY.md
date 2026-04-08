@@ -4,7 +4,7 @@
 1. 此文件超过 200 行会被截断，每条保持单行，不超过 150 字符。
 2. 只保存常用的、跨会话的用户个人习惯和偏好，不保存文档索引。
 3. 唯一的知识库索引是底部的 [README](README.md)，由用户管理。
-4. References 里的文档开头必须有 yaml 元数据：name/description。
+4. wiki/ 里的文档必须有 yaml 元数据：type/name/description（有来源时加 sources）。
 
 ## 用户偏好
 - 语言：中文
@@ -19,4 +19,4 @@
 - 讲解：面向零基础，不假设前提知识，函数/参数/机制都要先解释清楚再给结论；先讲整体（输入输出）再找核心逻辑，只在卡住处深挖；用生活比喻带出术语；短而朴素优于长篇大论；让用户复述验证理解
 
 ## 知识库索引
-[README](README.md) | [References 目录](References/)
+[README](README.md) | [Wiki 目录](wiki/) | [原始资料](sources/)

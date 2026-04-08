@@ -1,0 +1,137 @@
+{
+  "skill_name": "bug-remember",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "你已经改了超过3次了，这个 canvas 渲染闪烁的问题到底怎么回事？",
+      "expected_output": "Skill triggers. Claude first searches bugs/ for matching records. If found, applies the known fix directly. If not found, proceeds to debug then record.",
+      "files": [],
+      "expectations": [
+        "Agent mentions searching the bugs/ experience library",
+        "Agent performs grep or ls on the bugs/ directory",
+        "Agent responds about whether a match was found or not"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/bug-remember",
+      "expected_output": "Skill triggers actively in record mode. Claude performs retrospective, checks bugs/ for duplicates, writes a new bug document with YAML metadata, confirms with user.",
+      "files": [],
+      "expectations": [
+        "Agent enters record mode (Step 3) since this is a manual trigger",
+        "Agent performs a retrospective of the conversation",
+        "Agent checks bugs/ for existing records before writing",
+        "Agent proposes writing a bug document with YAML frontmatter"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "又出现了，之前那个碰撞检测穿透的问题又来了，忘了上次怎么改的了",
+      "expected_output": "Skill triggers via keyword. Claude searches bugs/ for collision/tunnel records. If found, reads and applies the fix. If not, starts debugging.",
+      "files": [],
+      "expectations": [
+        "Agent recognizes the passive trigger keywords",
+        "Agent searches bugs/ directory for collision-related records",
+        "Agent responds about found or not-found status"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "帮我写一个快速排序算法",
+      "expected_output": "Skill does NOT trigger. No bug-related keywords present.",
+      "files": [],
+      "expectations": [
+        "Agent does NOT mention the bugs/ experience library",
+        "Agent does NOT search the bugs/ directory",
+        "Agent responds with a quicksort implementation, not a bug-remember workflow"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "same bug again, the hydration mismatch is back after I updated Next.js",
+      "expected_output": "Skill triggers. Claude searches bugs/ for hydration-related records. If example-hydration-mismatch.md matches, reads it and applies the documented fix.",
+      "files": [],
+      "expectations": [
+        "Agent searches bugs/ for hydration-related records",
+        "Agent finds or references example-hydration-mismatch.md",
+        "Agent applies or references the documented solution"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "不用记了，这次是我自己改错的，不是之前那个问题",
+      "expected_output": "If previously triggered, Claude accepts the decline and does not force a record.",
+      "files": [],
+      "expectations": [
+        "Agent accepts the user's decline gracefully",
+        "Agent does NOT write a bug document against the user's wishes"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "天气又出现了变化，今天下午可能会下雨",
+      "expected_output": "Skill does NOT trigger. '又出现了' in non-bug context should not match.",
+      "files": [],
+      "expectations": [
+        "Agent does NOT mention bug-remember or the experience library",
+        "Agent responds about weather, not bugs"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "/bug-remember — 这已经是第三次遇到 Phaser 的 tilemap 图层渲染顺序问题了",
+      "expected_output": "Skill triggers. Claude checks bugs/ for phaser/tilemap records, finds or creates a new entry with YAML metadata and keywords.",
+      "files": [],
+      "expectations": [
+        "Agent enters record mode (manual trigger)",
+        "Agent checks bugs/ for existing phaser/tilemap records",
+        "Agent proposes writing a bug document with YAML frontmatter including framework and keywords"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "又踩坑了，PixiJS 的 Sprite cacheAsBitmap 在缩放时模糊",
+      "expected_output": "Skill triggers via keyword. Claude searches bugs/ for pixi/cacheAsBitmap/scaling records.",
+      "files": [],
+      "expectations": [
+        "Agent recognizes '又踩坑了' as a trigger keyword",
+        "Agent searches bugs/ for pixi/cacheAsBitmap related records",
+        "Agent responds about found or not-found status"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "/bug-remember",
+      "expected_output": "When a bug document with similar name already exists in bugs/, Claude shows the existing entry and asks: update or create new?",
+      "files": [],
+      "expectations": [
+        "Agent searches bugs/ before writing",
+        "Agent checks for duplicate entries",
+        "Agent presents existing entries to the user if found"
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "Next.js hydration 又报错了，之前碰到过这个问题",
+      "expected_output": "Skill triggers. Claude searches bugs/ and finds example-hydration-mismatch.md via keywords [hydration, SSR, Next.js]. Reads the document, applies the documented solution, tells user this is a known fix from the experience library.",
+      "files": [],
+      "expectations": [
+        "Agent searches bugs/ for hydration-related records",
+        "Agent finds example-hydration-mismatch.md",
+        "Agent reads and applies the documented solution",
+        "Agent tells the user this is a known fix from the experience library"
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "Phaser 3 的 Arcade Physics 碰撞检测偶尔会穿透薄墙",
+      "expected_output": "Skill does NOT trigger on first mention (no keyword match). But if user follows up with '之前也遇到过' or '/bug-remember', then triggers and searches bugs/ for phaser/physics/collision records.",
+      "files": [],
+      "expectations": [
+        "Agent does NOT automatically trigger bug-remember (no keyword in prompt)",
+        "Agent responds with debugging help or asks clarifying questions",
+        "Agent does NOT search bugs/ unprompted"
+      ]
+    }
+  ]
+}
