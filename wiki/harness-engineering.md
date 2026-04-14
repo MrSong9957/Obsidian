@@ -3,7 +3,7 @@ name: Harness Engineering
 description: AI Agent-First 软件开发实践，来自 OpenAI 团队 — 了解 AI 驱动开发模式时阅读
 type: concept
 sources:
-  - "[[sources/learn-claude-code]]"
+  - "[[sources/openai-harness-engineering]]"
 updated: 2026-04-05
 tags: [ai, methodology]
 ---
