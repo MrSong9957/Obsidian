@@ -211,9 +211,19 @@ FROM docker.1ms.run/library/debian:bookworm-slim
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
 
-# Install system dependencies
+# Install system dependencies + Python 3
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bash curl git ca-certificates sudo \
+    python3 python3-pip python3-venv \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install gh CLI (GitHub CLI) — official channel, proxy auto-used if set
+RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+      | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+      | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+    && apt-get update \
+    && apt-get install -y gh \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js 20.x
@@ -255,6 +265,9 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
+      args:
+        HTTP_PROXY: ${HTTP_PROXY:-}
+        HTTPS_PROXY: ${HTTPS_PROXY:-}
     container_name: ${PROJECT_NAME:-dev-container}
     # Initialize config (run entrypoint as root on first start)
     user: "0:0"
@@ -307,7 +320,7 @@ ANTHROPIC_API_KEY=your-api-key-here
 # GitHub Token (for git plugin, get from https://github.com/settings/tokens)
 GITHUB_PERSONAL_ACCESS_TOKEN=your-github-token-here
 
-# Network proxy (container uses host proxy via host.docker.internal)
+# Network proxy — used by both build (apt/curl) and runtime
 HTTP_PROXY=http://host.docker.internal:7890
 HTTPS_PROXY=http://host.docker.internal:7890
 ```
@@ -406,6 +419,19 @@ docker volume ls                # 查看卷
 ```
 ```
 
+### 网络故障排除
+
+构建镜像时，Docker 会自动使用 .env 中的 HTTP_PROXY/HTTPS_PROXY。
+
+如果 gh CLI 安装失败（`cli.github.com` 不可达），确认：
+1. .env 中 HTTP_PROXY 和 HTTPS_PROXY 已正确设置
+2. 宿主机 Clash 已启动并监听 7890 端口
+3. Docker Desktop 的 `host.docker.internal` 解析正常
+
+如果代理也不可用，可跳过 gh CLI 改用 git credential：
+  删除 Dockerfile 中 "Install gh CLI" 的 RUN 层，
+  用 entrypoint.sh 中的 git config credential.helper store 替代。
+
 ### 8. 输出使用说明
 
 ```bash
@@ -451,3 +477,5 @@ claude -p "hello"
 - [ ] 配置目录与宿主机隔离
 - [ ] Claude Code 可正常使用 GLM-5.1
 - [ ] Git 插件可正常访问 GitHub
+- [ ] Python 3 可用（`python3 --version`）
+- [ ] gh CLI 可用（`gh --version`）
