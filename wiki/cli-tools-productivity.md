@@ -8,7 +8,7 @@ updated: 2026-04-05
 tags: [cli, productivity]
 ---
 
-## 十个提升生产力的 CLI 工具推荐
+# 十个提升生产力的 CLI 工具推荐
 
 1. **Collie Anything** — 工具的工具，帮你生成其他 CLI 工具的神器
 2. **LLM is Simon Wilson** — 帮你选择合适电脑配置的本地 AI 模型

@@ -118,12 +118,12 @@ agentMetadata:
 
 ## 相关概念
 
-- [[harness-engineering]] — "代码是 harness" 的核心方法论
-- [[multi-agent-framework]] — 多智能体协作的四角色框架
-- [[summary-learn-claude-code]] — 12 个教学脚本的完整摘要
-- [[summary-claude-code-system-prompts]] — 250 个生产提示词的分类摘要
-- [[Everything-Claude-Code]] — ECC 技能集，Skill 分类的第三方扩展
-- [[natural-language-programming]] — 自然语言定义 Agent 行为（对应 System Prompts 的行为约束）
+- [[harness-engineering.md]] — "代码是 harness" 的核心方法论
+- [[multi-agent-framework.md]] — 多智能体协作的四角色框架
+- [[summary-learn-claude-code.md]] — 12 个教学脚本的完整摘要
+- [[summary-claude-code-system-prompts.md]] — 250 个生产提示词的分类摘要
+- [[Everything-Claude-Code.md]] — ECC 技能集，Skill 分类的第三方扩展
+- [[natural-language-programming.md]] — 自然语言定义 Agent 行为（对应 System Prompts 的行为约束）
 
 ## 待解决的问题
 

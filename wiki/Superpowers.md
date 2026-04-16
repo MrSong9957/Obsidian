@@ -10,7 +10,7 @@ tags: [claude-code, skills]
 
 # Superpowers 使用指南
 
-> 相关文档：[[Everything-Claude-Code|ECC 技能集总览]]
+> 相关文档：[[Everything-Claude-Code.md|ECC 技能集总览]]
 
 ## 1. 什么是 Superpowers？
 

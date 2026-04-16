@@ -95,10 +95,10 @@ agentMetadata:                ← 子代理元数据（仅 agent 类型有）
 
 ## 与现有 wiki 的关系
 
-- [[Everything-Claude-Code]] — ECC 技能集覆盖了 Skill 分类（13 个）的大部分，但 System/Tool/Agent/Data 部分未覆盖
-- [[harness-engineering]] — 250 个提示词就是"代码是 harness"理念的生产级实现
-- [[multi-agent-framework]] — Agent Prompts 中的 Explore/Plan/Verify 等子代理是多智能体协作的实际案例
-- [[summary-learn-claude-code]] — learn-claude-code 的教学版 Agent Loop 对应 System Prompts 中的 conversation summarization 和 context compaction
+- [[Everything-Claude-Code.md]] — ECC 技能集覆盖了 Skill 分类（13 个）的大部分，但 System/Tool/Agent/Data 部分未覆盖
+- [[harness-engineering.md]] — 250 个提示词就是"代码是 harness"理念的生产级实现
+- [[multi-agent-framework.md]] — Agent Prompts 中的 Explore/Plan/Verify 等子代理是多智能体协作的实际案例
+- [[summary-learn-claude-code.md]] — learn-claude-code 的教学版 Agent Loop 对应 System Prompts 中的 conversation summarization 和 context compaction
 
 ## 引用索引
 

@@ -10,7 +10,7 @@ tags: [testing, automation]
 
 # 终端 UI 自动化测试深入研究
 
-> 相关文档：[[terminal-ui-testing|终端 UI 测试精要]] · [[multi-agent-framework|多智能体框架]] · [[ui-design|UI 设计]]
+> 相关文档：[[terminal-ui-testing.md|终端 UI 测试精要]] · [[multi-agent-framework.md|多智能体框架]] · [[ui-design.md|UI 设计]]
 
 ## Context
 

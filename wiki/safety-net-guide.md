@@ -12,7 +12,7 @@ tags: [claude-code, safety]
 
 > Claude Code 插件 - 在危险命令执行前拦截它们
 
-**相关文档**：[[statusline-install|状态栏配置]] | [[Everything-Claude-Code|ECC 技能集]]
+**相关文档**：[[statusline-install.md|状态栏配置]] | [[Everything-Claude-Code.md|ECC 技能集]]
 
 ## 简介
 

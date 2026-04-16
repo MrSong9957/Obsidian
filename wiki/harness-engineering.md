@@ -10,7 +10,7 @@ tags: [ai, methodology]
 
 # Harness Engineering: AI Agent-First 软件开发
 
-> 相关文档：[[multi-agent-framework|多智能体框架]] · [[MEMORY|Claude 记忆索引]]
+> 相关文档：[[multi-agent-framework.md|多智能体框架]] · [[MEMORY|Claude 记忆索引]]
 
 > 原文: [Harness engineering: leveraging Codex in an agent-first world](https://openai.com/index/harness-engineering/)
 > 作者: OpenAI 团队

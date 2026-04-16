@@ -6,6 +6,8 @@ updated: 2026-04-10
 tags: [feedback, 调试, 可观测性]
 ---
 
+# 三段式可观测性
+
 修复 BUG 时，优先用 before/after/failed 三段式事件日志建立可观测性，再定位问题。
 
 **Why:** 用户从 s12 的 EventBus 获得灵感——append-only JSONL 在关键操作前后及失败时各留一条记录，能完整回溯"发生了什么"，是最轻量但最有效的调试手段。

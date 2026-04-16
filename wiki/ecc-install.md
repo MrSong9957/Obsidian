@@ -10,7 +10,7 @@ tags: [claude-code, installation]
 
 # ECC (everything-claude-code) 安装指南
 
-> 返回 [[Everything-Claude-Code|ECC 技能集总览]]
+> 返回 [[Everything-Claude-Code.md|ECC 技能集总览]]
 
 ## 环境要求
 - Claude Code 最新版本

@@ -10,7 +10,7 @@ tags: [claude-code, statusline]
 
 # Claude Code 状态栏插件安装指南
 
-> 相关文档：[[safety-net-guide|Safety Net 安全网]] | [[Everything-Claude-Code|ECC 技能集]]
+> 相关文档：[[safety-net-guide.md|Safety Net 安全网]] | [[Everything-Claude-Code.md|ECC 技能集]]
 
 ## 概述
 

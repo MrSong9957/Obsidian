@@ -34,6 +34,8 @@ vault/
 | 编辑 | ❌ | ✅ | 仅更新指针 | ❌ |
 | 删除 | ❌ | 仅标记 deprecated | ❌ | ❌ |
 
+**文件放置规则：** feedback/project/reference 类详档放 wiki/，根目录只放 MEMORY.md、README.md、LLM-WIKI-ARCHITECTURE.md。
+
 ## 2. 写入流程
 
 ### 2.1 确定目标文件
@@ -79,14 +81,15 @@ tags: [标签1, 标签2]
 - 不使用 HTML 标签或自定义语法
 - 注释和说明文字用中文
 - 文件名使用 kebab-case（如 `prompt-toolkit.md`），不在文件名中使用中文或下划线
+- 双链统一带 `.md` 扩展名：`[[wiki/xxx.md|显示名]]`，不带扩展名的格式禁用
 - 每个页面必须有 H1 标题（`# 标题`），标题放在 frontmatter 之后的第一行
 
 ### 2.4 MEMORY.md 索引更新
 
 当 wiki/ 中新增或删除文件时，同步更新 `MEMORY.md`：
 - 新增文件：在对应分类下添加一行指针（不超过 150 字符）
-- 格式：`- [显示名](wiki/filename.md) — 一句话说明`
-- 如果该页面对应用户偏好，行末加 `→ [详情](wiki/xxx.md)`
+- 格式：`- [[wiki/filename.md|显示名]]([wiki/filename.md](wiki/filename.md)) — 一句话说明`
+- 偏好条目行末加：`→ [[wiki/xxx.md|详情]]([wiki/xxx.md](wiki/xxx.md))`
 
 **MEMORY.md 不超过 200 行。** 接近上限时，合并相似条目或移除低价值指针。
 
@@ -171,12 +174,12 @@ tags: [标签1, 标签2]
 
 ### 5.1 触发条件
 
-当 wiki 页面超过 **500 行**时，必须考虑拆分。
+当 wiki 页面超过 **600 行**时，必须考虑拆分。
 
 ### 5.2 拆分判断
 
 ```
-页面 > 500 行
+页面 > 600 行
        │
        ▼
   1. 分析页面结构：有哪些独立的主题分区？
@@ -257,7 +260,7 @@ tags: [原有标签]
 2. 检查每个文件：
    ├─ frontmatter 完整性（name, description, type, updated, tags）
    ├─ H1 标题存在性（frontmatter 后的第一行必须是 # 标题）
-   ├─ 文件行数（> 500 行标记为待拆分，> 400 行标记为需关注）
+   ├─ 文件行数（> 600 行标记为待拆分，> 500 行标记为需关注）
    ├─ 文件命名规范（应为 kebab-case，无中文、无下划线）
    ├─ wikilinks 有效性（指向的目标文件或目录是否存在）
    └─ updated 时效性（超过 90 天标记为可能过时）
@@ -297,7 +300,7 @@ wiki_dir: wiki
 sources_dir: sources
 
 # 阈值
-split_threshold_lines: 500        # 超过此行数触发拆分评估
+split_threshold_lines: 600        # 超过此行数触发拆分评估
 memory_max_lines: 200             # MEMORY.md 最大行数
 dedup_similarity_threshold: 0.8   # 内容重叠度超过此值视为重复
 

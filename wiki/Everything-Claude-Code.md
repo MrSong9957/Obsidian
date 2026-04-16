@@ -12,7 +12,7 @@ tags: [claude-code, skills]
 
 > Claude Code 扩展技能集，包含 110+ Skills、Rules、MCP 配置和项目模板。
 
-**相关文档**：[[ECC-Agent-Usage-Instructions|ECC 智能体使用]] | [[Superpowers|Superpowers 技能系统]] | [[ecc-install|安装指南]]
+**相关文档**：[[ECC-Agent-Usage-Instructions.md|ECC 智能体使用]] | [[Superpowers.md|Superpowers 技能系统]] | [[ecc-install.md|安装指南]]
 
 ---
 

@@ -10,7 +10,7 @@ tags: [claude-code, agents]
 
 # 全能 Claude 代码框架（ECC）——智能体使用说明
 
-> 相关文档：[[Everything-Claude-Code|ECC 技能集总览]] | [[Superpowers|Superpowers 技能系统]]
+> 相关文档：[[Everything-Claude-Code.md|ECC 技能集总览]] | [[Superpowers.md|Superpowers 技能系统]]
 
 这是一款**可用于生产环境的 AI 编程插件**，提供 25 个专业智能体、108 项技能、57 条指令，以及面向软件开发的自动化钩子工作流。
 

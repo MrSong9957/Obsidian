@@ -12,7 +12,7 @@ tags: [testing, playwright]
 
 > 轻量级 CLI 工具，让 Claude Code 高效完成 UI 测试
 
-**相关文档**：[[Everything-Claude-Code|ECC 技能集]] | [[ui-design|UI 设计原则]]
+**相关文档**：[[Everything-Claude-Code.md|ECC 技能集]] | [[ui-design.md|UI 设计原则]]
 
 ## 安装
 

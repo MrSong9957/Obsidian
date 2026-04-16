@@ -6,6 +6,8 @@ updated: 2026-04-12
 tags: [TDD, 测试驱动开发, 安全函数, 工具函数, safe_path]
 originSessionId: e7a7837a-73ac-4168-b6bb-ba35ba9bb1b3
 ---
+# TDD 默认实践
+
 默认使用 TDD（测试驱动开发）。安全相关函数和工具函数，实现前先写边界 case 并验证。
 
 **Why:** safe_path 函数定义了 PROJECT_ROOT 却没使用，也没有边界检查（`is_relative_to`），写完后只测了正常路径没测越界路径，导致 `../../etc/passwd` 可以畅通无阻。直到用户对照教程指出才修复。

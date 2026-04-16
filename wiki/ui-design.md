@@ -10,7 +10,7 @@ tags: [frontend, design]
 
 # UI 设计原则
 
-> 相关文档：[[Everything-Claude-Code|ECC 技能集]]
+> 相关文档：[[Everything-Claude-Code.md|ECC 技能集]]
 
 ### 一、动手之前
 
