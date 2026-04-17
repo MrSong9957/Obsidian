@@ -7,11 +7,13 @@ sources:
   - "[[sources/claude-code-system-prompts/README]]"
 confidence: 0.92
 updated: 2026-04-06
-status: active
+status: deprecated
 tags: [Agent, 架构, Claude-Code, harness]
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # Claude Code Agent 架构
+
+> 内容已迁移至 [[wiki/agent-arch-p1.md|agent-arch-p1]]。
 
 ## 核心思想
 

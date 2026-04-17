@@ -6,9 +6,12 @@ sources:
   - "[[sources/claude-code-system-prompts/README]]"
 updated: 2026-04-05
 tags: [claude-code, skills]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # Everything Claude Code (ECC)
+
+> 内容已迁移至 [[wiki/claude-code-p2.md|claude-code-p2]]。
 
 > Claude Code 扩展技能集，包含 110+ Skills、Rules、MCP 配置和项目模板。
 

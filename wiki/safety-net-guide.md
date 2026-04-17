@@ -6,9 +6,12 @@ sources:
   - "[[sources/claude-code-system-prompts/README]]"
 updated: 2026-04-05
 tags: [claude-code, safety]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # Safety Net 使用手册
+
+> 内容已迁移至 [[wiki/claude-code-p2.md|claude-code-p2]]。
 
 > Claude Code 插件 - 在危险命令执行前拦截它们
 

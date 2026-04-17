@@ -5,8 +5,11 @@ type: reference
 updated: 2026-04-16
 tags: [claude-code, memory, architecture, active-recall]
 originSessionId: c5af07bf-8132-4a4b-91e3-10395f164b1d
+status: deprecated
 ---
 # Claude Code 记忆系统：Active Recall 机制
+
+> 内容已迁移至 [[wiki/claude-code-p1.md|claude-code-p1]]。
 
 ## 四阶段筛选
 

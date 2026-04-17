@@ -6,9 +6,12 @@ sources:
   - "[[sources/claude-code-system-prompts/README]]"
 updated: 2026-04-05
 tags: [claude-code, memory]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # Claude Code Auto Memory 完整指南
+
+> 内容已迁移至 [[wiki/claude-code-p1.md|claude-code-p1]]。
 
 > 基于官方文档整理：https://code.claude.com/docs/en/memory
 

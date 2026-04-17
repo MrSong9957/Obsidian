@@ -6,9 +6,12 @@ sources:
   - "[[sources/claude-code-system-prompts/README]]"
 updated: 2026-04-05
 tags: [claude-code, configuration]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # CLAUDE.md 完整指南
+
+> 内容已迁移至 [[wiki/claude-code-p1.md|claude-code-p1]]。
 
 > 官方文档：https://code.claude.com/docs/en/memory
 > 实践参考：https://joseparreogarcia.substack.com/p/how-claude-code-rules-actually-work

@@ -6,7 +6,10 @@ sources:
   - "[[sources/claude-code-system-prompts/README]]"
 updated: 2026-04-05
 tags: [claude-code, statusline]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
+> 本页内容已合并至 [[wiki/statusline-install.md|statusline-install]]。
 
 # Claude Code 状态栏安装指南
 

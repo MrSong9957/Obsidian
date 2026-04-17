@@ -5,8 +5,11 @@ type: feedback
 updated: 2026-04-16
 tags: [kv-cache, claudemd, prompt-engineering, obsidian, 双链]
 originSessionId: a40cbcbb-0a0a-4e5c-95c1-213ce2eb6a6c
+status: deprecated
 ---
 # 文档编排与双链规范
+
+> 内容已迁移至 [[wiki/claude-code-p1.md|claude-code-p1]]。
 
 ## CLAUDE.md KV 缓存编排
 

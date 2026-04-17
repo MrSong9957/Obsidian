@@ -6,9 +6,12 @@ source: "[[sources/claude-code-system-prompts/README]]"
 confidence: 0.95
 updated: 2026-04-06
 tags: [Claude-Code, 系统提示词, 提示工程, harness]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # 摘要：Claude Code System Prompts
+
+> 内容已迁移至 [[wiki/agent-arch-p1.md|agent-arch-p1]]。
 
 ## 一句话总结
 

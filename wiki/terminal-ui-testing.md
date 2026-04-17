@@ -6,9 +6,12 @@ sources:
   - "[[sources/learn-claude-code]]"
 updated: 2026-04-05
 tags: [testing, automation]
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
+status: deprecated
 ---
-
 # 终端 UI 自动化测试深入研究
+
+> 内容已迁移至 [[wiki/frontend.md|frontend]]。
 
 > 相关文档：[[terminal-ui-testing.md|终端 UI 测试精要]] · [[multi-agent-framework.md|多智能体框架]] · [[ui-design.md|UI 设计]]
 
@@ -299,6 +302,33 @@ Screenshot screenshots/04-joke.png
 ---
 
 ## 关键发现
+
+1. **简单的交互循环 + 二元奖励**就能训练出有效 Agent
+2. **环境规模比算法复杂度更重要**
+3. **循环行为是主要失败模式**（39%）
+4. **VHS 的 Screenshot 功能让 AI 可以"看见"终端 UI**
+
+---
+
+## 双智能体循环架构（原始研究视角）
+
+```
+Generator Agent          VHS Test Runner          Evaluator Agent
+     |                        |                         |
+     +-- 编写/修改代码 ------->|                         |
+     +-- 创建 .tape 脚本 ----->|                         |
+     |                        +-- 执行 .tape             |
+     |                        +-- 生成 PNG 截图 -------->|
+     |                        |                         +-- 视觉分析
+     |                        |                         +-- 发现问题
+     |                        |                         +-- 生成反馈
+     |<-------------------------------------------------+
+     |                    反馈循环                        |
+```
+
+**实现要点：** Generator 编写代码 + 创建 .tape；VHS 执行并生成 PNG；Evaluator 多模态分析截图并生成反馈；持续迭代直到通过或达到最大次数。
+
+### 关键发现
 
 1. **简单的交互循环 + 二元奖励**就能训练出有效 Agent
 2. **环境规模比算法复杂度更重要**

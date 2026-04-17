@@ -4,9 +4,12 @@ name: s_full_architecture
 description: s_full.py 完整底层逻辑中文文档，按执行顺序组织，整合 s01-s11 所有机制
 updated: 2026-04-10
 tags: [agent, harness, python, architecture]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # s_full.py 底层逻辑全景
+
+> 内容已迁移至 [[wiki/agent-arch-p1.md|agent-arch-p1]]。
 
 ## 1. 概述
 

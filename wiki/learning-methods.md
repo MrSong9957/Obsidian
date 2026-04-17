@@ -4,9 +4,12 @@ description: 个人学习路径框架——内→外与外→内两条路径、�
 type: concept
 updated: 2026-04-05
 tags: [learning, methodology]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # 学习方法论
+
+> 内容已迁移至 [[wiki/learning.md|learning]]。
 
 ## 两条学习路径
 

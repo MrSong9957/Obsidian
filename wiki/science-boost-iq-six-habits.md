@@ -4,9 +4,12 @@ description: 六大核心习惯提升智商的实践指南 — 了解科学提�
 type: concept
 updated: 2026-04-05
 tags: [self-improvement, habits]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # 科学提升智商：六大核心习惯与实践指南
+
+> 内容已迁移至 [[wiki/learning.md|learning]]。
 
 ---
 

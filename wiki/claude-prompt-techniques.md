@@ -5,8 +5,11 @@ type: reference
 updated: 2026-04-16
 tags: [claude, prompt-engineering, techniques, anti-intuitive]
 originSessionId: c5af07bf-8132-4a4b-91e3-10395f164b1d
+status: deprecated
 ---
 # Claude 提示词技巧：7 条反直觉实用策略
+
+> 内容已迁移至 [[wiki/dev-practice.md|dev-practice]]。
 
 来源：从 Claude 泄露代码中提炼，核心发现——顶尖能力的核心在于提示词设计。
 

@@ -6,7 +6,10 @@ sources:
   - "[[sources/learn-claude-code]]"
 updated: 2026-04-05
 tags: [testing, automation]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
+> 本页内容已合并至 [[wiki/terminal-ui-testing.md|terminal-ui-testing]]。
 
 # 终端 UI 自动化测试方案
 

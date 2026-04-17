@@ -6,9 +6,12 @@ source: "[[sources/learn-claude-code]]"
 confidence: 0.95
 updated: 2026-04-06
 tags: [Agent, Claude-Code, 教学笔记, harness]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # 摘要：Learn Claude Code（s01-s12）
+
+> 内容已迁移至 [[wiki/agent-arch-p1.md|agent-arch-p1]]。
 
 ## 一句话总结
 

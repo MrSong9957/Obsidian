@@ -6,9 +6,12 @@ sources:
   - "[[sources/claude-code-system-prompts/README]]"
 updated: 2026-04-05
 tags: [claude-code, agents]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # 全能 Claude 代码框架（ECC）——智能体使用说明
+
+> 内容已迁移至 [[wiki/claude-code-p2.md|claude-code-p2]]。
 
 > 相关文档：[[Everything-Claude-Code.md|ECC 技能集总览]] | [[Superpowers.md|Superpowers 技能系统]]
 

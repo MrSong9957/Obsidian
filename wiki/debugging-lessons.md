@@ -4,9 +4,12 @@ description: 调试方法论 — 先观察再假设、日志先行 — 遇到调
 type: concept
 updated: 2026-04-12
 tags: [debugging, experience]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # 调试教训
+
+> 内容已迁移至 [[wiki/dev-practice.md|dev-practice]]。
 
 ## 2026-03-21: 菜单返回 Bug
 

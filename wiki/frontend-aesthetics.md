@@ -6,7 +6,10 @@ sources:
   - "[[sources/claude-code-system-prompts/README]]"
 updated: 2026-04-05
 tags: [frontend, design]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
+> 本页内容已合并至 [[wiki/ui-design.md|ui-design]]。
 
 # 前端美学原则
 

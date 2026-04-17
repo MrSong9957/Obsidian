@@ -6,9 +6,12 @@ sources:
   - "[[sources/learn-claude-code]]"
 updated: 2026-04-05
 tags: [ai, programming]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # 人话编程规范
+
+> 内容已迁移至 [[wiki/agent-arch-p2.md|agent-arch-p2]]。
 
 > 创建日期：2026-03-31
 

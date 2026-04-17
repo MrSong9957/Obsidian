@@ -6,9 +6,12 @@ sources:
   - "[[sources/claude-code-system-prompts/README]]"
 updated: 2026-04-05
 tags: [obsidian, tools]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # Obsidian CLI 速查手册
+
+> 内容已迁移至 [[wiki/obsidian.md|obsidian]]。
 
 > Obsidian 1.12+ 内置命令行工具，Early Access 阶段，需 Catalyst Insider 许可证
 

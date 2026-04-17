@@ -6,9 +6,12 @@ sources:
   - "[[sources/learn-claude-code]]"
 updated: 2026-04-05
 tags: [ai, multi-agent]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # 多智能体迭代框架精要
+
+> 内容已迁移至 [[wiki/agent-arch-p1.md|agent-arch-p1]]。
 
 **触发词：** 用户说"多智能体框架"、"生成器+评估器"、"迭代开发"等
 

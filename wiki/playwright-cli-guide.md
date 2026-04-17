@@ -6,9 +6,12 @@ sources:
   - "[[sources/claude-code-system-prompts/README]]"
 updated: 2026-04-05
 tags: [testing, playwright]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # Playwright CLI 快速指南
+
+> 内容已迁移至 [[wiki/frontend.md|frontend]]。
 
 > 轻量级 CLI 工具，让 Claude Code 高效完成 UI 测试
 

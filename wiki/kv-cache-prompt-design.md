@@ -8,9 +8,12 @@ tags:
   - prompt-design
   - inference-optimization
   - mi-code
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # KV 缓存提示词设计原则
+
+> 内容已迁移至 [[wiki/dev-practice.md|dev-practice]]。
 
 ## KV缓存优化原则
 

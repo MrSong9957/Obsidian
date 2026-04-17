@@ -6,9 +6,12 @@ sources:
   - "[[sources/claude-code-system-prompts/README]]"
 updated: 2026-04-05
 tags: [claude-code, statusline]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # Claude Code 状态栏插件安装指南
+
+> 内容已迁移至 [[wiki/claude-code-p2.md|claude-code-p2]]。
 
 > 相关文档：[[safety-net-guide.md|Safety Net 安全网]] | [[Everything-Claude-Code.md|ECC 技能集]]
 

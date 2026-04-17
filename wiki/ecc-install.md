@@ -6,9 +6,12 @@ sources:
   - "[[sources/claude-code-system-prompts/README]]"
 updated: 2026-04-05
 tags: [claude-code, installation]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # ECC (everything-claude-code) 安装指南
+
+> 内容已迁移至 [[wiki/claude-code-p2.md|claude-code-p2]]。
 
 > 返回 [[Everything-Claude-Code.md|ECC 技能集总览]]
 

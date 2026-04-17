@@ -6,9 +6,12 @@ sources:
   - "[[sources/learn-claude-code]]"
 updated: 2026-04-05
 tags: [ai, skills]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # AI 时代人类技能发展
+
+> 内容已迁移至 [[wiki/learning.md|learning]]。
 
 > 研究日期：2026-03-27 | 有效期至 2026-04-27（领域变化快，月度更新）
 

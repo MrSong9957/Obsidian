@@ -6,9 +6,12 @@ sources:
   - "[[sources/openai-harness-engineering]]"
 updated: 2026-04-05
 tags: [ai, methodology]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # Harness Engineering: AI Agent-First 软件开发
+
+> 内容已迁移至 [[wiki/agent-arch-p2.md|agent-arch-p2]]。
 
 > 相关文档：[[multi-agent-framework.md|多智能体框架]] · [[MEMORY|Claude 记忆索引]]
 

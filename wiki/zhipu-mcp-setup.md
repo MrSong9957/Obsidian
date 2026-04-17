@@ -4,9 +4,12 @@ description: 智谱 AI 4 个 MCP 服务器（视觉理解/联网搜索/网页读
 type: summary
 updated: 2026-04-05
 tags: [mcp, zhipu, setup]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # 智谱 AI MCP 服务器安装指南
+
+> 内容已迁移至 [[wiki/network-api.md|network-api]]。
 
 本文档介绍如何在 Claude Code 中安装智谱 AI 提供的 4 个 MCP 服务器，为 Claude 增加视觉理解、联网搜索、网页读取和开源仓库查询能力。
 

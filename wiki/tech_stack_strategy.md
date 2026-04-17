@@ -4,9 +4,12 @@ name: 技术栈与语言策略
 description: 原型用 HTML/CSS/JS，正式前端 Flutter，后端默认 Python，高性能场景 Rust
 updated: 2026-04-10
 tags: [技术栈, 语言策略, Rust, Flutter, 界面原型]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # 技术栈与语言策略
+
+> 内容已迁移至 [[wiki/frontend.md|frontend]]。
 
 ## 技术栈
 

@@ -5,9 +5,12 @@ description: 讲解重心是底层逻辑而非语法；遇新概念用零基础�
 updated: 2026-04-13
 tags: [代码讲解, 底层逻辑, 学习方法, AI时代]
 sources: [agents/s12_worktree_task_isolation.py 讨论中总结]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # 代码讲解与分析策略
+
+> 内容已迁移至 [[wiki/dev-practice.md|dev-practice]]。
 
 ## 重心：底层逻辑优先
 

@@ -4,9 +4,12 @@ description: 修复 BUG 时使用 before/after/failed 三段式事件记录作�
 type: feedback
 updated: 2026-04-10
 tags: [feedback, 调试, 可观测性]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # 三段式可观测性
+
+> 内容已迁移至 [[wiki/dev-practice.md|dev-practice]]。
 
 修复 BUG 时，优先用 before/after/failed 三段式事件日志建立可观测性，再定位问题。
 

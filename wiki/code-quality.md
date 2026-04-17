@@ -6,9 +6,12 @@ sources:
   - "[[sources/claude-code-system-prompts/README]]"
 updated: 2026-04-05
 tags: [code-quality, best-practices]
+status: deprecated
+originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
-
 # 代码质量约束（自动发现机制）
+
+> 内容已迁移至 [[wiki/dev-practice.md|dev-practice]]。
 
 **核心原则：用户不需要知道"什么是好的"，AI 负责发现最佳实践。**
 
