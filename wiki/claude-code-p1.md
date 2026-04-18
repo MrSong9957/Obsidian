@@ -2,9 +2,9 @@
 name: Claude Code 配置
 description: settings.json/CLAUDE.md/rules/记忆系统/技能位置 — 遇到Claude Code配置、持久化指令、记忆系统问题时参考
 type: concept
-updated: 2026-04-17
-tags: [claude-code, settings, claudemd, memory, rules]
+updated: 2026-04-18
 originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
+tags: [claude-code, settings, claudemd, memory, rules]
 ---
 # Claude Code 配置
 
@@ -47,6 +47,25 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - 正确路径：`~/.claude/skills/<skill-name>/SKILL.md`
 - 放好后用 `/reload-plugins` 刷新生效
 - 项目 `skills/` 和 `~/.claude/plugins/` 都不是正确位置
+
+## Hook 类型选择
+
+- prompt hook 返回 `{"ok": false, "reason": "..."}` 可让主 Claude 继续工作，拥有完整对话上下文和全部工具权限
+- command hook + `claude -p` 子进程需读 transcript 重建上下文，有冷启动和终端乱码风险
+- stop_hook_active 机制防无限循环：Claude 继续→再停→hook 返回 `{"ok": true}`→结束
+- 结论：Stop 事件中需利用主对话上下文的任务（如复盘），优先用 prompt hook
+
+### Stop Hook 演进：V1 → V4
+
+- **V1**（command hook + claude -p）：子进程需从 transcript 重建上下文，冷启动慢，终端乱码
+- **V2**（prompt hook + 主对话内复盘）：不阻塞但消耗主对话 token
+- **V3**（prompt hook + 后台 agent）：不阻塞、零 token 消耗，但评估器过度触发（几乎每次回复都启动后台 agent）+ GLM 评估器不严格输出 JSON 导致终端显示 "error"
+- **V4**（关键词触发 + 后台 agent，当前方案）：移除 Stop hook，用户输入"复盘"关键词时 Claude 启动后台 agent
+  - 零过度触发、零额外 API 调用、零配置（不需要 hook/settings.json）
+  - 继承 V3 优势：不阻塞、零 token 消耗、完整工具权限
+- **演进路线**：command+claude-p（V1）→ prompt hook ok:false（V2）→ prompt hook + 后台 agent（V3）→ 关键词触发 + 后台 agent（V4）
+- **设计文档**：[[sources/stop-hook-design.md|完整设计文档]]
+- **教训**：自动触发的 hook 评估器难以准确判断对话是否有复盘价值，用户主动触发（关键词）是更可靠的方案
 
 ## CLAUDE.md KV 缓存编排
 

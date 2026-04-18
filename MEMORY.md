@@ -22,11 +22,14 @@
 - 开发方法：默认 TDD，代码质量由 AI 发现最佳实践 → [[wiki/dev-practice.md|详情]]([wiki/dev-practice.md](wiki/dev-practice.md))
 
 ## 经验教训
-- 网络：JS 渲染页面 web reader 遗漏内容，用 curl + grep 替代 → [[wiki/network-api.md|详情]]([wiki/network-api.md](wiki/network-api.md))
+- 网络：web reader 可能遗漏JS内容或返回缓存旧版，用 curl+grep 或 no_cache=true → [[wiki/network-api.md|详情]]([wiki/network-api.md](wiki/network-api.md))
 - Claude Code：自定义技能放 ~/.claude/skills/<name>/SKILL.md → [[wiki/claude-code-p1.md|详情]]([wiki/claude-code-p1.md](wiki/claude-code-p1.md))
 - 提示词：固定前置动态后置最大化 KV 缓存命中 → [[wiki/dev-practice.md|详情]]([wiki/dev-practice.md](wiki/dev-practice.md))
 - 文档：CLAUDE.md 稳定前置 + 双链带 .md → [[wiki/claude-code-p1.md|详情]]([wiki/claude-code-p1.md](wiki/claude-code-p1.md))
-- 删除操作：rm -rf 前必须先确认目录内容 → [[wiki/dev-practice.md|详情]]([wiki/dev-practice.md](wiki/dev-practice.md))
+- 删除操作：rm -rf 和 find -delete 前先预览，Safety Net 会阻止批量删除 → [[wiki/dev-practice.md|详情]]([wiki/dev-practice.md](wiki/dev-practice.md))
+- 上下文管理：当前完整保留，旧的才压缩（截断+落盘→占位符→摘要）→ [[wiki/agent-arch-p1.md|详情]]([wiki/agent-arch-p1.md](wiki/agent-arch-p1.md))
+- Hooks：V4 关键词"复盘"触发后台 agent 复盘，无需 hook 配置（V3 因评估器过度触发已废弃）→ [[wiki/claude-code-p1.md|详情]]([wiki/claude-code-p1.md](wiki/claude-code-p1.md))
+- Skill 触发：description 含重叠关键词会竞争匹配，用户触发的改斜杠命令 → [[wiki/claude-code-p2.md|详情]]([wiki/claude-code-p2.md](wiki/claude-code-p2.md))
 
 ## 知识库索引
 [README](README.md) | [Wiki 目录](wiki/) | [原始资料](sources/)

@@ -2,7 +2,7 @@
 name: Agent 架构（上）
 description: Agent循环/多智能体框架/系统提示词/教学脚本 — 遇到Agent架构设计、多智能体协作、系统提示词问题时参考
 type: concept
-updated: 2026-04-17
+updated: 2026-04-18
 tags: [agent, architecture, multi-agent, system-prompts]
 originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
@@ -16,12 +16,25 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - **Agent = while 循环 + 工具分发 + 上下文管理 + 子代理**，四个机制组合，缺一不可
 - 循环本质：`while stop_reason == "tool_use"` 把工具结果喂回模型，直到模型自己停下来
 - 工具分发：`TOOL_HANDLERS` 字典映射 tool_name → handler，新增工具只需注册
-- 上下文管理：三层压缩（micro_compact 每轮静默清理 → auto_compact 超阈值 LLM 摘要 → compact 工具模型主动触发）
+- 上下文管理：四层压缩（截断+落盘 → micro_compact 每轮静默清理 → auto_compact 超阈值 LLM 摘要 → compact 工具模型主动触发）
 - 子代理：全新 messages 列表 + 受限工具集（防止递归）+ 只返回摘要（父代理上下文保持干净）
 - 技能按需加载：系统提示词只放 name+description（~100 tokens），调用时才加载完整内容
 - 生产版核心洞察：循环本身不变，通过 250 个提示词片段控制循环内的决策质量
 
 > 详细内容见 [[sources/agent-arch-p1.md]]
+
+## 上下文压缩最小心智模型
+
+- **核心原则**：上下文有限 → 必须腾地方 → 当前结果完整保留，旧的才压缩
+- **四层实现**，按激进程度递增：
+  1. 结果超大时：完整内容写到磁盘，上下文只留前 N 行预览 + 文件路径
+  2. 每轮对话前（micro_compact）：最近 3 个 tool_result 完整保留，更早的替换为 `[Previous: used {tool_name}]` 占位符
+  3. token 超阈值时（auto_compact）：完整对话落盘到 `.transcripts/`，上下文替换为 LLM 生成的摘要
+  4. 主动触发时（manual compact）：同 auto_compact
+- **信息流向**：完整结果 → 截断+落盘（超大时）→ 占位符（超 3 轮）→ 摘要（超阈值），活跃度递减，保留量递减
+- **关键取舍**：截断+落盘信息不丢可回读；占位符只记"用过什么"；摘要压缩比最高但依赖 LLM 质量，完整历史可通过磁盘恢复
+
+> 来源：[[sources/agent-arch-p1.md]]
 
 ## s_full.py 核心结论
 

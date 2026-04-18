@@ -5,6 +5,7 @@ description: |
   当用户在新项目中想要连接 Obsidian 仓库、挂载知识库、设置记忆链接时使用此技能。
   适用于：新项目初始化、Docker 容器环境、需要跨项目共享 Obsidian 知识库的场景。
   触发短语：连接 Obsidian、挂载知识库、链接仓库、关联记忆、obsidian-link、设置 Obsidian 链接。
+depends: []
 ---
 
 # Obsidian Link 技能

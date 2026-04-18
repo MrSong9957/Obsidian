@@ -4,6 +4,7 @@ description: |
   管理 Obsidian 知识仓库的写入、更新、去重、合并和拆分。当用户要求"记住"、"保存到笔记"、"记录到 Obsidian"、
   "写入 wiki"、"更新知识库"，或提到任何需要持久化知识到 Obsidian 仓库的操作时，使用此技能。
   也适用于用户提到知识去重、笔记合并、文档拆分、上下文窗口优化等场景。
+depends: [obsidian-link]
 ---
 
 # Obsidian Remember — 知识仓库管理技能

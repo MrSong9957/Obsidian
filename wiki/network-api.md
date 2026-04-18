@@ -1,9 +1,9 @@
 ---
 name: 网络与 API
-description: Web抓取JS渲染问题/MCP服务器配置/API调用经验 — 遇到网络请求、页面抓取、MCP配置问题时参考
+description: Web抓取缓存与JS渲染问题/MCP服务器配置/API调用经验 — 遇到网络请求、页面抓取、MCP配置问题时参考
 type: concept
-updated: 2026-04-17
-tags: [network, api, web-scraping, mcp]
+updated: 2026-04-18
+tags: [network, api, web-scraping, mcp, caching]
 originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
 # 网络与 API
@@ -16,6 +16,13 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
   - 替代：首次失败后直接 `curl -sL URL | grep 关键词` 搜索原始 HTML
 
 > 详细内容见 sources/network-api.md
+
+## Web Reader 缓存可能返回过时内容
+
+- Web reader 有缓存机制，对同一 URL 可能返回旧版本内容而非最新版本
+- 禁止：首次抓取内容与用户描述不符时，直接信任抓取结果
+  - 原因：缓存导致返回过时页面，实测 learn.shareai.run/zh/s07/ 第一次抓到旧版（任务图系统），用户实际看到的是新版（权限系统）
+  - 替代：用 `no_cache=true` 参数重新抓取，或与用户交叉验证内容是否匹配
 
 ## 智谱 MCP 服务器速查
 

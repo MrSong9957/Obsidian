@@ -2,7 +2,7 @@
 name: Claude Code 工具
 description: ECC技能集/Superpowers/SafetyNet/Statusline — 遇到Claude Code插件、安全网、状态栏问题时参考
 type: concept
-updated: 2026-04-17
+updated: 2026-04-18
 tags: [claude-code, plugins, ecc, superpowers, safety-net]
 originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
@@ -36,10 +36,20 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ## Safety Net 核心能力
 
 - Hook 机制在命令执行前拦截，CLAUDE.md 的"软"规则无法替代"硬"技术约束
-- 拦截：git checkout -- / git reset --hard / git push --force / rm -rf（cwd 外）/ git branch -D
+- 拦截：git checkout -- / git reset --hard / git push --force / rm -rf（cwd 外）/ git branch -D / find -delete
 - 放行：git checkout -b / git branch -d / git push --force-with-lease / rm -rf ./...
+- 绕过方式：Safety Net 阻止批量删除时，先预览目标列表（如 `find ... -print`），再逐个删除（如 `find ... -exec rm {} \;` 或循环）
 - 高级：Shell 包装检测、解释器单行检测、审计日志、自定义规则（`~/.cc-safety-net/config.json`）
 - 安装：`/plugin install safety-net@cc-marketplace` → 配置 PreToolUse Hook
+
+## Skill 竞争匹配与触发方式
+
+**禁止：** 让多个 skill 的 description 含相同关键词（如"记住"），依赖自动匹配触发
+**原因：** 两个 skill description 含重叠关键词时，Claude 自动匹配会产生竞争，可能选错 skill 或两个都不触发
+**替代：**
+- 用户主动触发的 skill 改为斜杠命令（`/skill-name`），显式调用消除歧义
+- 仅后台 agent 调用的 skill 用 symlink 指向原版，description 避免与前端 skill 重叠
+- 实例：note-obsidian 从 SKILL 改为斜杠命令（V5），obsidian-remember 改为 symlink 仅供后台 agent 调用
 
 ## StatusLine 关键变量
 
