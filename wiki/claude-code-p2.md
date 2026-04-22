@@ -2,7 +2,7 @@
 name: Claude Code 工具
 description: ECC技能集/Superpowers/SafetyNet/Statusline — 遇到Claude Code插件、安全网、状态栏问题时参考
 type: concept
-updated: 2026-04-18
+updated: 2026-04-20
 tags: [claude-code, plugins, ecc, superpowers, safety-net]
 originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
@@ -57,6 +57,12 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - 配置：settings.json 中 `statusLine.type` = command 或 template
 - 推荐 Python 版本（比 Bash 版本更稳定）；脚本放 `~/.claude/scripts/statusline.py`
 - 多状态栏合并：用管道 `python statusline.py | npx cc-safety-net --statusline`
+
+## GitHub MCP 插件认证
+
+**问题：** `github@claude-plugins-official` 启动报错 `Incompatible auth server: does not support dynamic client registration`
+**原因：** 插件 `.mcp.json` 用 `${GITHUB_PERSONAL_ACCESS_TOKEN}` header 认证，变量缺失时回退到 OAuth 动态注册，而 Copilot 端点不支持
+**解决：** 在 `~/.claude/settings.json` 的 `env` 中添加 `"GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_xxx"`（值取自项目 `docker/.env`），`/reload-plugins` 后生效
 
 ## 安装教训
 
