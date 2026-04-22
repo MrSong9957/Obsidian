@@ -2,7 +2,7 @@
 name: CLAUDE.md 通用基础模板
 description: 所有项目 CLAUDE.md 的通用规则基础，包含语言偏好、协作方式、行为约束、Git 规范
 type: reference
-updated: 2026-04-20
+updated: 2026-04-23
 tags: [claude-md, template, universal-rules]
 ---
 # CLAUDE.md 通用基础规则
@@ -22,6 +22,15 @@ tags: [claude-md, template, universal-rules]
 - 禁止猜测不确定的信息，超出知识范围直接说明，从权威渠道（官方文档、Web 搜索）获取支持后再回答
 - 指出方案缺陷不迎合不软化，因沉默的同意比刺耳的真话代价更大
 - 基于假设行动时显式标出假设，因隐含假设错误会导致整个方案静默失败
+
+## 编码风格 & 重构规则
+- 保持方案简单。加个参数优于创建重复函数。扩展优于抽象。
+- 不要过度设计。用户要求小改动就做最小的改动。
+- 优先使用 Python。Python 3.13 + venv 优于 conda/miniconda。
+- UI 工作可以用 HTML 原型。
+
+## 评估理念
+- 用以用户为中心的标准评估 UI/UX，而非代码指标（不用行数、功能密度、token 频率来衡量面向用户的输出）。
 
 ## Git 规范
 - 身份信息从 `git log --format='%an <%ae>' -1` 获取（与历史提交一致）
