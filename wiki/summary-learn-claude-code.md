@@ -64,7 +64,6 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - [[harness-engineering.md]] — "模型就是 Agent，代码是 harness" 的方法论
 - [[multi-agent-framework.md]] — 多智能体协作的四角色迭代框架
 - [[natural-language-programming.md]] — s10 用自然语言定义团队协议
-- [[Everything-Claude-Code.md]] — ECC 技能集覆盖了 s05 技能加载的生产版实现
 - [[learning-methods.md]] — 12 个脚本的螺旋上升学习路径设计
 
 ## 引用索引

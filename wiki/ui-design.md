@@ -13,7 +13,7 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 
 > 内容已迁移至 [[wiki/frontend.md|frontend]]。
 
-> 相关文档：[[Everything-Claude-Code.md|ECC 技能集]]
+
 
 ### 一、动手之前
 

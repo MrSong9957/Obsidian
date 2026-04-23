@@ -98,7 +98,6 @@ agentMetadata:
 - [[multi-agent-framework.md]] — 多智能体协作的四角色框架
 - [[summary-learn-claude-code.md]] — 12 个教学脚本的完整摘要
 - [[summary-claude-code-system-prompts.md]] — 250 个生产提示词的分类摘要
-- [[Everything-Claude-Code.md]] — ECC 技能集，Skill 分类的第三方扩展
 - [[natural-language-programming.md]] — 自然语言定义 Agent 行为（对应 System Prompts 的行为约束）
 
 ### 待解决的问题
@@ -646,7 +645,6 @@ teammate 发送 plan_approval 消息给 lead
 4. 仅在索引无匹配时才自定义提示词
 
 **索引资源示例：**
-- `ECC-Agent-Usage-Instructions` - 25 个专业智能体
 - `Superpowers` - 核心工作流技能
 - 其他插件技能
 

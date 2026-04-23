@@ -188,6 +188,76 @@ ls wiki/ | head -5
 
 如果有断裂的链接，报告给用户并尝试修复。
 
+## 第六步：Windows 非 Docker 环境
+
+当环境检测结果为非 Docker + Windows 时，使用以下方案。
+
+### 关键发现
+
+- **Claude Code 只读取 `memory/MEMORY.md` 作为纯文本注入系统提示，不扫描子目录。** 因此所有内容必须平铺在 memory 根目录，不能嵌套（如 `memory/obsidian/` 下的内容不会被发现）。
+- **Windows 上目录 Junction 不需要管理员权限，文件 Symlink 需要。** 这是两种不同的机制。
+- **跨盘符（如 C: 和 E:）不可用硬链接。**
+
+### 链接策略
+
+```
+Windows 非 Docker 环境
+       │
+       ▼
+  判断用户是否有管理员权限或已开启开发者模式
+       │
+       ├─ 有管理员权限 / 开发者模式
+       │     │
+       │     ▼
+       │   目录用 Junction（不需要权限）：
+       │     New-Item -ItemType Junction -Path $MEMORY_DIR/$item -Target $VAULT/$item
+       │   文件用 Symlink（需要权限）：
+       │     New-Item -ItemType SymbolicLink -Path $MEMORY_DIR/$file -Target $VAULT/$file
+       │
+       └─ 无管理员权限
+             │
+             ▼
+           目录用 Junction（仍然不需要权限）
+           文件改为直接复制（不同步，需手动更新）
+```
+
+### 需要链接的条目
+
+| 条目 | 类型 | 链接方式 |
+|------|------|----------|
+| MEMORY.md | 文件 | Symlink（需管理员）或复制 |
+| README.md | 文件 | Symlink（需管理员）或复制 |
+| LLM-WIKI-ARCHITECTURE.md | 文件 | Symlink（需管理员）或复制 |
+| wiki/ | 目录 | Junction |
+| sources/ | 目录 | Junction |
+| skills/ | 目录 | Junction |
+| templates/ | 目录 | Junction |
+
+### 重要：平铺，不要嵌套
+
+所有条目必须直接链接到 memory 根目录，不要创建 `memory/obsidian/` 中间层。原因：Claude Code 不扫描子目录，嵌套后 MEMORY.md 中引用的 `wiki/xxx.md` 路径会失效。
+
+### 管理员 PowerShell 命令（文件 Symlink）
+
+如果用户有管理员权限或已开启开发者模式，指导用户在管理员 PowerShell 中运行：
+
+```powershell
+$dir = "<项目记忆目录路径>"
+$vault = "<Obsidian 仓库路径>"
+
+# 删除已有的副本文件（如有）
+Remove-Item "$dir\MEMORY.md" -Force -ErrorAction SilentlyContinue
+Remove-Item "$dir\README.md" -Force -ErrorAction SilentlyContinue
+Remove-Item "$dir\LLM-WIKI-ARCHITECTURE.md" -Force -ErrorAction SilentlyContinue
+
+# 创建 Symlink
+New-Item -ItemType SymbolicLink -Path "$dir\MEMORY.md" -Target "$vault\MEMORY.md"
+New-Item -ItemType SymbolicLink -Path "$dir\README.md" -Target "$vault\README.md"
+New-Item -ItemType SymbolicLink -Path "$dir\LLM-WIKI-ARCHITECTURE.md" -Target "$vault\LLM-WIKI-ARCHITECTURE.md"
+```
+
+如果用户无法获取管理员权限，建议开启 Windows 开发者模式（设置 → 系统 → 开发者选项），之后文件 Symlink 不再需要管理员权限。
+
 ## 输出
 
 完成后向用户展示：

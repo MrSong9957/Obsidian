@@ -1,21 +1,14 @@
 ---
 name: Claude Code 工具
-description: ECC技能集/Superpowers/SafetyNet/Statusline — 遇到Claude Code插件、安全网、状态栏问题时参考
+description: Superpowers/SafetyNet/Statusline — 遇到Claude Code插件、安全网、状态栏问题时参考
 type: concept
-updated: 2026-04-20
-tags: [claude-code, plugins, ecc, superpowers, safety-net]
+updated: 2026-04-23
+tags: [claude-code, plugins, superpowers, safety-net]
 originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
 # Claude Code 工具
 
 > 前篇：[[wiki/claude-code-p1.md|Claude Code 配置]]
-
-## ECC 技能集概要
-
-- 112 个 Skills（110 ECC 核心 + 2 官方插件）+ 25 个智能体 + 57 条指令
-- 分类：流程工作流、代码开发、测试、安全、数据库、框架、前端、Agent 工程、内容营销、iOS/Swift、媒体处理、API/MCP、供应链物流
-- 安装：`/plugin marketplace add affaan-m/everything-claude-code` → `/plugin install` → 手动合并 rules 和 hooks
-- 教训：rules 不能通过插件分发需手动安装；hooks 必须追加不能覆盖；Windows 需配 `CLAUDE_PLUGIN_ROOT` 环境变量
 
 ## Superpowers 核心技能
 
@@ -42,15 +35,6 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - 高级：Shell 包装检测、解释器单行检测、审计日志、自定义规则（`~/.cc-safety-net/config.json`）
 - 安装：`/plugin install safety-net@cc-marketplace` → 配置 PreToolUse Hook
 
-## Skill 竞争匹配与触发方式
-
-**禁止：** 让多个 skill 的 description 含相同关键词（如"记住"），依赖自动匹配触发
-**原因：** 两个 skill description 含重叠关键词时，Claude 自动匹配会产生竞争，可能选错 skill 或两个都不触发
-**替代：**
-- 用户主动触发的 skill 改为斜杠命令（`/skill-name`），显式调用消除歧义
-- 仅后台 agent 调用的 skill 用 symlink 指向原版，description 避免与前端 skill 重叠
-- 实例：note-obsidian 从 SKILL 改为斜杠命令（V5），obsidian-remember 改为 symlink 仅供后台 agent 调用
-
 ## StatusLine 关键变量
 
 - stdin JSON 字段：`model.display_name` / `workspace.current_dir` / `context_window.used_percentage`
@@ -66,9 +50,6 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 
 ## 安装教训
 
-- ECC：用 `"source": "directory"` 代替 `"source": "github"` 避免 GitHub 访问失败
 - Safety Net：Windows 需手动配 Hook 和 `SAFETY_NET_PLUGIN_ROOT` 环境变量
 - 任何插件安装前备份：`cp -r ~/.claude/rules ~/.claude/rules.backup`
 - Rules 和 Hooks 都是追加合并，绝不能直接覆盖
-
-> 详细内容见 sources/claude-code-p2.md

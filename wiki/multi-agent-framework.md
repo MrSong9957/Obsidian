@@ -55,7 +55,6 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 4. 仅在索引无匹配时才自定义提示词
 
 **索引资源示例：**
-- `ECC-Agent-Usage-Instructions` - 25 个专业智能体
 - `Superpowers` - 核心工作流技能
 - 其他插件技能
 

@@ -338,7 +338,7 @@ Generator Agent          VHS Test Runner          Evaluator Agent
 
 > 轻量级 CLI 工具，让 Claude Code 高效完成 UI 测试
 
-**相关文档**：[[Everything-Claude-Code.md|ECC 技能集]] | [[ui-design.md|UI 设计原则]]
+**相关文档**：**相关文档**：[[ui-design.md|UI 设计原则]]
 
 ## 安装
 

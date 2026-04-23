@@ -20,19 +20,10 @@ memory/
 
 ## 快速导航
 
-### Claude Code 技能系统
-
-| 文档 | 说明 |
-|------|------|
-| [[wiki/Everything-Claude-Code.md\|ECC 技能集]] | 110+ Skills 完整索引 |
-| [[wiki/ECC-Agent-Usage-Instructions.md\|ECC 智能体]] | 25 个专业智能体使用说明 |
-| [[wiki/Superpowers.md\|Superpowers]] | 开发流程技能系统 |
-
 ### 安装与配置
 
 | 文档 | 说明 |
 |------|------|
-| [[wiki/ecc-install.md\|ECC 安装]] | 安装指南 |
 | [[wiki/statusline-install.md\|状态栏]] | 状态栏配置 |
 | [[wiki/statusline-setup.md\|状态栏 Python 版]] | Python 版状态栏配置 |
 | [[wiki/safety-net-guide.md\|Safety Net]] | 安全插件指南 |
