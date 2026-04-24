@@ -71,6 +71,6 @@ tags: [claude-code, settings, claudemd, memory, rules]
 
 - 稳定不变内容前置，易变项目信息后置；修改项目部分不会使前面缓存失效
 - 删除可通过 ls/read 推导的内容，只保留无法推导的显式约束
-- 双链统一带 `.md` 扩展名：`[[wiki/feedback_tdd.md|TDD 实践]]`
+- 双链统一带 `.md` 扩展名：`[[wiki/dev-practice.md|TDD 实践]]`
 
 > 详细内容见 sources/claude-code-p1.md
