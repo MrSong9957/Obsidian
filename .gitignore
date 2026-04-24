@@ -1,2 +1,5 @@
 # Obsidian 配置文件（不同步）
 .obsidian/
+
+# Claude 本地配置（不同步）
+.claude/settings.local.json
