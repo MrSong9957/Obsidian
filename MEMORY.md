@@ -1,13 +1,12 @@
 # Memory
 
 ## 管理规则
-1. 此文件超过 200 行会被截断，每条保持单行，不超过 150 字符。
-2. 只保存常用的、跨会话的用户个人习惯和偏好，不保存文档索引。
-3. 唯一的知识库索引是底部的 [README](README.md)，由用户管理。
-4. wiki/ 里的文档必须有 yaml 元数据：type/name/description/updated/tags，双链统一带 `.md` 扩展名。
-5. 知识库三层架构：sources/（只读）→ wiki/（可读写）→ CLAUDE.md（行为规则），详见 [LLM-WIKI-ARCHITECTURE](../../LLM-WIKI-ARCHITECTURE.md)。
-6. 个人习惯和经验教训条目格式：`- {场景}：{摘要} → [[wiki/xxx.md|详情]](...)`。
-7. wiki 按问题领域组织，同一领域写进同一个文档，超 600 行拆分。
+- 此文件超过 200 行会被截断，每条保持单行，不超过 150 字符。
+- 只保存常用的、跨会话的用户个人习惯和偏好。
+- wiki/ 里的文档必须有 yaml 元数据：type/name/description/updated/tags，双链统一带 `.md` 扩展名。
+- 知识库三层架构：sources/（只读）→ wiki/（可读写）→ CLAUDE.md（行为规则），详见 [LLM-WIKI-ARCHITECTURE](../../LLM-WIKI-ARCHITECTURE.md)。
+- 个人习惯和经验教训条目格式：`- {场景}：{摘要} → [[wiki/xxx.md|详情]](...)`。
+- wiki 按问题领域组织，同一领域写进同一个文档，超 600 行拆分。
 
 ## 个人习惯
 - 语言：中文
