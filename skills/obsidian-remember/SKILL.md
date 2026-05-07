@@ -525,7 +525,7 @@ wiki_aging_require_confirm_active: true
 经验教训按**场景/问题**组织，不按成功/失败分类。每条只有摘要 + 索引：
 
 ```
-- 网络：JS 渲染页面 web reader 遗漏内容，用 curl + grep 替代 → [[wiki/network-api.md|详情]](...)
+- 网络：JS 渲染页面 web reader 遗漏内容，用 curl + grep 替代 → [[wiki/zhipu-mcp.md|详情]](...)
 - 删除操作：rm -rf 前必须先确认目录内容 → [[wiki/dev-practice.md|详情]](...)
 ```
 

@@ -48,6 +48,12 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 **原因：** 插件 `.mcp.json` 用 `${GITHUB_PERSONAL_ACCESS_TOKEN}` header 认证，变量缺失时回退到 OAuth 动态注册，而 Copilot 端点不支持
 **解决：** 在 `~/.claude/settings.json` 的 `env` 中添加 `"GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_xxx"`（值取自项目 `docker/.env`），`/reload-plugins` 后生效
 
+## 首次安装配置清单
+
+首次安装 Claude Code 后必做配置：官方插件市场（GitHub/context7/skill-creator/learning-output-style/superpowers/frontend-design）→ Safety Net 插件（cc-marketplace）→ StatusLine（带安全网管道）→ 智谱 MCP（4 个服务器）。多数插件安装需用户在 `/plugin` 交互操作，Hook 和 settings.json 可自动配置。完整步骤见 [[sources/claude-code-first-time-setup.md]]
+
+← [[sources/claude-code-first-time-setup.md]]
+
 ## 安装教训
 
 - Safety Net：Windows 需手动配 Hook 和 `SAFETY_NET_PLUGIN_ROOT` 环境变量

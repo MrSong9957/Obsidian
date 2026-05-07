@@ -96,7 +96,7 @@ agentMetadata:
 
 - [[harness-engineering.md]] — "代码是 harness" 的核心方法论
 - [[multi-agent-framework.md]] — 多智能体协作的四角色框架
-- [[summary-learn-claude-code.md]] — 12 个教学脚本的完整摘要
+- [[learn-shareai.md]] — 19 章教学笔记（Learn ShareAI）
 - [[summary-claude-code-system-prompts.md]] — 250 个生产提示词的分类摘要
 - [[natural-language-programming.md]] — 自然语言定义 Agent 行为（对应 System Prompts 的行为约束）
 
@@ -108,17 +108,17 @@ agentMetadata:
 
 ### 引用索引
 
-[^1]: [[sources/learn-claude-code/s01-Agent循环]] `L9-19` — Agent Loop 核心模式定义
+[^1]: [[sources/learn-shareai/s01-Agent循环]] `L9-19` — Agent Loop 核心模式定义
 [^2]: [[sources/claude-code-system-prompts/README]] `L46-57` — 多片段组合的设计理由
-[^3]: [[sources/learn-claude-code/s01-Agent循环]] `L124-155` — agent_loop 完整代码
+[^3]: [[sources/learn-shareai/s01-Agent循环]] `L124-155` — agent_loop 完整代码
 [^4]: [[sources/claude-code-system-prompts/README]] `L154-220` — System Prompt 片段列表
-[^5]: [[sources/learn-claude-code/s02-工具调用]] `L10-20` — TOOL_HANDLERS 分发机制
+[^5]: [[sources/learn-shareai/s02-工具调用]] `L10-20` — TOOL_HANDLERS 分发机制
 [^6]: [[sources/claude-code-system-prompts/README]] `L265-343` — Tool Descriptions 完整列表
-[^7]: [[sources/learn-claude-code/s06-上下文压缩]] `L12-40` — 三层压缩架构图
+[^7]: [[sources/learn-shareai/s06-上下文压缩]] `L12-40` — 三层压缩架构图
 [^8]: [[sources/claude-code-system-prompts/system-prompts/system-prompt-context-compaction-summary]] `L1-28` — 生产版压缩摘要 prompt
-[^9]: [[sources/learn-claude-code/s04-子代理]] `L10-29` — 子代理的独立上下文设计
+[^9]: [[sources/learn-shareai/s04-子代理]] `L10-29` — 子代理的独立上下文设计
 [^10]: [[sources/claude-code-system-prompts/system-prompts/agent-prompt-explore]] `L12-26` — Explore 代理的元数据和工具限制
-[^11]: [[sources/learn-claude-code/s05-技能按需加载]] `L9-18` — 两层按需加载设计
+[^11]: [[sources/learn-shareai/s05-技能系统]] `L9-18` — 两层按需加载设计
 [^12]: [[sources/claude-code-system-prompts/README]] `L123-153` — Data 系列参考文档列表
 
 ---
@@ -905,19 +905,19 @@ docs/test-artifacts/
 
 ### 引用索引
 
-[^0]: [[sources/learn-claude-code/s01-Agent循环]] `L1-10` — 核心问题和解决方案概述
-[^1]: [[sources/learn-claude-code/s01-Agent循环]] `L9-19` — Agent Loop 的 while 循环模式
-[^2]: [[sources/learn-claude-code/s02-工具调用]] `L1-20` — 工具分发表的设计
-[^3]: [[sources/learn-claude-code/s03-进度追踪]] `L1-30` — TodoWrite 进度追踪机制
-[^4]: [[sources/learn-claude-code/s04-子代理]] `L1-30` — 子代理的独立上下文设计
-[^5]: [[sources/learn-claude-code/s05-技能按需加载]] `L1-20` — 两层按需加载架构
-[^6]: [[sources/learn-claude-code/s06-上下文压缩]] `L1-45` — 三层压缩策略
-[^7]: [[sources/learn-claude-code/s07-任务系统]] `L1-30` — 任务持久化设计
-[^8]: [[sources/learn-claude-code/s08-后台任务]] `L1-30` — 后台线程执行
-[^9]: [[sources/learn-claude-code/s09-团队协作]] `L1-30` — 持久化 teammate 设计
-[^10]: [[sources/learn-claude-code/s10-团队协议]] `L1-30` — 自然语言团队协议
-[^11]: [[sources/learn-claude-code/s11-自主代理]] `L1-30` — 任务看板与自动认领
-[^12]: [[sources/learn-claude-code/s12-工作树隔离]] `L1-30` — git worktree 隔离机制
+[^0]: [[sources/learn-shareai/s01-Agent循环]] `L1-10` — 核心问题和解决方案概述
+[^1]: [[sources/learn-shareai/s01-Agent循环]] `L9-19` — Agent Loop 的 while 循环模式
+[^2]: [[sources/learn-shareai/s02-工具调用]] `L1-20` — 工具分发表的设计
+[^3]: [[sources/learn-shareai/s03-进度追踪]] `L1-30` — TodoWrite 进度追踪机制
+[^4]: [[sources/learn-shareai/s04-子代理]] `L1-30` — 子代理的独立上下文设计
+[^5]: [[sources/learn-shareai/s05-技能系统]] `L1-20` — 两层按需加载架构
+[^6]: [[sources/learn-shareai/s06-上下文压缩]] `L1-45` — 三层压缩策略
+[^7]: [[sources/learn-shareai/s17-自主代理]] `L1-30` — 任务持久化设计（概念融入自主代理章节）
+[^8]: [[sources/learn-shareai/s13-后台任务]] `L1-30` — 后台线程执行
+[^9]: [[sources/learn-shareai/s15-Agent团队]] `L1-30` — 持久化 teammate 设计
+[^10]: [[sources/learn-shareai/s16-团队协议]] `L1-30` — 自然语言团队协议
+[^11]: [[sources/learn-shareai/s17-自主代理]] `L1-30` — 任务看板与自动认领
+[^12]: [[sources/learn-shareai/s18-Worktree隔离]] `L1-30` — git worktree 隔离机制
 
 ---
 
