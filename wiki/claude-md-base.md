@@ -2,7 +2,7 @@
 name: CLAUDE.md 双层架构模板
 description: 全局（karpathy 行为准则）+ 项目级（superpowers 工作流）双层 CLAUDE.md 创建方法
 type: reference
-updated: 2026-05-07
+updated: 2026-05-08
 tags: [claude-md, template, karpathy, superpowers, kv-cache, two-tier]
 ---
 
@@ -142,6 +142,61 @@ tags: [claude-md, template, karpathy, superpowers, kv-cache, two-tier]
 
 ### 7. 完成分支（Finishing Branch）
 验证测试通过，呈现选项（merge/PR/保留/丢弃），清理 worktree。
+
+---
+
+## 技能库
+
+可用技能通过 `Skill` 工具调用，按阶段归类：
+
+### 规划阶段
+| 技能 | 触发时机 |
+|------|---------|
+| brainstorming | 任何创造性工作（新功能、新组件、行为修改）**之前**必须使用 |
+| writing-plans | 有需求/规格需要拆分为多步任务时，写代码之前 |
+| using-git-worktrees | 需要隔离工作空间、创建 feature 分支时 |
+
+### 执行阶段
+| 技能 | 触发时机 |
+|------|---------|
+| subagent-driven-development | 当前会话中执行已拆分的独立任务 |
+| dispatching-parallel-agents | 2+ 个无依赖的独立任务需要并行时 |
+| executing-plans | 在独立会话中执行已有计划（含审查检查点） |
+| test-driven-development | 实现功能或修复 bug 前，先写测试 |
+
+### 质量保障
+| 技能 | 触发时机 |
+|------|---------|
+| verification-before-completion | 声称工作完成/修复/通过 **之前**，必须先运行验证 |
+| requesting-code-review | 完成任务、实现大功能、合并前 |
+| receiving-code-review | 收到代码审查反馈时，先验证再实施 |
+| systematic-debugging | 遇到 bug、测试失败、意外行为时，**先观察再修复** |
+
+### 收尾阶段
+| 技能 | 触发时机 |
+|------|---------|
+| finishing-a-development-branch | 实现完成、测试通过后，决定 merge/PR/保留/丢弃 |
+
+### 其他技能
+| 技能 | 触发时机 |
+|------|---------|
+| writing-skills | 创建/编辑技能，或验证技能可用性 |
+| obsidian-remember | "记住"、"保存到笔记"、"写入 wiki" 等知识持久化操作 |
+
+---
+
+## 设计原则
+
+- 测试先行：先写测试，始终如此
+- 系统化优于临时应对：流程优于猜测
+- 复杂度缩减：简洁是首要目标
+- 证据优于声明：声称完成前先验证
+
+技能分为两类：
+- **刚性技能**（TDD、调试）：严格执行，不走捷径
+- **弹性技能**（模式）：按上下文灵活应用
+
+技能优先级：流程技能优先（brainstorming、debugging）→ 实施技能其次（frontend-design 等）
 
 ---
 
