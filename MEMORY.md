@@ -33,6 +33,7 @@
 - 决策：跨学科思维模型框架（芒格100模型），高频模型含反向思考/概率思维/二阶思维 → [[wiki/mental-models.md|详情]]([wiki/mental-models.md](wiki/mental-models.md))
 - Git 认证：remote URL 禁止明文 token，用 credential store + .env 读取 → [[wiki/git-security.md|详情]]([wiki/git-security.md](wiki/git-security.md))
 - Safety Net 状态栏：管道接入 `statusline.py | npx cc-safety-net --statusline`，Windows 需设 SAFETY_NET_PLUGIN_ROOT → [[wiki/claude-code-p2.md|详情]]([wiki/claude-code-p2.md](wiki/claude-code-p2.md))
+- Yazi：Windows 配置在 `%AppData%\yazi\config\`，非 Linux `~/.config/yazi/`；PowerShell 写多行 TOML 用数组语法 → [[wiki/yazi.md|详情]]([wiki/yazi.md](wiki/yazi.md))
 
 ## 知识库索引
 - 本文件未覆盖的内容 → [README.md](README.md)（冷数据，按领域导航）

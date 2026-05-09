@@ -2,10 +2,11 @@
 name: Yazi 文件管理器
 description: Yazi 配置经验 — 主题安装、配色系统、Windows 配置路径
 type: summary
-updated: 2026-05-07
+updated: 2026-05-09
 tags: [cli, yazi, config, theme]
 sources:
   - "[[sources/yazi-theme-setup.md]]"
+  - "[[sources/yazi-wrap-fix.md]]"
 ---
 
 # Yazi 文件管理器
@@ -27,3 +28,9 @@ sources:
 - 暗色首选 **catppuccin-mocha**（深紫灰底 + 柔和彩色，低对比度）
 - 亮色首选 **catppuccin-latte**
 - **base16** 特殊：不自带颜色，读取终端 16 色配置，换终端主题自动跟随 ← [[sources/yazi-theme-setup.md]] L67
+
+## 预览换行
+
+- `[preview] wrap = "yes"` 开启预览面板自动换行（yazi v26.5.6+ 已验证）← [[sources/yazi-wrap-fix.md]] L1-L10
+- Windows 配置必须放在 `%AppData%\yazi\config\yazi.toml`，非 `~/.config/yazi/`（WSL/Docker 容器内路径对 yazi.exe 无效）← [[sources/yazi-wrap-fix.md]] L13-L18
+- **禁止**用 `Set-Content -Value '多行文本'` 写 TOML，PowerShell 会拼成单行导致解析失败；用数组语法 `'[line1]', '[line2]' | Set-Content path` ← [[sources/yazi-wrap-fix.md]] L24-L35
