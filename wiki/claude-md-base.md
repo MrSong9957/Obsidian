@@ -181,7 +181,6 @@ tags: [claude-md, template, karpathy, superpowers, kv-cache, two-tier]
 | 技能 | 触发时机 |
 |------|---------|
 | writing-skills | 创建/编辑技能，或验证技能可用性 |
-| obsidian-remember | "记住"、"保存到笔记"、"写入 wiki" 等知识持久化操作 |
 
 ---
 
