@@ -2,7 +2,7 @@
 name: CLAUDE.md 双层架构模板
 description: 全局（karpathy 行为准则）+ 项目级（superpowers 工作流）双层 CLAUDE.md 创建方法
 type: reference
-updated: 2026-05-08
+updated: 2026-05-09
 tags: [claude-md, template, karpathy, superpowers, kv-cache, two-tier]
 ---
 
@@ -113,50 +113,50 @@ tags: [claude-md, template, karpathy, superpowers, kv-cache, two-tier]
 ```markdown
 # CLAUDE.md
 
-[项目名称] 的 AI 行为准则与项目规范。
-
 ---
 
-## 开发工作流
+## Superpowers
+
+### 开发工作流
 
 遵循 Superpowers 七阶段工作流：
 
-### 1. 头脑风暴（Brainstorming）
+#### 1. 头脑风暴（Brainstorming）
 写代码之前，先通过提问细化需求，探索替代方案，分段展示设计供验证。
 
-### 2. Git Worktree
+#### 2. Git Worktree
 设计批准后，创建隔离工作空间（新分支），验证测试基线干净。
 
-### 3. 编写计划（Writing Plans）
+#### 3. 编写计划（Writing Plans）
 将工作拆分为 2-5 分钟的小任务。每个任务包含：精确文件路径、完整代码、验证步骤。
 
-### 4. 子代理驱动开发（Subagent-Driven Development）
+#### 4. 子代理驱动开发（Subagent-Driven Development）
 每个任务分派独立子代理执行，双阶段审查（规格合规 + 代码质量）。
 
-### 5. 测试驱动开发（TDD）
+#### 5. 测试驱动开发（TDD）
 严格 RED-GREEN-REFACTOR：先写失败测试 → 看它失败 → 写最小代码 → 看它通过 → 提交。
 测试之前写的代码应删除重写。
 
-### 6. 代码审查（Code Review）
+#### 6. 代码审查（Code Review）
 任务间进行审查，按严重性报告问题。CRITICAL 级别阻止推进。
 
-### 7. 完成分支（Finishing Branch）
+#### 7. 完成分支（Finishing Branch）
 验证测试通过，呈现选项（merge/PR/保留/丢弃），清理 worktree。
 
 ---
 
-## 技能库
+### 技能库
 
 可用技能通过 `Skill` 工具调用，按阶段归类：
 
-### 规划阶段
+#### 规划阶段
 | 技能 | 触发时机 |
 |------|---------|
 | brainstorming | 任何创造性工作（新功能、新组件、行为修改）**之前**必须使用 |
 | writing-plans | 有需求/规格需要拆分为多步任务时，写代码之前 |
 | using-git-worktrees | 需要隔离工作空间、创建 feature 分支时 |
 
-### 执行阶段
+#### 执行阶段
 | 技能 | 触发时机 |
 |------|---------|
 | subagent-driven-development | 当前会话中执行已拆分的独立任务 |
@@ -164,7 +164,7 @@ tags: [claude-md, template, karpathy, superpowers, kv-cache, two-tier]
 | executing-plans | 在独立会话中执行已有计划（含审查检查点） |
 | test-driven-development | 实现功能或修复 bug 前，先写测试 |
 
-### 质量保障
+#### 质量保障
 | 技能 | 触发时机 |
 |------|---------|
 | verification-before-completion | 声称工作完成/修复/通过 **之前**，必须先运行验证 |
@@ -172,12 +172,12 @@ tags: [claude-md, template, karpathy, superpowers, kv-cache, two-tier]
 | receiving-code-review | 收到代码审查反馈时，先验证再实施 |
 | systematic-debugging | 遇到 bug、测试失败、意外行为时，**先观察再修复** |
 
-### 收尾阶段
+#### 收尾阶段
 | 技能 | 触发时机 |
 |------|---------|
 | finishing-a-development-branch | 实现完成、测试通过后，决定 merge/PR/保留/丢弃 |
 
-### 其他技能
+#### 其他技能
 | 技能 | 触发时机 |
 |------|---------|
 | writing-skills | 创建/编辑技能，或验证技能可用性 |
@@ -185,12 +185,10 @@ tags: [claude-md, template, karpathy, superpowers, kv-cache, two-tier]
 
 ---
 
-## 设计原则
+### 设计原则
 
-- 测试先行：先写测试，始终如此
 - 系统化优于临时应对：流程优于猜测
 - 复杂度缩减：简洁是首要目标
-- 证据优于声明：声称完成前先验证
 
 技能分为两类：
 - **刚性技能**（TDD、调试）：严格执行，不走捷径
@@ -198,21 +196,40 @@ tags: [claude-md, template, karpathy, superpowers, kv-cache, two-tier]
 
 技能优先级：流程技能优先（brainstorming、debugging）→ 实施技能其次（frontend-design 等）
 
+技能调用：1% 规则，即使只有 1% 可能适用也必须先调用技能；调用顺序：技能检查在澄清问题之前；指令优先级：用户指令 > superpowers 技能 > 默认行为
+
+### 铁律
+
+1. **TDD 铁律**：没有失败测试，不写生产代码
+2. **调试铁律**：没有根因调查，不实施修复
+3. **验证铁律**：没有运行证据，不声称完成
+
 ---
 
-## 技术栈
+## 项目信息
+
+### 技术栈
 
 [项目技术栈描述]
 
 ---
 
-## 架构
+### 架构
 
 [项目架构描述]
 
 ---
 
-## 项目
+### 文件约定
+
+- **设计文档**：`docs/superpowers/specs/YYYY-MM-DD--<name>.md`
+- **任务计划**：`docs/superpowers/plans/YYYY-MM-DD-<name>.md`
+- **个人技能**：`~/.claude/skills/<name>/SKILL.md`
+- **Worktree 目录**：`.worktrees/`（项目本地隐藏，必须 git check-ignore 验证）
+
+---
+
+### 项目
 
 [项目描述]
 ```
@@ -253,7 +270,7 @@ tags: [claude-md, template, karpathy, superpowers, kv-cache, two-tier]
 | 全局层用中文 | 母语更精确、更易维护，减少翻译歧义 |
 | 项目层用 superpowers 工作流 | 七阶段方法论替代零散指令，确保从设计到交付的完整流程 |
 | 个人偏好只放 5 条核心偏好，不放项目特有配置 | 核心偏好跨项目稳定，项目特有配置放在项目级 CLAUDE.md |
-| 全局层不放项目配置 | 项目配置频繁变动，放在全局会污染其他项目 |
-| 项目层不放编码规范和 Git 配置 | 这些已外置到 rules/common/，避免重复 |
+| 项目级 CLAUDE.md 两级分区（Superpowers + 项目信息） | 符合 KV 缓存规则：稳定前缀高命中率，动态后缀不影响前缀缓存 |
+| 铁律替代设计原则中的重复项 | TDD/调试/验证各一条铁律，比"测试先行""证据优于声明"更精确、更不易遗漏 |
+| 技能调用 1% 规则 | 即使只有 1% 可能适用也必须先调用技能，防止遗漏关键流程 |
 | 详细规则外置到 rules/ | CLAUDE.md 保持精简（< 200 行），rules 按需加载 |
-| TDD 严格执行 | Superpowers 核心理念：测试先于实现，证据优于声明 |
