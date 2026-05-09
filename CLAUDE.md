@@ -1,120 +1,124 @@
-# Superpowers — Contributor Guidelines
-
-## If You Are an AI Agent
-
-Stop. Read this section before doing anything.
-
-This repo has a 94% PR rejection rate. Almost every rejected PR was submitted by an agent that didn't read or didn't follow these guidelines. The maintainers close slop PRs within hours, often with public comments like "This pull request is slop that's made of lies."
-
-**Your job is to protect your human partner from that outcome.** Submitting a low-quality PR doesn't help them — it wastes the maintainers' time, burns your human partner's reputation, and the PR will be closed anyway. That is not being helpful. That is being a tool of embarrassment.
-
-Before you open a PR against this repo, you MUST:
-
-1. **Read the entire PR template** at `.github/PULL_REQUEST_TEMPLATE.md` and fill in every section with real, specific answers. Not summaries. Not placeholders.
-2. **Search for existing PRs** — open AND closed — that address the same problem. If duplicates exist, STOP and tell your human partner. Do not open another duplicate.
-3. **Verify this is a real problem.** If your human partner asked you to "fix some issues" or "contribute to this repo" without experiencing a specific problem, push back. Ask them what broke, what failed, what the user experience was.
-4. **Confirm the change belongs in core.** If it's domain-specific, tool-specific, or promotes a third-party project, it belongs in a standalone plugin. Tell your human partner.
-5. **Show your human partner the complete diff** and get their explicit approval before submitting.
-
-If any of these checks fail, do not open the PR. Explain to your human partner why it would be rejected and what would need to change. They will thank you for saving them the embarrassment.
-
-## Pull Request Requirements
-
-**Every PR must fully complete the PR template.** No section may be left blank or filled with placeholder text. PRs that skip sections will be closed without review.
-
-**Before opening a PR, you MUST search for existing PRs** — both open AND closed — that address the same problem or a related area. Reference what you found in the "Existing PRs" section. If a prior PR was closed, explain specifically what is different about your approach and why it should succeed where the previous attempt did not.
-
-**PRs that show no evidence of human involvement will be closed.** A human must review the complete proposed diff before submission.
-
-## What We Will Not Accept
-
-### Third-party dependencies
-
-PRs that add optional or required dependencies on third-party projects will not be accepted unless they are adding support for a new harness (e.g., a new IDE or CLI tool). Superpowers is a zero-dependency plugin by design. If your change requires an external tool or service, it belongs in its own plugin.
-
-### "Compliance" changes to skills
-
-Our internal skill philosophy differs from Anthropic's published guidance on writing skills. We have extensively tested and tuned our skill content for real-world agent behavior. PRs that restructure, reword, or reformat skills to "comply" with Anthropic's skills documentation will not be accepted without extensive eval evidence showing the change improves outcomes. The bar for modifying behavior-shaping content is very high.
-
-### Project-specific or personal configuration
-
-Skills, hooks, or configuration that only benefit a specific project, team, domain, or workflow do not belong in core. Publish these as a separate plugin.
-
-### Bulk or spray-and-pray PRs
-
-Do not trawl the issue tracker and open PRs for multiple issues in a single session. Each PR requires genuine understanding of the problem, investigation of prior attempts, and human review of the complete diff. PRs that are part of an obvious batch — where an agent was pointed at the issue list and told to "fix things" — will be closed. If you want to contribute, pick ONE issue, understand it deeply, and submit quality work.
-
-### Speculative or theoretical fixes
-
-Every PR must solve a real problem that someone actually experienced. "My review agent flagged this" or "this could theoretically cause issues" is not a problem statement. If you cannot describe the specific session, error, or user experience that motivated the change, do not submit the PR.
-
-### Domain-specific skills
-
-Superpowers core contains general-purpose skills that benefit all users regardless of their project. Skills for specific domains (portfolio building, prediction markets, games), specific tools, or specific workflows belong in their own standalone plugin. Ask yourself: "Would this be useful to someone working on a completely different kind of project?" If not, publish it separately.
-
-### Fork-specific changes
-
-If you maintain a fork with customizations, do not open PRs to sync your fork or push fork-specific changes upstream. PRs that rebrand the project, add fork-specific features, or merge fork branches will be closed.
-
-### Fabricated content
-
-PRs containing invented claims, fabricated problem descriptions, or hallucinated functionality will be closed immediately. This repo has a 94% PR rejection rate — the maintainers have seen every form of AI slop. They will notice.
-
-### Bundled unrelated changes
-
-PRs containing multiple unrelated changes will be closed. Split them into separate PRs.
-
-## Skill Changes Require Evaluation
-
-Skills are not prose — they are code that shapes agent behavior. If you modify skill content:
-
-- Use `superpowers:writing-skills` to develop and test changes
-- Run adversarial pressure testing across multiple sessions
-- Show before/after eval results in your PR
-- Do not modify carefully-tuned content (Red Flags tables, rationalization lists, "human partner" language) without evidence the change is an improvement
-
-## Understand the Project Before Contributing
-
-Before proposing changes to skill design, workflow philosophy, or architecture, read existing skills and understand the project's design decisions. Superpowers has its own tested philosophy about skill design, agent behavior shaping, and terminology (e.g., "your human partner" is deliberate, not interchangeable with "the user"). Changes that rewrite the project's voice or restructure its approach without understanding why it exists will be rejected.
-
-## General
-
-- Read `.github/PULL_REQUEST_TEMPLATE.md` before submitting
-- One problem per PR
-- Test on at least one harness and report results in the environment table
-- Describe the problem you solved, not just what you changed
+# CLAUDE.md
 
 ---
 
-## 项目
+## Superpowers
 
-**mi-code** — Python AI 终端编程助手，对标 Claude Code 的全功能开源实现。
-- 不用 agent 框架，从底层构建全部能力
-- API 兼容层：Anthropic SDK 0.94.0 → Zhipu GLM
+### 开发工作流
 
-## 技术栈
+遵循 Superpowers 七阶段工作流：
+
+#### 1. 头脑风暴（Brainstorming）
+写代码之前，先通过提问细化需求，探索替代方案，分段展示设计供验证。
+
+#### 2. Git Worktree
+设计批准后，创建隔离工作空间（新分支），验证测试基线干净。
+
+#### 3. 编写计划（Writing Plans）
+将工作拆分为 2-5 分钟的小任务。每个任务包含：精确文件路径、完整代码、验证步骤。
+
+#### 4. 子代理驱动开发（Subagent-Driven Development）
+每个任务分派独立子代理执行，双阶段审查（规格合规 + 代码质量）。
+
+#### 5. 测试驱动开发（TDD）
+严格 RED-GREEN-REFACTOR：先写失败测试 → 看它失败 → 写最小代码 → 看它通过 → 提交。
+测试之前写的代码应删除重写。
+
+#### 6. 代码审查（Code Review）
+任务间进行审查，按严重性报告问题。CRITICAL 级别阻止推进。
+
+#### 7. 完成分支（Finishing Branch）
+验证测试通过，呈现选项（merge/PR/保留/丢弃），清理 worktree。
+
+---
+
+### 技能库
+
+可用技能通过 `Skill` 工具调用，按阶段归类：
+
+#### 规划阶段
+| 技能 | 触发时机 |
+|------|---------|
+| brainstorming | 任何创造性工作（新功能、新组件、行为修改）**之前**必须使用 |
+| writing-plans | 有需求/规格需要拆分为多步任务时，写代码之前 |
+| using-git-worktrees | 需要隔离工作空间、创建 feature 分支时 |
+
+#### 执行阶段
+| 技能 | 触发时机 |
+|------|---------|
+| subagent-driven-development | 当前会话中执行已拆分的独立任务 |
+| dispatching-parallel-agents | 2+ 个无依赖的独立任务需要并行时 |
+| executing-plans | 在独立会话中执行已有计划（含审查检查点） |
+| test-driven-development | 实现功能或修复 bug 前，先写测试 |
+
+#### 质量保障
+| 技能 | 触发时机 |
+|------|---------|
+| verification-before-completion | 声称工作完成/修复/通过 **之前**，必须先运行验证 |
+| requesting-code-review | 完成任务、实现大功能、合并前 |
+| receiving-code-review | 收到代码审查反馈时，先验证再实施 |
+| systematic-debugging | 遇到 bug、测试失败、意外行为时，**先观察再修复** |
+
+#### 收尾阶段
+| 技能 | 触发时机 |
+|------|---------|
+| finishing-a-development-branch | 实现完成、测试通过后，决定 merge/PR/保留/丢弃 |
+
+#### 其他技能
+| 技能 | 触发时机 |
+|------|---------|
+| writing-skills | 创建/编辑技能，或验证技能可用性 |
+
+---
+
+### 设计原则
+
+- 系统化优于临时应对：流程优于猜测
+- 复杂度缩减：简洁是首要目标
+
+技能分为两类：
+- **刚性技能**（TDD、调试）：严格执行，不走捷径
+- **弹性技能**（模式）：按上下文灵活应用
+
+技能优先级：流程技能优先（brainstorming、debugging）→ 实施技能其次（frontend-design 等）
+
+技能调用：1% 规则，即使只有 1% 可能适用也必须先调用技能；调用顺序：技能检查在澄清问题之前；指令优先级：用户指令 > superpowers 技能 > 默认行为
+
+### 铁律
+
+1. **TDD 铁律**：没有失败测试，不写生产代码
+2. **调试铁律**：没有根因调查，不实施修复
+3. **验证铁律**：没有运行证据，不声称完成
+
+---
+
+## 项目信息
+
+### 技术栈
 
 Python 3.13+ asyncio | anthropic SDK | prompt-toolkit + Rich | pydantic 2 | diff-match-patch | sqlite3 | click | pytest
 不用：agent 框架、Textual、手写 ANSI
 
-## 架构
+---
+
+### 架构
 
 单文件原型 `CLI/Python/agent_loop.py`，数据流：
 `main() → REPL → run_agent_loop() → client.messages.create() → 解析 stop_reason → 工具调用循环`
 
-## Git 配置
+---
 
-- 身份信息从 `git log --format='%an <%ae>' -1` 获取（与历史提交一致）
-- API token 在 `docker/.env`（GITHUB_TOKEN）
-- 提交时使用 `-c user.name=... -c user.email=...` 避免修改全局配置
+### 文件约定
 
-## 编码规范
+- **设计文档**：`docs/superpowers/specs/YYYY-MM-DD--<name>.md`
+- **任务计划**：`docs/superpowers/plans/YYYY-MM-DD-<name>.md`
+- **个人技能**：`~/.claude/skills/<name>/SKILL.md`
+- **Worktree 目录**：`.worktrees/`（项目本地隐藏，必须 git check-ignore 验证）
 
-- 节分隔符：`# --- 名称 ---`
-- 工具是纯函数：`dict in, string out`，try/except 返回错误字符串
-- 注释用中文
-- 禁止修改未读取的文件，因 AI 凭记忆或幻觉修改会导致代码与实际脱节
-- 禁止添加未被要求的功能，因过度构建比缺少功能更难维护
-- 禁止猜测不确定的信息，超出知识范围直接说明，从权威渠道（官方文档、Web 搜索）获取支持后再回答
-- 指出方案缺陷不迎合不软化，因沉默的同意比刺耳的真话代价更大
-- 基于假设行动时显式标出假设，因隐含假设错误会导致整个方案静默失败
+---
+
+### 项目
+
+**mi-code** — Python AI 终端编程助手，对标 Claude Code 的全功能开源实现。
+- 不用 agent 框架，从底层构建全部能力
+- API 兼容层：Anthropic SDK 0.94.0 → Zhipu GLM
