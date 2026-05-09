@@ -20,13 +20,13 @@ sources:
 
 ## Windows 配置路径
 
-- 配置目录：`%AppData%\yazi\config\`（首次使用需手动创建）
-- Flavors 安装位置由 `ya pkg` 自动管理，用户无需关心
+- 配置目录：`%AppData%\yazi\config\`（首次使用需手动创建）← [[sources/yazi-theme-setup.md]] L7,L45-L48
+- Flavors 安装位置由 `ya pkg` 自动管理，用户无需关心 ← [[sources/yazi-theme-setup.md]] L18
 
 ## 护眼 Flavor 推荐
 
-- 暗色首选 **catppuccin-mocha**（深紫灰底 + 柔和彩色，低对比度）
-- 亮色首选 **catppuccin-latte**
+- 暗色首选 **catppuccin-mocha**（深紫灰底 + 柔和彩色，低对比度）← [[sources/yazi-theme-setup.md]] L58,L80
+- 亮色首选 **catppuccin-latte** ← [[sources/yazi-theme-setup.md]] L80
 - **base16** 特殊：不自带颜色，读取终端 16 色配置，换终端主题自动跟随 ← [[sources/yazi-theme-setup.md]] L67
 
 ## 预览换行
