@@ -2,7 +2,7 @@
 name: CLAUDE.md 双层架构模板
 description: 全局（karpathy 行为准则）+ 项目级（superpowers 工作流）双层 CLAUDE.md 创建方法
 type: reference
-updated: 2026-05-09
+updated: 2026-05-10
 tags: [claude-md, template, karpathy, superpowers, kv-cache, two-tier]
 ---
 
@@ -121,26 +121,26 @@ tags: [claude-md, template, karpathy, superpowers, kv-cache, two-tier]
 
 遵循 Superpowers 七阶段工作流：
 
-#### 1. 头脑风暴（Brainstorming）
+#### 1. 头脑风暴（Brainstorming）`brainstorming`
 写代码之前，先通过提问细化需求，探索替代方案，分段展示设计供验证。
 
-#### 2. Git Worktree
+#### 2. Git Worktree `using-git-worktrees`
 设计批准后，创建隔离工作空间（新分支），验证测试基线干净。
 
-#### 3. 编写计划（Writing Plans）
+#### 3. 编写计划（Writing Plans）`writing-plans`
 将工作拆分为 2-5 分钟的小任务。每个任务包含：精确文件路径、完整代码、验证步骤。
 
-#### 4. 子代理驱动开发（Subagent-Driven Development）
+#### 4. 子代理驱动开发（Subagent-Driven Development）`subagent-driven-development` / `dispatching-parallel-agents` / `executing-plans`
 每个任务分派独立子代理执行，双阶段审查（规格合规 + 代码质量）。
 
-#### 5. 测试驱动开发（TDD）
+#### 5. 测试驱动开发（TDD）`test-driven-development`
 严格 RED-GREEN-REFACTOR：先写失败测试 → 看它失败 → 写最小代码 → 看它通过 → 提交。
 测试之前写的代码应删除重写。
 
-#### 6. 代码审查（Code Review）
+#### 6. 代码审查（Code Review）`requesting-code-review` / `receiving-code-review`
 任务间进行审查，按严重性报告问题。CRITICAL 级别阻止推进。
 
-#### 7. 完成分支（Finishing Branch）
+#### 7. 完成分支（Finishing Branch）`finishing-a-development-branch` / `verification-before-completion`
 验证测试通过，呈现选项（merge/PR/保留/丢弃），清理 worktree。
 
 ---
@@ -170,7 +170,6 @@ tags: [claude-md, template, karpathy, superpowers, kv-cache, two-tier]
 | verification-before-completion | 声称工作完成/修复/通过 **之前**，必须先运行验证 |
 | requesting-code-review | 完成任务、实现大功能、合并前 |
 | receiving-code-review | 收到代码审查反馈时，先验证再实施 |
-| systematic-debugging | 遇到 bug、测试失败、意外行为时，**先观察再修复** |
 
 #### 收尾阶段
 | 技能 | 触发时机 |
@@ -180,7 +179,9 @@ tags: [claude-md, template, karpathy, superpowers, kv-cache, two-tier]
 #### 其他技能
 | 技能 | 触发时机 |
 |------|---------|
+| using-superpowers | 每次对话开始时，建立技能发现和调用规则 |
 | writing-skills | 创建/编辑技能，或验证技能可用性 |
+| systematic-debugging | 跨阶段：遇到 bug、测试失败、意外行为时，**先观察再修复** |
 
 ---
 
@@ -202,6 +203,13 @@ tags: [claude-md, template, karpathy, superpowers, kv-cache, two-tier]
 1. **TDD 铁律**：没有失败测试，不写生产代码
 2. **调试铁律**：没有根因调查，不实施修复
 3. **验证铁律**：没有运行证据，不声称完成
+
+### 子代理派发规则
+
+派发子代理时，将对应技能要求注入 prompt：
+- 实现任务 → `先调用 Skill 工具加载 test-driven-development 技能`
+- 代码质量审查 → `先调用 Skill 工具加载 requesting-code-review 技能`
+- 完成分支 → `先调用 Skill 工具加载 finishing-a-development-branch 技能`
 
 ---
 

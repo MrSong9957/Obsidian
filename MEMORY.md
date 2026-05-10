@@ -7,7 +7,7 @@
 - 知识库三层架构：sources/（只读）→ wiki/（可读写）→ CLAUDE.md（行为规则），详见 [LLM-WIKI-ARCHITECTURE](../../LLM-WIKI-ARCHITECTURE.md)。
 - 个人习惯和经验教训条目格式：`- {场景}：{摘要} → [[wiki/xxx.md|详情]](...)`。
 - wiki 按问题领域组织，同一领域写进同一个文档，超 600 行拆分。
-- 记忆查找优先级：MEMORY.md（热，始终在上下文中）→ README.md（冷，MEMORY.md 未命中时查阅）。
+- 记忆查找流程（必须遵循）：① MEMORY.md 中查找 → ② 未命中则必须读 README.md 按领域导航查找 → ③ README.md 命中后读对应 wiki/ 文件。禁止跳过 README.md 直接 grep/find。
 
 ## 个人习惯
 - 语言：中文
@@ -27,13 +27,16 @@
 - 首次配置：插件/SafetyNet/StatusLine/智谱MCP 完整安装步骤 → [[wiki/claude-code-p2.md|详情]]([wiki/claude-code-p2.md](wiki/claude-code-p2.md))
 - 提示词：固定前置动态后置缓存命中；协作用情境简报/魔鬼代言人/范围锁定等 10 技巧 → [[wiki/dev-practice.md|详情]]([wiki/dev-practice.md](wiki/dev-practice.md))
 - 文档：CLAUDE.md 稳定前置 + 双链带 .md → [[wiki/claude-code-p1.md|详情]]([wiki/claude-code-p1.md](wiki/claude-code-p1.md))
+- CLAUDE.md 模板：全局层 karpathy 准则 + 项目层 superpowers 工作流的双层架构 → [[wiki/claude-md-base.md|详情]](wiki/claude-md-base.md)
+- Learn ShareAI：s01-s19 从零构建 Agent，各章摘要、关键数据结构、实现要点见 → [[wiki/learn-shareai.md|详情]](wiki/learn-shareai.md)
 - 删除操作：rm -rf 和 find -delete 前先预览，Safety Net 会阻止批量删除 → [[wiki/dev-practice.md|详情]]([wiki/dev-practice.md](wiki/dev-practice.md))
 - 上下文管理：当前完整保留，旧的才压缩（截断+落盘→占位符→摘要）→ [[wiki/agent-arch-p1.md|详情]]([wiki/agent-arch-p1.md](wiki/agent-arch-p1.md))
 - Hooks：V4 关键词"复盘"触发后台 agent 复盘，无需 hook 配置（V3 因评估器过度触发已废弃）→ [[wiki/claude-code-p1.md|详情]]([wiki/claude-code-p1.md](wiki/claude-code-p1.md))
 - 决策：跨学科思维模型框架（芒格100模型），高频模型含反向思考/概率思维/二阶思维 → [[wiki/mental-models.md|详情]]([wiki/mental-models.md](wiki/mental-models.md))
-- Git 认证：remote URL 禁止明文 token，用 credential store + .env 读取 → [[wiki/git-security.md|详情]]([wiki/git-security.md](wiki/git-security.md))
+- 凭证：所有 token/api key 在 /home/app/project/docker/.env，认证失败先从 .env 读；token 过期或错误时提醒用户更新，不反复追问
 - Safety Net 状态栏：管道接入 `statusline.py | npx cc-safety-net --statusline`，Windows 需设 SAFETY_NET_PLUGIN_ROOT → [[wiki/claude-code-p2.md|详情]]([wiki/claude-code-p2.md](wiki/claude-code-p2.md))
 - Yazi：Windows 配置在 `%AppData%\yazi\config\`，非 Linux `~/.config/yazi/`；PowerShell 写多行 TOML 用数组语法 → [[wiki/yazi.md|详情]]([wiki/yazi.md](wiki/yazi.md))
+- 技能链调用：技能内引用其他技能时必须用 Skill 工具加载完整内容，不能跳过 → [feedback-skill-chain-discipline](feedback-skill-chain-discipline.md)
 
 ## 知识库索引
 - 本文件未覆盖的内容 → [README.md](README.md)（冷数据，按领域导航）
