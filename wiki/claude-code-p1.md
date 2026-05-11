@@ -2,7 +2,7 @@
 name: Claude Code 配置
 description: settings.json/CLAUDE.md/rules/记忆系统/技能位置 — 遇到Claude Code配置、持久化指令、记忆系统问题时参考
 type: concept
-updated: 2026-04-18
+updated: 2026-05-11
 originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 tags: [claude-code, settings, claudemd, memory, rules]
 ---
@@ -42,11 +42,14 @@ tags: [claude-code, settings, claudemd, memory, rules]
 - Active Recall 四阶段：扫描（200 文件前 30 行）→ 摘要 → Sonnet 选最多 5 条 → 注入（单文件 4KB 截断）
 - 会话累计上限 60KB，单轮 20KB；压缩后计数器重置
 
-## 技能存放位置
+## Skill 开发与部署
 
-- 正确路径：`~/.claude/skills/<skill-name>/SKILL.md`
-- 放好后用 `/reload-plugins` 刷新生效
-- 项目 `skills/` 和 `~/.claude/plugins/` 都不是正确位置
+- 存放路径：`~/.claude/skills/<skill-name>/SKILL.md`，放好后用 `/reload-plugins` 刷新生效
+- **SKILL.md 结构**：纯自然语言指令，定义触发条件 → 操作流程（含 bash 命令模板）→ 输出格式（含 box-drawing 表格示例）→ 安全约束（发送前确认、不自动批量） ← [[sources/email-assistant-journey.md]] L1-10
+- **双目录部署**：项目目录（开发）和 `~/.claude/skills/`（运行）是两份独立副本，改代码后必须 `cp` 同步，否则 Skill 调用仍用旧版 ← [[sources/email-assistant-journey.md]] L53-54
+- **.env 加载策略**：Skill 的 `_load_dotenv()` 用 fallback 列表加载多个 .env，`os.environ.setdefault` 保证先加载的优先，解决部署目录和开发目录凭证分散问题 ← [[sources/email-assistant-journey.md]] L71-75
+- **技能链调用**：Skill 内引用其他 Skill 时必须用 Skill 工具加载完整内容，不能跳过
+- **子代理限制**：子代理/团队成员无法调用 Skill 工具，父代理必须预加载技能内容并注入 prompt
 
 ## Hook 类型选择
 

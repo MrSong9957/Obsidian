@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-05-08
+updated: 2026-05-11
 ---
 
 # 原始资料索引
@@ -18,6 +18,7 @@ updated: 2026-05-08
 | [[sources/claude-code-statusline-setup\|claude-code-statusline-setup]] |  |
 | [[sources/claude-collaboration-prompting\|Claude 协作提示词技巧]] | 10 条从协作角度优化 Claude 输出质量的方法，包含具体提示词模板和核心逻辑 |
 | [[sources/dev-practice\|开发实践（详细）]] | TDD/调试案例/代码讲解/提示词技巧完整内容 — 需要详细案例或完整解释时参考 |
+| [[sources/email-assistant-journey\|Email Assistant 开发历程]] | Email Assistant 项目从零到一的完整开发过程、调试故事、踩坑记录 |
 | [[sources/feedback_git-token-security\|Git Token 安全认证方式]] | 避免在 git remote URL 中使用明文 token，改用 credential store |
 | [[sources/frontend\|前端与 UI（完整资料）]] | UI设计原则/终端UI测试/Playwright自动化/技术栈策略的完整资料，含代码示例和详细教程 |
 | [[sources/learning\|学习方法（完整资料）]] | AI时代技能发展/学习方法论/认知提升习惯的完整研究资料，含详细示例和论证 |
@@ -25,7 +26,10 @@ updated: 2026-05-08
 | [[sources/obsidian\|Obsidian（详细）]] | Obsidian CLI完整参考/快捷键/自动化脚本 — 需要完整命令或配置细节时参考 |
 | [[sources/openai-harness-engineering\|Harness Engineering: Leveraging Codex in an Agent-First World]] | OpenAI 团队历时 5 个月用 0 行人工代码构建产品的实验总结，提出 Harness Engineering 方法论 |
 | [[sources/stop-hook-design\|Stop Hook Memory Review 设计文档]] | V4 最终方案（关键词触发 + 后台 agent）的完整实现记录 |
+| [[sources/subagent-skill-test-2026-05-10\|子代理 Skill 工具可用性测试]] | 2026-05-10 实测子代理/团队成员能否使用 Skill 工具，记录所有尝试方案和结果 |
+| [[sources/yazi-preview-line-numbers\|yazi-preview-line-numbers]] |  |
 | [[sources/yazi-theme-setup\|yazi-theme-setup]] |  |
+| [[sources/yazi-wrap-fix\|Yazi 文本换行配置调试]] | yazi 预览不换行问题的排查过程 — 从错误路径到 PowerShell 写入陷阱 |
 | [[sources/zhipu-mcp\|网络与 API（详细）]] | MCP安装完整指南、配置参考、故障排除 — 安装或排查 MCP 问题时参考 |
 
 ## 集合

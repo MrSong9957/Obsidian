@@ -1,9 +1,9 @@
 ---
 name: Claude Code 工具
-description: Superpowers/SafetyNet/Statusline — 遇到Claude Code插件、安全网、状态栏问题时参考
+description: Superpowers/SafetyNet/Statusline/子代理技能注入 — 遇到Claude Code插件、安全网、状态栏、子代理技能问题时参考
 type: concept
-updated: 2026-04-23
-tags: [claude-code, plugins, superpowers, safety-net]
+updated: 2026-05-10
+tags: [claude-code, plugins, superpowers, safety-net, subagent, skill]
 originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
 # Claude Code 工具
@@ -59,3 +59,20 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - Safety Net：Windows 需手动配 Hook 和 `SAFETY_NET_PLUGIN_ROOT` 环境变量
 - 任何插件安装前备份：`cp -r ~/.claude/rules ~/.claude/rules.backup`
 - Rules 和 Hooks 都是追加合并，绝不能直接覆盖
+
+## 子代理 Skill 工具可用性
+
+**结论：** 子代理和团队成员都不能使用 Skill 工具（不在直接工具列表，也不在 ToolSearch 延迟列表）。父代理必须预加载技能内容注入 prompt。 ← [[sources/subagent-skill-test-2026-05-10.md]]
+
+**禁止：** 在子代理 prompt 中要求其调用 Skill 工具
+**原因：** Skill 是主会话运行时内置工具，不传递给子代理上下文。ToolSearch("Skill") 返回假阳性空 schema
+**替代：** 父代理先用 Skill 加载技能完整内容，用 `---<SKILL_NAME> START/END---` 标记包裹注入子代理 prompt
+
+**注入方式：**
+- 子代理（`--print`）：技能内容嵌入 `-p` 参数
+- 团队成员（`--agents`）：技能内容嵌入 `prompt` 字段 ← [[sources/subagent-skill-test-2026-05-10.md]]
+
+**失败的方案（勿再尝试）：**
+- ToolSearch 加载 Skill → 假阳性
+- `--allowedTools Skill` → 参数被忽略
+- `--plugin-dir superpowers/` → 插件提供内容不提供工具

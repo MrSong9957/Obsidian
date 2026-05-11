@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-05-08
+updated: 2026-05-11
 ---
 
 # Wiki 索引
@@ -10,11 +10,13 @@ updated: 2026-05-08
 | [[wiki/agent-arch-p1\|Agent 架构（上）]] | Agent循环/多智能体框架/系统提示词/教学脚本 — 遇到Agent架构设计、多智能体协作、系统提示词问题时参考 | agent, architecture, multi-agent, system-prompts |
 | [[wiki/agent-arch-p2\|Agent 架构（下）]] | Harness工程方法论/人话编程规范 — 遇到AI协作方法论、自然语言编程规范问题时参考 | agent, harness, natural-language, methodology |
 | [[wiki/claude-code-p1\|Claude Code 配置]] | settings.json/CLAUDE.md/rules/记忆系统/技能位置 — 遇到Claude Code配置... | claude-code, settings, claudemd, memory, rules |
-| [[wiki/claude-code-p2\|Claude Code 工具]] | Superpowers/SafetyNet/Statusline — 遇到Claude Code插件、安全网、状态... | claude-code, plugins, superpowers, safety-net |
+| [[wiki/claude-code-p2\|Claude Code 工具]] | Superpowers/SafetyNet/Statusline/子代理技能注入 — 遇到Claude Code插... | claude-code, plugins, superpowers, safety-net, subagent, skill |
 | [[wiki/claude-md-base\|CLAUDE.md 双层架构模板]] | 全局（karpathy 行为准则）+ 项目级（superpowers 工作流）双层 CLAUDE.md 创建方法 | claude-md, template, karpathy, superpowers, kv-cache, two-tier |
 | [[wiki/cli-tools-productivity\|十个提升生产力的 CLI 工具]] | 10 个提升开发生产力的 CLI 工具推荐及核心功能 — 选择提升效率的 CLI 工具时参考 | cli, productivity |
 | [[wiki/container-python-setup\|Docker 容器内安装 Python 版本]] | 容器网络受限环境下安装 Python 版本的经验路线图 | docker, python, networking, experience |
 | [[wiki/dev-practice\|开发实践]] | TDD/代码质量/调试方法论/代码讲解/提示词技巧/KV缓存设计/协作提示词 — 遇到开发质量、调试方法、提示词优... | dev, tdd, debugging, prompt, code-quality |
+| [[wiki/email-assistant-arch\|Email Assistant 架构决策]] | Email Assistant 项目的关键设计决策及理由 — 遇到类似邮件助手项目时参考架构选型 | email, architecture, decision, claude-code, skill |
+| [[wiki/email-dev\|Python 邮件开发]] | IMAP/SMTP asyncio 编程实战经验、QQ 邮箱特性、HTML 邮件处理 — 遇到 Python 邮件... | python, email, imap, smtp, asyncio |
 | [[wiki/frontend\|前端与 UI]] | UI设计原则/终端UI测试/Playwright自动化/技术栈策略 — 遇到前端设计、UI测试、技术选型问题时参考 | frontend, ui, testing, playwright, tech-stack |
 | [[wiki/git-security\|Git 安全实践]] | Git 认证安全、token 管理、credential 配置 — 避免明文 token 暴露 | git, security, credentials, docker |
 | [[wiki/learn-shareai\|Learn ShareAI（s01-s19）]] | 从零构建 Claude Code-like Agent——19 章学习笔记 | agent, learn-shareai |
