@@ -23,6 +23,7 @@ updated: 2026-05-11
 | [[sources/frontend\|前端与 UI（完整资料）]] | UI设计原则/终端UI测试/Playwright自动化/技术栈策略的完整资料，含代码示例和详细教程 |
 | [[sources/learning\|学习方法（完整资料）]] | AI时代技能发展/学习方法论/认知提升习惯的完整研究资料，含详细示例和论证 |
 | [[sources/obsidian-knowledge-system\|obsidian-knowledge-system]] |  |
+| [[sources/project-roadmap\|Email Assistant 项目发展规划]] | 项目发展方向三阶段路线图（开源→框架→SaaS）完整分析 |
 | [[sources/obsidian\|Obsidian（详细）]] | Obsidian CLI完整参考/快捷键/自动化脚本 — 需要完整命令或配置细节时参考 |
 | [[sources/openai-harness-engineering\|Harness Engineering: Leveraging Codex in an Agent-First World]] | OpenAI 团队历时 5 个月用 0 行人工代码构建产品的实验总结，提出 Harness Engineering 方法论 |
 | [[sources/stop-hook-design\|Stop Hook Memory Review 设计文档]] | V4 最终方案（关键词触发 + 后台 agent）的完整实现记录 |

@@ -24,4 +24,5 @@ updated: 2026-05-11
 | [[wiki/mental-models\|思维模型]] | 跨学科思维模型框架（芒格100模型）— 决策质量提升、避免认知偏误、系统思考时参考 | mental-models, decision-making, cognition, munger, thinking-framework |
 | [[wiki/obsidian\|Obsidian]] | Obsidian CLI工具使用/知识仓库管理 — 遇到Obsidian操作或知识管理问题时参考 | obsidian, knowledge-management |
 | [[wiki/yazi\|Yazi 文件管理器]] | Yazi 配置经验 — 主题安装、配色系统、Windows 配置路径 | cli, yazi, config, theme |
+| [[wiki/project-roadmap\|项目路线图]] | 三阶段战略（开源→Skill框架→SaaS）及阶段切换信号 — 项目方向决策时参考 | project, roadmap, strategy, email-assistant, open-source |
 | [[wiki/zhipu-mcp\|智谱MCP]] | 智谱MCP服务器配置速查/Web抓取缓存与JS渲染问题 — 安装或排查智谱MCP、遇到页面抓取问题时参考 | zhipu, mcp, web-scraping, caching |
