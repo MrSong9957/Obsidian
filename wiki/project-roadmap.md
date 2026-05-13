@@ -1,10 +1,10 @@
 ---
 name: Email Assistant 项目路线图
-description: 项目发展方向的三阶段战略决策 — 开源 Build in Public → AI Skill 框架 → SaaS
+description: 项目发展方向的三阶段战略决策 — 开源 Build in Public → AI Skill 框架 → SaaS，含多平台发布方案
 type: concept
-updated: 2026-05-11
-tags: [project, roadmap, strategy, email-assistant, open-source]
-sources: [[sources/project-roadmap.md]]
+updated: 2026-05-13
+tags: [project, roadmap, strategy, email-assistant, open-source, publish, social-media]
+sources: [[sources/project-roadmap.md]], [[sources/publish-plan.md]]
 ---
 
 # Email Assistant 项目路线图
@@ -82,3 +82,37 @@ sources: [[sources/project-roadmap.md]]
 - 视频 hook：「我用 AI 写了一个能帮我管邮件的终端工具」
 
 ← [[sources/project-roadmap.md]] L99-103
+
+## 多平台发布方案（10 个平台）
+
+国内外各 5 个平台，按内容类型四列对齐：
+
+| 内容类型 | 国内 | 国外 |
+|----------|------|------|
+| 代码分发 | GitHub | GitHub |
+| 长文 | 知乎 | Dev.to |
+| 社交图文 | 小红书 / 公众号 | X / Reddit |
+| 视频 | 抖音 / B站 | YouTube |
+
+### 通用发布格式
+
+- **文字 + 图片 = 最小通用集**，所有平台都支持
+- **文字图片可合成视频**（FFmpeg / remotion / 手动录屏），覆盖抖音/B站/YouTube
+- 一次写好 `post.md`（frontmatter + body），脚本按平台规则裁剪分发
+- 每个平台通过 frontmatter 开关控制：`true`(自动) / `draft`(草稿) / `manual`(手动) / `false`(跳过)
+
+### 一键发布工具 `publish.sh`
+
+- 解析 `release-notes/v{version}/post.md` 统一模板
+- 自动平台：GitHub Release（`gh` CLI）、Dev.to（REST API）
+- 手动平台：格式化输出到剪贴板，复制即发
+- 视频平台：检查视频文件，输出上传指引
+
+← [[sources/publish-plan.md]] L1-232
+
+### 平台评估结论
+
+- 即刻、V2EX 为小众平台，不在首批发布范围
+- 掘金（开发者社区）替换为知乎（更主流，SEO 更好）
+- Hacker News、Product Hunt 降级为 launch day 备选，不作为常规渠道
+- 抖音必须纳入（用户量最大，覆盖面最广）

@@ -41,7 +41,7 @@
 - 技能文件同步：改 project/email_cli.py 或 SKILL.md 后必须 cp 到 ~/.claude/skills/email-assistant/，否则技能调用用旧版 → [feedback-skill-file-sync](feedback-skill-file-sync.md)
 - Python 邮件开发：IMAP/SMTP asyncio 踩坑（BODY.PEEK、multipart 递归、QQ 邮箱特性） → [[wiki/email-dev.md|详情]](wiki/email-dev.md)
 - Skill 开发模式：SKILL.md 结构、双目录部署同步、.env fallback 加载、子代理技能注入 → [[wiki/claude-code-p1.md|详情]]([wiki/claude-code-p1.md](wiki/claude-code-p1.md))
-- 项目路线图：三阶段递进 A 开源 Build in Public → B Skill 框架 → C SaaS，当前阶段 A → [[wiki/project-roadmap.md|详情]](wiki/project-roadmap.md)
+- 项目路线图：三阶段递进 A 开源 Build in Public → B Skill 框架 → C SaaS，含 10 平台发布方案 → [[wiki/project-roadmap.md|详情]](wiki/project-roadmap.md)
 
 ## 知识库索引
 - 本文件未覆盖的内容 → [README.md](README.md)（冷数据，按领域导航）
