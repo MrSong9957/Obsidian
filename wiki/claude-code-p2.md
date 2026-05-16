@@ -2,13 +2,14 @@
 name: Claude Code 工具
 description: Superpowers/SafetyNet/Statusline/子代理技能注入 — 遇到Claude Code插件、安全网、状态栏、子代理技能问题时参考
 type: concept
-updated: 2026-05-10
+updated: 2026-05-14
 tags: [claude-code, plugins, superpowers, safety-net, subagent, skill]
 originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
 # Claude Code 工具
 
 > 前篇：[[wiki/claude-code-p1.md|Claude Code 配置]]
+> 续篇：[[wiki/claude-code-p3.md|Claude Code 进阶工作流]]
 
 ## Superpowers 核心技能
 
@@ -34,6 +35,7 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - 绕过方式：Safety Net 阻止批量删除时，先预览目标列表（如 `find ... -print`），再逐个删除（如 `find ... -exec rm {} \;` 或循环）
 - 高级：Shell 包装检测、解释器单行检测、审计日志、自定义规则（`~/.cc-safety-net/config.json`）
 - 安装：`/plugin install safety-net@cc-marketplace` → 配置 PreToolUse Hook
+- Hook 参数：v0.9.0+ 用 `--claude-code`（从 stdin 读 JSON），旧参数 `--hook "$TOOL_INPUT"` 已废弃，会报 `Unknown option: --hook` ← [[sources/2026-05-13-safety-net-hook-fix.md]] L32-46
 
 ## StatusLine 关键变量
 
@@ -41,6 +43,12 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - 配置：settings.json 中 `statusLine.type` = command 或 template
 - 推荐 Python 版本（比 Bash 版本更稳定）；脚本放 `~/.claude/scripts/statusline.py`
 - 多状态栏合并：用管道 `python statusline.py | npx cc-safety-net --statusline`
+
+### Worktree 兼容
+
+- **分支检测 bug：** `get_git_branch()` 用 `os.path.isdir(".git")` 查找仓库，但 worktree 中 `.git` 是文件（指向主仓库），导致跳过 worktree 向上找到主仓库，返回错误分支。修复：改为 `isdir(...) or isfile(...)`
+- **目录显示：** worktree 路径 `<project>/.claude/worktrees/<name>/` 过长且无意义，检测后压缩为 `项目名:worktree名` 格式（如 `project:persona-style`）
+- **普通目录：** 只保留最后 2 层（如 `~/a/b/c` → `b/c`），不足 2 层保持原样
 
 ## GitHub MCP 插件认证
 
@@ -76,3 +84,7 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - ToolSearch 加载 Skill → 假阳性
 - `--allowedTools Skill` → 参数被忽略
 - `--plugin-dir superpowers/` → 插件提供内容不提供工具
+
+## ECC 补强
+
+ECC（Everything Claude Code）是独立插件，提供基础设施层（编码规范、上下文管理、安全审查、持续学习），补充 Superpowers 不覆盖的领域。详见 [[wiki/everything-claude-code.md|ECC 插件]]。

@@ -22,26 +22,23 @@
 - 开发方法：默认 TDD，代码质量由 AI 发现最佳实践 → [[wiki/dev-practice.md|详情]]([wiki/dev-practice.md](wiki/dev-practice.md))
 
 ## 经验教训
-- 智谱MCP：web reader 可能遗漏JS内容或返回缓存旧版，用 curl+grep 或 no_cache=true → [[wiki/zhipu-mcp.md|详情]]([wiki/zhipu-mcp.md](wiki/zhipu-mcp.md))
-- Claude Code：自定义技能放 ~/.claude/skills/<name>/SKILL.md → [[wiki/claude-code-p1.md|详情]]([wiki/claude-code-p1.md](wiki/claude-code-p1.md))
-- 首次配置：插件/SafetyNet/StatusLine/智谱MCP 完整安装步骤 → [[wiki/claude-code-p2.md|详情]]([wiki/claude-code-p2.md](wiki/claude-code-p2.md))
-- 提示词：固定前置动态后置缓存命中；协作用情境简报/魔鬼代言人/范围锁定等 10 技巧 → [[wiki/dev-practice.md|详情]]([wiki/dev-practice.md](wiki/dev-practice.md))
-- 文档：CLAUDE.md 稳定前置 + 双链带 .md → [[wiki/claude-code-p1.md|详情]]([wiki/claude-code-p1.md](wiki/claude-code-p1.md))
-- CLAUDE.md 模板：全局层 karpathy 准则 + 项目层 superpowers 工作流的双层架构 → [[wiki/claude-md-base.md|详情]](wiki/claude-md-base.md)
+- Claude Code：技能存放/SKILL开发/文档双链/Hooks复盘 → [[wiki/claude-code-p1.md|详情]]([wiki/claude-code-p1.md](wiki/claude-code-p1.md))
+- 开发实践：提示词缓存/协作技巧、rm 安全操作 → [[wiki/dev-practice.md|详情]]([wiki/dev-practice.md](wiki/dev-practice.md))
 - Learn ShareAI：s01-s19 从零构建 Agent，各章摘要、关键数据结构、实现要点见 → [[wiki/learn-shareai.md|详情]](wiki/learn-shareai.md)
-- 删除操作：rm -rf 和 find -delete 前先预览，Safety Net 会阻止批量删除 → [[wiki/dev-practice.md|详情]]([wiki/dev-practice.md](wiki/dev-practice.md))
 - 上下文管理：当前完整保留，旧的才压缩（截断+落盘→占位符→摘要）→ [[wiki/agent-arch-p1.md|详情]]([wiki/agent-arch-p1.md](wiki/agent-arch-p1.md))
-- Hooks：V4 关键词"复盘"触发后台 agent 复盘，无需 hook 配置（V3 因评估器过度触发已废弃）→ [[wiki/claude-code-p1.md|详情]]([wiki/claude-code-p1.md](wiki/claude-code-p1.md))
 - 决策：跨学科思维模型框架（芒格100模型），高频模型含反向思考/概率思维/二阶思维 → [[wiki/mental-models.md|详情]]([wiki/mental-models.md](wiki/mental-models.md))
-- 凭证：多个 .env 文件（skill 目录 + 项目根目录），_load_dotenv 用 fallback 列表 + setdefault 合并加载；token 过期时提醒用户更新，不反复追问
-- Safety Net 状态栏：管道接入 `statusline.py | npx cc-safety-net --statusline`，Windows 需设 SAFETY_NET_PLUGIN_ROOT → [[wiki/claude-code-p2.md|详情]]([wiki/claude-code-p2.md](wiki/claude-code-p2.md))
+- 凭证：所有 token 集中管理在 D:\Files\.env，docker-compose 通过 env_file 引用；各服务获取方式见速查表 → [[wiki/token-management.md|详情]](wiki/token-management.md)
 - Yazi：Windows 配置在 `%AppData%\yazi\config\`，非 Linux `~/.config/yazi/`；PowerShell 写多行 TOML 用数组语法 → [[wiki/yazi.md|详情]]([wiki/yazi.md](wiki/yazi.md))
 - 技能链调用：技能内引用其他技能时必须用 Skill 工具加载完整内容，不能跳过 → [feedback-skill-chain-discipline](feedback-skill-chain-discipline.md)
 - 子代理/团队成员技能注入：均无法调用 Skill 工具，父代理预加载内容注入 prompt → [feedback-subagent-skill-injection](feedback-subagent-skill-injection.md)
 - 技能文件同步：改 project/email_cli.py 或 SKILL.md 后必须 cp 到 ~/.claude/skills/email-assistant/，否则技能调用用旧版 → [feedback-skill-file-sync](feedback-skill-file-sync.md)
 - Python 邮件开发：IMAP/SMTP asyncio 踩坑（BODY.PEEK、multipart 递归、QQ 邮箱特性） → [[wiki/email-dev.md|详情]](wiki/email-dev.md)
-- Skill 开发模式：SKILL.md 结构、双目录部署同步、.env fallback 加载、子代理技能注入 → [[wiki/claude-code-p1.md|详情]]([wiki/claude-code-p1.md](wiki/claude-code-p1.md))
 - 项目路线图：三阶段递进 A 开源 Build in Public → B Skill 框架 → C SaaS，含 10 平台发布方案 → [[wiki/project-roadmap.md|详情]](wiki/project-roadmap.md)
+- 技能触发纪律：邮件等关键词请求必须先 Skill 工具调用，不能直接执行 CLI → [feedback-skill-trigger-discipline](feedback-skill-trigger-discipline.md)
+- CC 进阶工作流：上下文管理/Hooks/子代理/并行 + Session Memory/Token经济学/Evals/持续学习 → [[wiki/claude-code-p3.md|详情]](wiki/claude-code-p3.md)
+- 邮件详情展示：末尾必须追加 webmail Link 行（按账户变化） → [feedback-email-detail-link](feedback-email-detail-link.md)
+- 人格化邮件回复：代码完成待实测，分支 worktree-persona-style，实测后执行 finishing-a-development-branch → [[sources/2026-05-14-persona-style-progress.md|详情]](sources/2026-05-14-persona-style-progress.md)
+- 新项目初始化：Docker 容器 → 验证镜像配置 → 补充缺失项（Git/CLAUDE.md/ECC rules/目录结构） → [[wiki/new-project-setup.md|详情]](wiki/new-project-setup.md)
 
 ## 知识库索引
 - 本文件未覆盖的内容 → [README.md](README.md)（冷数据，按领域导航）

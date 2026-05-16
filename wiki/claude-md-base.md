@@ -1,9 +1,18 @@
 ---
-name: CLAUDE.md 双层架构模板
+name: claude-md
 description: 全局（karpathy 行为准则）+ 项目级（superpowers 工作流）双层 CLAUDE.md 创建方法
-type: reference
-updated: 2026-05-10
-tags: [claude-md, template, karpathy, superpowers, kv-cache, two-tier]
+metadata: 
+  node_type: memory
+  type: reference
+  updated: 2026-05-10
+  tags: 
+    - claude-md
+    - template
+    - karpathy
+    - superpowers
+    - kv-cache
+    - two-tier
+  originSessionId: e7e57f29-69b0-4083-b071-95477bbde34e
 ---
 
 # CLAUDE.md 双层架构模板
@@ -281,3 +290,60 @@ tags: [claude-md, template, karpathy, superpowers, kv-cache, two-tier]
 | 铁律替代设计原则中的重复项 | TDD/调试/验证各一条铁律，比"测试先行""证据优于声明"更精确、更不易遗漏 |
 | 技能调用 1% 规则 | 即使只有 1% 可能适用也必须先调用技能，防止遗漏关键流程 |
 | 详细规则外置到 rules/ | CLAUDE.md 保持精简（< 200 行），rules 按需加载 |
+| ECC 补强作为可选模块独立存放 | 不是所有项目都使用 ECC 插件，保持模板精简，按需添加 |
+
+---
+
+# ECC 补强模块（可选）
+
+> 安装 ECC 插件后，按需将以下内容添加到项目级 CLAUDE.md 的 `技能库` 节之后、`设计原则` 节之前。
+
+```markdown
+### ECC 补强（Everything Claude Code 插件）
+
+ECC 提供基础设施层，补充 Superpowers 不覆盖的领域。两者分工：
+
+**Superpowers 负责（流程层）**：TDD、规划、代码审查、Git 工作流、调试、验证
+**ECC 负责（基础设施层）**：编码规范、上下文管理、语言模式、安全、持续学习
+
+重叠时优先用 Superpowers：TDD 流程、任务规划、代码审查、分支管理。
+
+#### Strategic Compacting
+
+在逻辑节点手动 `/compact`，不让自动压缩中途触发：
+- **压缩时机**：探索完成→执行前 / 里程碑完成→下一个前
+- **禁止压缩**：任务执行中途 / 用户反馈未消化
+
+#### Continuous Learning
+
+发现非平凡模式时主动 `/learn`，不必等会话结束。适合提取：错误解决方案、调试技巧、变通方案、项目特定模式。
+
+#### Session Memory
+
+撞上下文限制前主动 `/save-session`。状态文件包含：有效方法（附证据）/ 失败尝试 / 待办。跨天继续时 `/resume-session`。
+
+#### Token Economics
+
+子代理模型选择：重复性任务→Haiku / 90% 编码→Sonnet（默认）/ 架构决策或安全关键→Opus。
+
+#### 子代理上下文传递
+
+传目标不只传查询——告诉子代理"为什么需要这个信息"。评估返回值充分性，不充分则追问（最多 3 轮）。
+
+#### Context Budget
+
+上下文使用超 70% 时主动 `/context-budget` 审计。经验阈值：MCP < 10 个，活跃工具 < 80 个。
+
+#### 常用命令
+
+| 命令 | 用途 |
+|------|------|
+| /build-fix | 修复构建错误 |
+| /e2e | 生成和运行 E2E 测试 |
+| /test-coverage | 检查测试覆盖率 |
+| /refactor-clean | 清理死代码 |
+| /context-budget | 上下文窗口审计 |
+| /strategic-compact | 结构化压缩 |
+| /save-session /resume-session | 跨会话状态管理 |
+| /learn | 提取可复用模式 |
+```

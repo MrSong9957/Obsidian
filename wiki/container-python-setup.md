@@ -2,7 +2,7 @@
 name: Docker 容器内安装 Python 版本
 description: 容器网络受限环境下安装 Python 版本的经验路线图
 type: feedback
-updated: 2026-04-11
+updated: 2026-05-14
 tags: [docker, python, networking, experience]
 ---
 
@@ -60,6 +60,18 @@ rm -rf ~/.local/miniconda3
 ```
 
 > `--override-channels` 阻止 conda 回退到被墙的 `repo.anaconda.com`。
+
+## 目录权限不匹配
+
+容器镜像构建时由 `root` 创建的目录，运行时以 `app` 用户执行会导致写入失败。
+
+**表现：** `EACCES: permission denied, mkdir '/home/app/project/.claude/worktrees'`（EnterWorktree 被拒绝）
+
+**原因：** `.claude/` 目录 owner 为 `root`（755），`app` 用户无写权限。
+
+**修复：** `sudo chown -R app:app /home/app/project/.claude/`
+
+**预防：** Dockerfile 中 `COPY` 后加 `RUN chown -R app:app /path`，或在 entrypoint 中用 `gosu` 降权前先 chown。
 
 ## 决策树
 

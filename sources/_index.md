@@ -15,6 +15,7 @@ updated: 2026-05-11
 | [[sources/claude-code-cli-path-fix\|claude-code-cli-path-fix]] |  |
 | [[sources/claude-code-first-time-setup\|Claude Code 首次安装配置指南]] | 首次安装或初始化 Claude Code 后的完整配置流程 — 新环境首次配置时按此文档执行 |
 | [[sources/claude-code-p1\|Claude Code 配置（完整参考）]] | settings.json/CLAUDE.md/rules/记忆系统/技能位置的完整参考文档，含代码示例、安装步骤和排错指南 |
+| [[sources/ecc\|ECC 完整参考]] | @affaanmustafa 的 Everything Claude Code 完整参考 — Skills/Hooks/Subagents/MCPs/Plugins/Session Memory/Token 经济学/Evals/33 个 Hooks 清单 |
 | [[sources/claude-code-statusline-setup\|claude-code-statusline-setup]] |  |
 | [[sources/claude-collaboration-prompting\|Claude 协作提示词技巧]] | 10 条从协作角度优化 Claude 输出质量的方法，包含具体提示词模板和核心逻辑 |
 | [[sources/dev-practice\|开发实践（详细）]] | TDD/调试案例/代码讲解/提示词技巧完整内容 — 需要详细案例或完整解释时参考 |

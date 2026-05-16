@@ -2,7 +2,7 @@
 name: Email Assistant 项目路线图
 description: 项目发展方向的三阶段战略决策 — 开源 Build in Public → AI Skill 框架 → SaaS，含多平台发布方案
 type: concept
-updated: 2026-05-13
+updated: 2026-05-14
 tags: [project, roadmap, strategy, email-assistant, open-source, publish, social-media]
 sources: [[sources/project-roadmap.md]], [[sources/publish-plan.md]]
 ---
@@ -49,6 +49,19 @@ sources: [[sources/project-roadmap.md]], [[sources/publish-plan.md]]
 | B → C | A+B 阶段发现明确的付费意愿/市场需求 |
 
 ← [[sources/project-roadmap.md]] L74-79
+
+## 应用场景洞察
+
+### 出海贸易沟通（核心场景）
+
+- **时差兼容：** 跨时区沟通天然容忍 AI 思考/处理延迟（几秒到几十秒），不影响体验
+- **语言无障碍：** AI 自动翻译，实现与全球任何语言客户的实时邮件沟通
+- **陌生拜访拓客：** AI 撰写个性化 cold email，批量但非群发，符合营销场景需求
+- **场景匹配度：** 出海贸易 = 时差 + 语言障碍 + 邮件为主 → 邮件助手完美契合
+
+### 场景化方向
+
+- 参考设计文档中的场景化路线，针对具体使用场景优化功能
 
 ## Build in Public 内容策略
 
