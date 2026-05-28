@@ -44,7 +44,7 @@ obsidian/
 | [[wiki/agent-arch-p1.md\|Agent 架构（上）]] | Agent 循环、多智能体、系统提示词 |
 | [[wiki/agent-arch-p2.md\|Agent 架构（下）]] | Harness 工程方法论、人话编程规范 |
 | [[wiki/learn-shareai.md\|Learn ShareAI]] | s01-s19 从零构建 Agent 学习笔记 |
-| [[wiki/learning.md\|学习方法]] | AI 时代技能、学习方法论、认知提升 |
+| [[wiki/learning-habits.md\|学习习惯]] | AI 时代技能、学习方法论、认知提升、语言学习哲学 |
 | [[wiki/mental-models.md\|思维模型]] | 跨学科思维模型（芒格 100 模型） |
 
 ### 工具指南
@@ -89,6 +89,7 @@ obsidian/
 | [[sources/stop-hook-design.md\|Stop Hook 设计]] | Stop Hook 设计过程 |
 | [[sources/yazi-theme-setup.md\|Yazi 主题配置]] | Yazi 主题安装调试过程 |
 | [[sources/zhipu-mcp.md\|智谱 MCP 原始资料]] | 智谱 MCP 配置调试记录 |
+| [[sources/opencode.md\|OpenCode 配置指南]] | OpenCode 安装、配置、MCP、与 Claude Code 对比 |
 | [[sources/feedback_git-token-security.md\|Git Token 安全事件]] | Git token 泄露教训记录 |
 
 ---

@@ -232,6 +232,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Claude Code and OpenCode (use npm mirror)
+# OpenCode 配置指南见 [[sources/opencode.md]]
 RUN npm config set registry https://registry.npmmirror.com \
     && npm install -g @anthropic-ai/claude-code opencode-ai
 

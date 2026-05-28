@@ -74,4 +74,4 @@ sources: [[sources/charlie-munger-mental-models.md]]
 ## 引用索引
 
 [^1]: [[sources/charlie-munger-mental-models.md]] L1-18 — 芒格100思维模型概要与来源
-[^2]: [[wiki/learning.md]] L44-48 — 六大认知提升习惯之"构建思维模型"
+[^2]: [[wiki/learning-habits.md]] 六大认知提升习惯之"构建思维模型"

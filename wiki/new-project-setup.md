@@ -38,6 +38,8 @@ metadata:
 
 基础镜像预装：Claude Code / OpenCode / Codex / Node.js 20 / Python 3 / Git / GitHub CLI / 中文字体
 
+> OpenCode 完整配置指南见 [[sources/opencode.md]]
+
 ## 基础镜像更新机制
 
 容器是基础镜像的可读写副本，不同项目引用同一镜像互不污染。工具版本在 `docker build` 时固化到镜像中。
@@ -181,6 +183,29 @@ Docker 构建涉及多个网络层，每层解法不同：
 
 - **`claude: command not found`** — bash 命令哈希缓存过期，执行 `hash -r` 清除缓存后重试
 - **`Unable to connect to Anthropic services`** — 临时容器缺少 `--env-file`，必须通过 `--env-file D:\Files\.env` 提供 API key
+- **`docker push` EOF 错误** — 国内网络推送到 Docker Hub 时的代理配置问题，见下方 [[#Docker Hub Push 代理配置]]
+
+### Docker Hub Push 代理配置
+
+> 从国内通过 FlClash 代理推送 Docker 镜像到 Docker Hub 的正确配置。
+
+**正确配置（无需修改 Docker Desktop）：**
+
+| 设置项 | 值 | 说明 |
+|--------|-----|------|
+| Docker Desktop Proxy | System proxy（默认） | 不需要改动 |
+| Containers proxy | Same as host proxy（默认） | 不需要改动 |
+| Docker Desktop Manual proxy | **不要修改** | 默认即可 |
+
+如果默认节点 push 时出现 EOF，在 FlClash 中切换代理节点后重试 `docker push`。
+
+**已验证的失败方式：**
+
+| 方式 | 结果 | 原因 |
+|------|------|------|
+| Manual proxy + HTTP 代理 | EOF | FlClash HTTP 代理与 Docker Hub TLS 握手不兼容 |
+| Manual proxy + SOCKS5 | Connection refused | FlClash SOCKS5 端口 7891 未开放 |
+| `$env:HTTPS_PROXY` 环境变量 | 无效 | `docker push` 是 daemon 行为，不读 shell 环境变量（与 `docker build` 不同） |
 
 ---
 

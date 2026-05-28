@@ -21,7 +21,7 @@ updated: 2026-05-11
 | [[wiki/frontend\|前端与 UI]] | UI设计原则/终端UI测试/Playwright自动化/技术栈策略 — 遇到前端设计、UI测试、技术选型问题时参考 | frontend, ui, testing, playwright, tech-stack |
 | [[wiki/git-security\|Git 安全实践]] | Git 认证安全、token 管理、credential 配置 — 避免明文 token 暴露 | git, security, credentials, docker |
 | [[wiki/learn-shareai\|Learn ShareAI（s01-s19）]] | 从零构建 Claude Code-like Agent——19 章学习笔记 | agent, learn-shareai |
-| [[wiki/learning\|学习方法]] | AI时代技能发展/学习方法论/认知提升习惯 — 遇到学习方法、技能发展、认知提升问题时参考 | learning, methodology, ai-skills, cognition |
+| [[wiki/learning-habits\|学习习惯]] | AI时代语言学习哲学/代码讲解策略/技能发展/认知提升 — 遇到学习方法、技能发展、认知提升、语言切换问题时参考 | learning, methodology, ai-skills, cognition, rust, language-learning |
 | [[wiki/mental-models\|思维模型]] | 跨学科思维模型框架（芒格100模型）— 决策质量提升、避免认知偏误、系统思考时参考 | mental-models, decision-making, cognition, munger, thinking-framework |
 | [[wiki/obsidian\|Obsidian]] | Obsidian CLI工具使用/知识仓库管理 — 遇到Obsidian操作或知识管理问题时参考 | obsidian, knowledge-management |
 | [[wiki/yazi\|Yazi 文件管理器]] | Yazi 配置经验 — 主题安装、配色系统、Windows 配置路径 | cli, yazi, config, theme |

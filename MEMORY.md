@@ -17,7 +17,7 @@
 - 方法论：Harness Engineering → [[wiki/agent-arch-p2.md|详情]]([wiki/agent-arch-p2.md](wiki/agent-arch-p2.md))
 - 原则：只做必要更改，不提前抽象，复用成熟方案
 - 子代理：可并行或需隔离时用；简单操作直接做
-- 代码讲解：底层逻辑优先，不跳过用户的问题 → [[wiki/dev-practice.md|详情]]([wiki/dev-practice.md](wiki/dev-practice.md))
+- 学习习惯：学霸七法（框架/反向/深层/逻辑/分科/渐进/理解>数量）+AI辅助 → [[wiki/learning-habits.md|详情]]([wiki/learning-habits.md](wiki/learning-habits.md))
 - 技术栈：原型 HTML/CSS/JS，正式 Flutter，后端 Python/Rust → [[wiki/frontend.md|详情]]([wiki/frontend.md](wiki/frontend.md))
 - 开发方法：默认 TDD，代码质量由 AI 发现最佳实践 → [[wiki/dev-practice.md|详情]]([wiki/dev-practice.md](wiki/dev-practice.md))
 
@@ -37,8 +37,9 @@
 - 技能触发纪律：邮件等关键词请求必须先 Skill 工具调用，不能直接执行 CLI → [feedback-skill-trigger-discipline](feedback-skill-trigger-discipline.md)
 - CC 进阶工作流：上下文管理/Hooks/子代理/并行 + Session Memory/Token经济学/Evals/持续学习 → [[wiki/claude-code-p3.md|详情]](wiki/claude-code-p3.md)
 - 邮件详情展示：末尾必须追加 webmail Link 行（按账户变化） → [feedback-email-detail-link](feedback-email-detail-link.md)
-- 人格化邮件回复：代码完成待实测，分支 worktree-persona-style，实测后执行 finishing-a-development-branch → [[sources/2026-05-14-persona-style-progress.md|详情]](sources/2026-05-14-persona-style-progress.md)
+- 人格化邮件回复：已合并 master，待办已迁移 → [[wiki/todos.md|待办事项]](wiki/todos.md)
 - 新项目初始化：Docker 容器 → 验证镜像配置 → 补充缺失项（Git/CLAUDE.md/ECC rules/目录结构） → [[wiki/new-project-setup.md|详情]](wiki/new-project-setup.md)
+- Rust 安装：容器用 USTC 镜像脚本；Windows 免 VS 选 GNU 工具链 `x86_64-pc-windows-gnu` → [[sources/rust.md|详情]](sources/rust.md)
 
 ## 知识库索引
 - 本文件未覆盖的内容 → [README.md](README.md)（冷数据，按领域导航）
