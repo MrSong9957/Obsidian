@@ -8,13 +8,14 @@ StatusLine 是 Claude Code 的内置功能，无需额外安装。只需在 `~/.
 
 在每次命令执行后显示：
 - 当前模型名称
-- 当前工作目录（`$HOME` 显示为 `~`）
-- Git 分支名称
+- 当前工作目录（最后两级，前缀 `~`）
+- Git 分支名称（非 git 仓库显示 `~` 占位符）
 - 上下文使用进度条（颜色编码：绿<50%，黄<80%，红>=80%）
+- Safety-net 保护状态（需额外配置）
 
 **示例输出：**
 ```
-MiniMax M2.5-highspeed | ~/project | main | ████████░░ 75%
+mimo-v2.5-pro | ~/Projects/test | ~ | ███░░░░░░░ 30% | 🛡️ Safety Net ✅
 ```
 
 ## 快速开始（推荐 Python 版本）
@@ -34,6 +35,8 @@ import sys
 import os
 import subprocess
 
+sys.stdout.reconfigure(encoding="utf-8")
+
 
 def get_git_branch(cwd: str) -> str:
     """Get git branch name, searching parent directories if needed."""
@@ -41,7 +44,7 @@ def get_git_branch(cwd: str) -> str:
         return ""
 
     check_dir = cwd
-    while check_dir and check_dir != "/":
+    while check_dir and check_dir not in ("/", "\\"):
         if os.path.isdir(os.path.join(check_dir, ".git")):
             try:
                 result = subprocess.run(
@@ -55,7 +58,10 @@ def get_git_branch(cwd: str) -> str:
                 break
             except (subprocess.TimeoutExpired, Exception):
                 break
-        check_dir = os.path.dirname(check_dir)
+        parent = os.path.dirname(check_dir)
+        if parent == check_dir:
+            break
+        check_dir = parent
     return ""
 
 
@@ -77,8 +83,17 @@ def main():
     cwd = input_data.get("workspace", {}).get("current_dir", "")
     used_pct = input_data.get("context_window", {}).get("used_percentage")
 
-    # Replace $HOME with ~
-    dir_display = cwd.replace(os.environ.get("HOME", ""), "~") if cwd else ""
+    # Format path: only show last two directory levels, prefix with ~
+    if cwd:
+        parts_list = cwd.replace("\\", "/").rstrip("/").split("/")
+        # Filter out empty parts (e.g. from leading /)
+        parts_list = [p for p in parts_list if p]
+        if len(parts_list) > 2:
+            dir_display = "~/" + "/".join(parts_list[-2:])
+        else:
+            dir_display = "/".join(parts_list)
+    else:
+        dir_display = ""
 
     # Get git branch
     branch = get_git_branch(cwd)
@@ -109,6 +124,8 @@ def main():
     parts = [f"{CYAN}{model}{RESET}", f"{BLUE}{dir_display}{RESET}"]
     if branch:
         parts.append(f"{GREEN}{branch}{RESET}")
+    else:
+        parts.append(f"{DIM}~{RESET}")
     parts.append(context_info)
 
     print(" | ".join(parts))
@@ -132,10 +149,37 @@ chmod +x ~/.claude/scripts/statusline.py
 {
   "statusLine": {
     "type": "command",
-    "command": "python3 ~/.claude/scripts/statusline.py"
+    "command": "python \"C:/Users/<username>/.claude/scripts/statusline.py\""
   }
 }
 ```
+
+> **Windows 用户**：使用正斜杠 `/` 或转义反斜杠 `\\`
+
+### 步骤 3b（可选）：集成 Safety-net 状态
+
+如果已安装 [safety-net](https://github.com/kenryu42/claude-code-safety-net) 插件，可通过管道连接显示保护状态：
+
+```json
+{
+  "statusLine": {
+    "type": "command",
+    "command": "python \"C:/Users/<username>/.claude/scripts/statusline.py\" | npx -y cc-safety-net --statusline"
+  },
+  "enabledPlugins": {
+    "safety-net@cc-marketplace": true
+  }
+}
+```
+
+Safety-net 状态指示器：
+
+| 状态 | 显示 |
+|------|------|
+| 默认模式 | 🛡️ Safety Net ✅ |
+| 严格模式 | 🛡️ Safety Net 🔒 |
+| 偏执模式 | 🛡️ Safety Net 👁️ |
+| Worktree 模式 | 🛡️ Safety Net 🌳 |
 
 ### 步骤 4：重启 Claude Code
 
@@ -294,7 +338,8 @@ def get_git_branch_cached(cwd: str) -> str:
 |------|----------|
 | 状态栏不显示 | 优先使用 Python 版本，避免 bash 转义问题 |
 | 脚本执行失败 | 检查脚本路径和执行权限 (`chmod +x`) |
-| Git 分支不显示 | 确认当前目录在 git 仓库中 |
+| Git 分支显示 `~` | 正常行为，表示当前目录不是 git 仓库 |
+| Safety-net 不显示 | 确认 `enabledPlugins` 已配置，且 `npx` 可用 |
 | 颜色显示异常 | 确认终端支持 ANSI 颜色 |
 
 ## 注意事项
