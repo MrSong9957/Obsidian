@@ -27,7 +27,7 @@
 - Learn ShareAI：s01-s19 从零构建 Agent，各章摘要、关键数据结构、实现要点见 → [[wiki/learn-shareai.md|详情]](wiki/learn-shareai.md)
 - 上下文管理：当前完整保留，旧的才压缩（截断+落盘→占位符→摘要）→ [[wiki/agent-arch-p1.md|详情]]([wiki/agent-arch-p1.md](wiki/agent-arch-p1.md))
 - 决策：跨学科思维模型框架（芒格100模型），高频模型含反向思考/概率思维/二阶思维 → [[wiki/mental-models.md|详情]]([wiki/mental-models.md](wiki/mental-models.md))
-- 凭证：所有 token 集中管理在 D:\Files\.env，docker-compose 通过 env_file 引用；各服务获取方式见速查表 → [[wiki/token-management.md|详情]](wiki/token-management.md)
+- 凭证/Provider：token 集中管理在 D:\Files\.env；MiMo 用 AUTH_TOKEN 非 API_KEY，域名 xiaomimimo.com（非 xiaomimimimo.com） → [[wiki/token-management.md|详情]](wiki/token-management.md)
 - Yazi：Windows 配置在 `%AppData%\yazi\config\`，非 Linux `~/.config/yazi/`；PowerShell 写多行 TOML 用数组语法 → [[wiki/yazi.md|详情]]([wiki/yazi.md](wiki/yazi.md))
 - 技能链调用：技能内引用其他技能时必须用 Skill 工具加载完整内容，不能跳过 → [feedback-skill-chain-discipline](feedback-skill-chain-discipline.md)
 - 子代理/团队成员技能注入：均无法调用 Skill 工具，父代理预加载内容注入 prompt → [feedback-subagent-skill-injection](feedback-subagent-skill-injection.md)

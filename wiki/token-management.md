@@ -2,9 +2,9 @@
 name: Token 管理
 description: Token 集中管理架构、各服务 token 获取方式、Docker 环境变量注入规则
 type: concept
-updated: 2026-05-15
-tags: [credentials, tokens, docker, management, security]
-sources: [[sources/tools/2026-05-15-token-management.md]]
+updated: 2026-05-29
+tags: [credentials, tokens, docker, management, security, mimo, provider]
+sources: [[sources/tools/2026-05-15-token-management.md]], [[sources/tools/mimo-provider-debug.md]]
 ---
 
 # Token 管理
@@ -60,3 +60,71 @@ ANTHROPIC_AUTH_TOKEN=xxx        # 容器内映射名（Claude Code 读取的变�
 4. Git remote URL 中的 token 不会自动同步，需手动 `git remote set-url`（推荐改用 credential store，详见 [[wiki/git-security.md|Git 安全实践]]）
 
 ← [[sources/tools/2026-05-15-token-management.md]]
+
+## MiMo Provider 配置
+
+### 认证字段差异
+
+不同 provider 使用不同的认证环境变量：
+
+| Provider | 认证变量 | 请求头 |
+|----------|----------|--------|
+| Zhipu（智谱） | `ANTHROPIC_API_KEY` | `x-api-key` |
+| MiMo（小米） | `ANTHROPIC_AUTH_TOKEN` | `Authorization: Bearer` |
+
+切换时必须清除另一个变量，否则会冲突。
+
+← [[sources/tools/mimo-provider-debug.md]] L15-25
+
+### Token Plan 域名
+
+MiMo Token Plan 的正确域名是 `xiaomimimo.com`（不是 `xiaomimimimo.com`）：
+
+- ✅ `https://token-plan-cn.xiaomimimo.com/anthropic`
+- ❌ `https://token-plan-cn.xiaomimimimo.com/anthropic`（多一个 mi，DNS 不解析）
+
+**禁止：** 从搜索结果或二手文档复制 URL，必须从官方文档确认域名
+**原因：** 多个技术博客都写错了域名（多一个 mi），导致 DNS 解析失败
+**替代：** 以 `platform.xiaomimimo.com` 官网域名为准，Token Plan 子域名为 `token-plan-cn.xiaomimimo.com`
+
+← [[sources/tools/mimo-provider-debug.md]] L33-46
+
+### 模型名后缀
+
+`[1m]`（小写 m）是启用 1M 上下文窗口的后缀，不是独立模型变体：
+
+- `mimo-v2.5-pro[1m]` = `mimo-v2.5-pro` + 1M 上下文
+- `[1M]`（大写）可能不被识别
+
+← [[sources/tools/mimo-provider-debug.md]] L27-31
+
+### 速查表更新
+
+| 服务 | 变量名 | 获取地址 |
+|------|--------|---------|
+| MiMo Token Plan | `MIMO_API_KEY` → 切换时映射到 `ANTHROPIC_AUTH_TOKEN` | platform.xiaomimimo.com → Token Plan |
+
+← [[sources/tools/mimo-provider-debug.md]]
+
+### Provider 切换脚本配置
+
+脚本位置：`/home/app/project/scripts/switch-provider.sh`
+
+**切换命令：**
+```bash
+source /home/app/project/scripts/switch-provider.sh mimo   # 切到 MiMo
+source /home/app/project/scripts/switch-provider.sh zhipu   # 切到智谱
+```
+
+**模型映射（已验证可用）：**
+
+| Claude 层级 | Zhipu 模型 | MiMo 模型 |
+|-------------|-----------|-----------|
+| Opus | `glm-5.1` | `mimo-v2.5-pro[1m]` |
+| Sonnet | `glm-5-turbo` | `mimo-v2.5-pro[1m]` |
+| Haiku | `glm-5-turbo` | `mimo-v2.5[1m]` |
+| Reasoning | `glm-5.1` | `mimo-v2.5-pro[1m]` |
+
+**切换后必须重启 Claude Code 才生效。**
+
+← [[sources/tools/mimo-provider-debug.md]]
