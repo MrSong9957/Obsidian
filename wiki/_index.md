@@ -12,6 +12,7 @@ updated: 2026-05-11
 | [[wiki/claude-code-p1\|Claude Code 配置]] | settings.json/CLAUDE.md/rules/记忆系统/技能位置 — 遇到Claude Code配置... | claude-code, settings, claudemd, memory, rules |
 | [[wiki/claude-code-p2\|Claude Code 工具]] | Superpowers/SafetyNet/Statusline/子代理技能注入 — 遇到Claude Code插... | claude-code, plugins, superpowers, safety-net, subagent, skill |
 | [[wiki/claude-code-p3\|Claude Code 进阶工作流]] | 上下文管理/Hooks配置范式/子代理限定/MCP管理/并行工作流/编辑器选择 — 进阶... | claude-code, hooks, subagents, mcp, context-management, workflow, editor |
+| [[wiki/claude-code-setup\|Claude Code 当前配置清单]] | 本机完整配置清单（插件/Hooks/状态栏/MCP/技能/代理/规则/团队）— 排查配置问题、迁移时参考 | claude-code, setup, plugins, hooks, mcp, config |
 | [[wiki/claude-md-base\|CLAUDE.md 双层架构模板]] | 全局（karpathy 行为准则）+ 项目级（superpowers 工作流）双层 CLAUDE.md 创建方法 | claude-md, template, karpathy, superpowers, kv-cache, two-tier |
 | [[wiki/cli-tools-productivity\|十个提升生产力的 CLI 工具]] | 10 个提升开发生产力的 CLI 工具推荐及核心功能 — 选择提升效率的 CLI 工具时参考 | cli, productivity |
 | [[wiki/container-python-setup\|Docker 容器内安装 Python 版本]] | 容器网络受限环境下安装 Python 版本的经验路线图 | docker, python, networking, experience |

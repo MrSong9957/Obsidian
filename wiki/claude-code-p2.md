@@ -58,9 +58,9 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 
 ## 首次安装配置清单
 
-首次安装 Claude Code 后必做配置：官方插件市场（GitHub/context7/skill-creator/learning-output-style/superpowers/frontend-design）→ Safety Net 插件（cc-marketplace）→ StatusLine（带安全网管道）→ 智谱 MCP（4 个服务器）。多数插件安装需用户在 `/plugin` 交互操作，Hook 和 settings.json 可自动配置。完整步骤见 [[sources/claude-code-first-time-setup.md]]
+首次安装 Claude Code 后必做配置：官方插件市场（GitHub/context7/skill-creator/learning-output-style/superpowers/frontend-design）→ Safety Net 插件（cc-marketplace）→ StatusLine（带安全网管道）→ 智谱 MCP（4 个服务器）。多数插件安装需用户在 `/plugin` 交互操作，Hook 和 settings.json 可自动配置。完整步骤见 [[wiki/new-project-setup.md#Claude Code 首次安装配置（一次性）|新项目初始化 - 首次安装配置]]。
 
-← [[sources/claude-code-first-time-setup.md]]
+> 当前已安装的插件和配置状态见 [[wiki/claude-code-setup.md|Claude Code 当前配置清单]]。
 
 ## 安装教训
 
