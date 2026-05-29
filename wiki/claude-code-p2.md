@@ -87,4 +87,4 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 
 ## ECC 补强
 
-ECC（Everything Claude Code）是独立插件，提供基础设施层（编码规范、上下文管理、安全审查、持续学习），补充 Superpowers 不覆盖的领域。详见 [[wiki/everything-claude-code.md|ECC 插件]]。
+ECC（Everything Claude Code）是独立插件，提供基础设施层（编码规范、上下文管理、安全审查、持续学习），补充 Superpowers 不覆盖的领域。详见 [[wiki/ecc-superpowers-supplement.md|ECC 补强指南]]。

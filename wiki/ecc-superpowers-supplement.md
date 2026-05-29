@@ -9,7 +9,7 @@ sources: [[sources/claude-code/ecc.md]]
 
 # ECC Superpowers 补强配置指南
 
-> 原始资料：[[sources/claude-code/ecc.md|ECC 完整参考]] | 概念概述：[[wiki/everything-claude-code.md|ECC 插件]]
+> 原始资料：[[sources/claude-code/ecc.md|ECC 完整参考]]
 >
 > 本文档覆盖 ECC 中与 Superpowers 互补的 8 项功能。除 Rules 需手动安装外，其余功能安装 ECC 插件后自动可用。
 
