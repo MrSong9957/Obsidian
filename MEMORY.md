@@ -39,7 +39,7 @@
 - 邮件详情展示：末尾必须追加 webmail Link 行（按账户变化） → [feedback-email-detail-link](feedback-email-detail-link.md)
 - 人格化邮件回复：已合并 master，待办已迁移 → [[wiki/todos.md|待办事项]](wiki/todos.md)
 - 新项目初始化：Docker 容器 → 验证镜像配置 → 补充缺失项（Git/CLAUDE.md/ECC rules/目录结构） → [[wiki/new-project-setup.md|详情]](wiki/new-project-setup.md)
-- Rust 安装：容器用 USTC 镜像脚本；Windows 免 VS 选 GNU 工具链 `x86_64-pc-windows-gnu` → [[sources/rust.md|详情]](sources/rust.md)
+- Rust 安装：容器用 USTC 镜像脚本；Windows 免 VS 选 GNU 工具链 `x86_64-pc-windows-gnu` → [[sources/dev/rust.md|详情]](sources/dev/rust.md)
 
 ## 知识库索引
 - 本文件未覆盖的内容 → [README.md](README.md)（冷数据，按领域导航）
