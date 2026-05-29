@@ -4,7 +4,7 @@ description: Token 集中管理架构、各服务 token 获取方式、Docker �
 type: concept
 updated: 2026-05-15
 tags: [credentials, tokens, docker, management, security]
-sources: [[sources/2026-05-15-token-management.md]]
+sources: [[sources/tools/2026-05-15-token-management.md]]
 ---
 
 # Token 管理
@@ -17,7 +17,7 @@ sources: [[sources/2026-05-15-token-management.md]]
 - Claude Code 宿主机：`~/.claude/settings.json` 中 `env.ANTHROPIC_AUTH_TOKEN` 独立管理
 - Docker Hub：`docker login` 交互式使用，不存 .env
 
-← [[sources/2026-05-15-token-management.md]]
+← [[sources/tools/2026-05-15-token-management.md]]
 
 ## Token 获取方式速查
 
@@ -32,7 +32,7 @@ sources: [[sources/2026-05-15-token-management.md]]
 | Outlook | `OUTLOOK_APP_PASSWORD` | account.microsoft.com/security → 应用密码 |
 | Docker Hub | 交互式 `docker login` | hub.docker.com → Settings → Security |
 
-← [[sources/2026-05-15-token-management.md]]
+← [[sources/tools/2026-05-15-token-management.md]]
 
 ## 关键规则
 
@@ -59,4 +59,4 @@ ANTHROPIC_AUTH_TOKEN=xxx        # 容器内映射名（Claude Code 读取的变�
 3. Claude Code 宿主机的 token 需单独更新 `~/.claude/settings.json`
 4. Git remote URL 中的 token 不会自动同步，需手动 `git remote set-url`（推荐改用 credential store，详见 [[wiki/git-security.md|Git 安全实践]]）
 
-← [[sources/2026-05-15-token-management.md]]
+← [[sources/tools/2026-05-15-token-management.md]]

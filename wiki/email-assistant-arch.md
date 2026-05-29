@@ -4,7 +4,7 @@ description: Email Assistant 项目的关键设计决策及理由 — 遇到类�
 type: concept
 updated: 2026-05-11
 tags: [email, architecture, decision, claude-code, skill]
-sources: [[sources/email-assistant-journey.md]]
+sources: [[sources/projects/email-assistant-journey.md]]
 ---
 # Email Assistant 架构决策
 

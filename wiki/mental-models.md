@@ -4,7 +4,7 @@ description: 跨学科思维模型框架（芒格100模型）— 决策质量提
 type: concept
 updated: 2026-04-24
 tags: [mental-models, decision-making, cognition, munger, thinking-framework]
-sources: [[sources/charlie-munger-mental-models.md]]
+sources: [[sources/learning/charlie-munger-mental-models.md]]
 ---
 
 # 思维模型
@@ -57,7 +57,7 @@ sources: [[sources/charlie-munger-mental-models.md]]
 7. **经济战略**（14 个）：机会成本、创造性破坏、比较优势、供需、博弈论等
 8. **军事战争**（5 个）：亲临一线、非对称战争、两线作战、相互确保摧毁
 
-完整内容见 [sources/charlie-munger-mental-models.md](../sources/charlie-munger-mental-models.md)
+完整内容见 [sources/learning/charlie-munger-mental-models.md](../sources/learning/charlie-munger-mental-models.md)
 
 ## 芒格最强调的三个原则
 
@@ -73,5 +73,5 @@ sources: [[sources/charlie-munger-mental-models.md]]
 
 ## 引用索引
 
-[^1]: [[sources/charlie-munger-mental-models.md]] L1-18 — 芒格100思维模型概要与来源
+[^1]: [[sources/learning/charlie-munger-mental-models.md]] L1-18 — 芒格100思维模型概要与来源
 [^2]: [[wiki/learning-habits.md]] 六大认知提升习惯之"构建思维模型"

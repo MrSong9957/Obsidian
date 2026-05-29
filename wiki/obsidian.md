@@ -22,4 +22,4 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - `obsidian sync --headless` — 无 GUI 同步（CI/自动化）
 - `obsidian` — 无参数进入 TUI 交互模式
 
-> 详细内容见 sources/obsidian.md
+> 详细内容见 sources/tools/obsidian.md

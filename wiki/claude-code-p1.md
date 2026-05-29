@@ -45,9 +45,9 @@ tags: [claude-code, settings, claudemd, memory, rules]
 ## Skill 开发与部署
 
 - 存放路径：`~/.claude/skills/<skill-name>/SKILL.md`，放好后用 `/reload-plugins` 刷新生效
-- **SKILL.md 结构**：纯自然语言指令，定义触发条件 → 操作流程（含 bash 命令模板）→ 输出格式（含 box-drawing 表格示例）→ 安全约束（发送前确认、不自动批量） ← [[sources/email-assistant-journey.md]] L1-10
-- **双目录部署**：项目目录（开发）和 `~/.claude/skills/`（运行）是两份独立副本，改代码后必须 `cp` 同步，否则 Skill 调用仍用旧版 ← [[sources/email-assistant-journey.md]] L53-54
-- **.env 加载策略**：Skill 的 `_load_dotenv()` 用 fallback 列表加载多个 .env，`os.environ.setdefault` 保证先加载的优先，解决部署目录和开发目录凭证分散问题 ← [[sources/email-assistant-journey.md]] L71-75
+- **SKILL.md 结构**：纯自然语言指令，定义触发条件 → 操作流程（含 bash 命令模板）→ 输出格式（含 box-drawing 表格示例）→ 安全约束（发送前确认、不自动批量） ← [[sources/projects/email-assistant-journey.md]] L1-10
+- **双目录部署**：项目目录（开发）和 `~/.claude/skills/`（运行）是两份独立副本，改代码后必须 `cp` 同步，否则 Skill 调用仍用旧版 ← [[sources/projects/email-assistant-journey.md]] L53-54
+- **.env 加载策略**：Skill 的 `_load_dotenv()` 用 fallback 列表加载多个 .env，`os.environ.setdefault` 保证先加载的优先，解决部署目录和开发目录凭证分散问题 ← [[sources/projects/email-assistant-journey.md]] L71-75
 - **技能链调用**：Skill 内引用其他 Skill 时必须用 Skill 工具加载完整内容，不能跳过
 - **子代理限制**：子代理/团队成员无法调用 Skill 工具，父代理必须预加载技能内容并注入 prompt
 

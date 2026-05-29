@@ -9,7 +9,7 @@ tags: [learning, methodology, ai-skills, cognition, rust, language-learning, stu
 
 ## 主要学习方法：学霸七法（熊子骁）
 
-> 14岁考入西交少年班、19岁直博清华。七条核心策略 ← [[sources/learning.md]] L433-490
+> 14岁考入西交少年班、19岁直博清华。七条核心策略 ← [[sources/learning/learning.md]] L433-490
 
 1. **框架学习法**：先搭建学科整体框架，再填充知识点——先有地图再走迷宫
 2. **反向解题法**：从"考什么"出发定位考点，而非从条件硬推——以终为始
@@ -33,7 +33,7 @@ tags: [learning, methodology, ai-skills, cognition, rust, language-learning, stu
 - 逆向工程 = 结构化的外→内：拿能跑的东西拆开看怎么做到的
 - 教材难懂的根因是抽象层次错配（同理心缺失），不是路径选择错误
 
-> 详细内容见 sources/learning.md
+> 详细内容见 sources/learning/learning.md
 
 ### 六大认知提升习惯
 
@@ -46,7 +46,7 @@ tags: [learning, methodology, ai-skills, cognition, rust, language-learning, stu
 
 - 核心洞察：习惯的复利效应——坚持 6 个月，流体智力可提高 7-12 分
 
-> 详细内容见 sources/learning.md
+> 详细内容见 sources/learning/learning.md
 
 ### AI 时代语言学习哲学
 
@@ -84,7 +84,7 @@ tags: [learning, methodology, ai-skills, cognition, rust, language-learning, stu
 - **L5 工具**：精通 AI 编程工具，你决定"测什么"，AI 决定"怎么写"
 - **L6 多领域**：M 型技能——多领域真正深度，组合创新
 
-> 详细内容见 sources/learning.md
+> 详细内容见 sources/learning/learning.md
 
 ### 代码讲解策略
 
@@ -99,7 +99,7 @@ tags: [learning, methodology, ai-skills, cognition, rust, language-learning, stu
 - 五个操作：序列、选择、重复、抽象、组合
 - 一个元规律：复杂度是唯一真正不可逆的敌人
 
-> 详细内容见 sources/learning.md
+> 详细内容见 sources/learning/learning.md
 
 ### DORA 2025 结论
 

@@ -25,4 +25,4 @@ tags: [git, security, credentials, docker]
    export GITHUB_TOKEN=$(grep GITHUB_TOKEN path/to/.env | cut -d= -f2)
    ```
 
-← [[sources/feedback_git-token-security.md]]
+← [[sources/security/feedback_git-token-security.md]]

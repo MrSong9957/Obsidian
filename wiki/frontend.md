@@ -21,7 +21,7 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - 质感：必须加噪点纹理/渐变网格/几何图案中的至少一样
 - 自动迭代闭环：截图→分析→改代码→重截，设迭代上限和收敛标准
 
-> 详细内容见 sources/frontend.md
+> 详细内容见 sources/dev/frontend.md
 
 ## 无头 vs 有头模式
 
@@ -29,7 +29,7 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - 无头：间距/对齐/颜色量化检查、代码 lint、自动迭代截图对比
 - 有头：审美定稿、动效体验、最终交付验收
 
-> 详细内容见 sources/frontend.md
+> 详细内容见 sources/dev/frontend.md
 
 ## 终端 UI 测试
 
@@ -38,15 +38,15 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - 评估维度：布局对齐、颜色对比度、文本溢出、交互状态、残留 Bug
 - 关键发现：简单交互循环 + 二元奖励即有效；环境规模比算法复杂度重要；循环行为是主要失败模式（39%）
 
-> 详细内容见 sources/frontend.md
+> 详细内容见 sources/dev/frontend.md
 
 ## Playwright CLI 能力摘要
 
 - 核心操作：open/screenshot/snapshot/fill/click/select/resize/route/state-save/state-load
 - 高级能力：Mock API（route）、多会话并发、网络监控、视频/轨迹录制、弱网模拟
-- 常用命令速查见 sources/frontend.md
+- 常用命令速查见 sources/dev/frontend.md
 
-> 详细内容见 sources/frontend.md
+> 详细内容见 sources/dev/frontend.md
 
 ## 技术栈策略
 
@@ -59,4 +59,4 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - Rust 策略：先用 Python 完整实现（用户能审查），完成后再翻译成 Rust
 - 界面原型：先用 HTML/CSS/JS 验证布局和交互流程，再翻译到 Flutter
 
-> 详细内容见 sources/frontend.md
+> 详细内容见 sources/dev/frontend.md

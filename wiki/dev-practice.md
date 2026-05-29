@@ -14,7 +14,7 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - 工具函数：先写 pytest 覆盖正常/边界/错误三路，再写实现
 - 有参考代码时，逐行对齐关键步骤，不是"差不多"就行
 
-> 详细内容见 sources/dev-practice.md
+> 详细内容见 sources/dev/dev-practice.md
 
 ## 调试方法论
 
@@ -22,14 +22,14 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - **三段式可观测性**：before/after/failed 事件日志，append-only JSONL，最轻量的调试手段
 - **先确认操作上下文，再假设代码 bug**：用户描述的"操作现场"是最关键线索
 
-> 详细内容见 sources/dev-practice.md
+> 详细内容见 sources/dev/dev-practice.md
 
 ## 代码质量约束
 
 - AI 负责发现最佳实践；实现前必须研究成熟开源项目并标注来源
 - 禁止 `any` 类型，参数验证用 Zod，类型从定义推导，高内聚低耦合单一职责
 
-> 详细内容见 sources/dev-practice.md
+> 详细内容见 sources/dev/dev-practice.md
 
 ## 代码讲解策略
 
@@ -42,7 +42,7 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - 固定前缀中不要插入时间戳、计数器等变化内容
 - 工具描述文本稳定后不改措辞，改动导致缓存失效
 
-> 详细内容见 sources/dev-practice.md
+> 详细内容见 sources/dev/dev-practice.md
 
 ## 提示词 7 条原则
 
@@ -51,7 +51,7 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - 不知道就说不知道，禁止猜测；先看再改，必须先读取文件才能编辑
 - 不要画蛇添足（三行重复好过过早抽象）；信息按需提供，避免一次全给
 
-> 详细内容见 sources/dev-practice.md
+> 详细内容见 sources/dev/dev-practice.md
 
 ## Claude 协作提示词技巧
 

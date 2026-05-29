@@ -38,7 +38,7 @@ metadata:
 
 基础镜像预装：Claude Code / OpenCode / Codex / Node.js 20 / Python 3 / Git / GitHub CLI / 中文字体
 
-> OpenCode 完整配置指南见 [[sources/opencode.md]]
+> OpenCode 完整配置指南见 [[sources/tools/opencode.md]]
 
 ## 基础镜像更新机制
 

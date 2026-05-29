@@ -15,7 +15,7 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
   - 原因：reader 不执行 JS，客户端内容丢失，实测遗漏两次才发现
   - 替代：首次失败后直接 `curl -sL URL | grep 关键词` 搜索原始 HTML
 
-> 详细内容见 sources/zhipu-mcp.md
+> 详细内容见 sources/claude-code/zhipu-mcp.md
 
 ## Web Reader 缓存可能返回过时内容
 
@@ -35,4 +35,4 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - 实测（2026-04-08）：4 个 MCP 均成功；视觉 MCP 对 Wikipedia 缩略图报 400，CDN 直链正常
 - .env 坑：Key 可能叫 `ANTHROPIC_API_KEY` 而非 `ZHIPU_API_KEY`；文件可能有 `\r\n` 换行
 
-> 详细内容见 sources/zhipu-mcp.md
+> 详细内容见 sources/claude-code/zhipu-mcp.md
