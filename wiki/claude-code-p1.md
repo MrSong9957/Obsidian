@@ -67,7 +67,7 @@ tags: [claude-code, settings, claudemd, memory, rules]
   - 零过度触发、零额外 API 调用、零配置（不需要 hook/settings.json）
   - 继承 V3 优势：不阻塞、零 token 消耗、完整工具权限
 - **演进路线**：command+claude-p（V1）→ prompt hook ok:false（V2）→ prompt hook + 后台 agent（V3）→ 关键词触发 + 后台 agent（V4）
-- **设计文档**：[[sources/stop-hook-design.md|完整设计文档]]
+- **设计文档**：[[sources/claude-code/stop-hook-design.md|完整设计文档]]
 - **教训**：自动触发的 hook 评估器难以准确判断对话是否有复盘价值，用户主动触发（关键词）是更可靠的方案
 
 ## CLAUDE.md KV 缓存编排
@@ -76,4 +76,4 @@ tags: [claude-code, settings, claudemd, memory, rules]
 - 删除可通过 ls/read 推导的内容，只保留无法推导的显式约束
 - 双链统一带 `.md` 扩展名：`[[wiki/dev-practice.md|TDD 实践]]`
 
-> 详细内容见 sources/claude-code-p1.md
+> 详细内容见 sources/claude-code/claude-code-p1.md

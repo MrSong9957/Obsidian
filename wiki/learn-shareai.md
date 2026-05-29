@@ -26,7 +26,7 @@ s01-s05 建立了 agent 的最小能力骨架。
 
 **关键代码**：`agent_loop()` 中 messages → model → tool_result → next turn
 
-→ 详见 [[sources/learn-shareai/s01-Agent循环.md|s01 Agent 循环]]
+→ 详见 [[sources/agent/learn-shareai/s01-Agent循环.md|s01 Agent 循环]]
 
 ### s02 工具调用
 
@@ -38,7 +38,7 @@ s01-s05 建立了 agent 的最小能力骨架。
 - `safe_path()` 路径沙箱防止逃逸工作区
 - 循环体与 s01 完全一致，只改 dispatch 层
 
-→ 详见 [[sources/learn-shareai/s02-工具调用.md|s02 工具调用]]
+→ 详见 [[sources/agent/learn-shareai/s02-工具调用.md|s02 工具调用]]
 
 ### s03 进度追踪
 
@@ -50,7 +50,7 @@ s01-s05 建立了 agent 的最小能力骨架。
 - nag reminder：连续 3 轮不更新 todo 时注入 `<reminder>`
 - rounds_since_todo 计数器接入主循环
 
-→ 详见 [[sources/learn-shareai/s03-进度追踪.md|s03 进度追踪]]
+→ 详见 [[sources/agent/learn-shareai/s03-进度追踪.md|s03 进度追踪]]
 
 ### s04 子代理
 
@@ -62,7 +62,7 @@ s01-s05 建立了 agent 的最小能力骨架。
 - 整个消息历史直接丢弃，父智能体只收到摘要文本
 - 本质是一次性外包，不是长期队友
 
-→ 详见 [[sources/learn-shareai/s04-子代理.md|s04 子代理]]
+→ 详见 [[sources/agent/learn-shareai/s04-子代理.md|s04 子代理]]
 
 ### s05 技能系统
 
@@ -74,7 +74,7 @@ s01-s05 建立了 agent 的最小能力骨架。
 - system prompt 放目录信息，`load_skill` 工具按需加载正文
 - 与 memory/CLAUDE.md 的边界：skill=可选知识包，memory=跨会话事实，CLAUDE.md=全局规则
 
-→ 详见 [[sources/learn-shareai/s05-技能系统.md|s05 技能系统]]
+→ 详见 [[sources/agent/learn-shareai/s05-技能系统.md|s05 技能系统]]
 
 ### 小结
 
@@ -103,7 +103,7 @@ s06-s08 为 agent 添加了"长期稳定工作"的基础保障。
 
 **关键数据结构**：PersistedOutputMarker、CompactState、micro_compact boundary
 
-→ 详见 [[sources/learn-shareai/s06-上下文压缩.md|s06 上下文压缩]]
+→ 详见 [[sources/agent/learn-shareai/s06-上下文压缩.md|s06 上下文压缩]]
 
 ### s07 权限系统
 
@@ -118,7 +118,7 @@ s06-s08 为 agent 添加了"长期稳定工作"的基础保障。
 
 **关键数据结构**：PermissionRule（tool/behavior/path/content）、mode、decision
 
-→ 详见 [[sources/learn-shareai/s07-权限系统.md|s07 权限系统]]
+→ 详见 [[sources/agent/learn-shareai/s07-权限系统.md|s07 权限系统]]
 
 ### s08 Hook 系统
 
@@ -133,7 +133,7 @@ s06-s08 为 agent 添加了"长期稳定工作"的基础保障。
 
 **关键数据结构**：HookEvent（name + payload）、HookResult（exit_code + message）
 
-→ 详见 [[sources/learn-shareai/s08-Hook系统.md|s08 Hook 系统]]
+→ 详见 [[sources/agent/learn-shareai/s08-Hook系统.md|s08 Hook 系统]]
 
 ### 小结
 
@@ -164,7 +164,7 @@ s13-s14 解决了"执行时机"问题。
 - s12 的 task = 工作目标（要做什么、谁依赖谁）
 - s13 的 background task = 运行中的执行单元（哪个命令在跑、跑到什么状态）
 
-→ 详见 [[sources/learn-shareai/s13-后台任务.md|s13 后台任务]]
+→ 详见 [[sources/agent/learn-shareai/s13-后台任务.md|s13 后台任务]]
 
 ### s14 定时调度
 
@@ -181,7 +181,7 @@ s13-s14 解决了"执行时机"问题。
 
 **统一模式**：后台任务完成通知 + 定时调度触发通知，都走通知队列，在下次模型调用前统一注入。
 
-→ 详见 [[sources/learn-shareai/s14-定时调度.md|s14 定时调度]]
+→ 详见 [[sources/agent/learn-shareai/s14-定时调度.md|s14 定时调度]]
 
 ### 小结
 
@@ -213,7 +213,7 @@ s15-s19 完成了从单 agent 到多 agent 平台的跃迁。
 | runtime task | 跑完或取消就结束 | 慢任务稍后回来 |
 | teammate | 可反复接任务 | 有名字、有邮箱、有独立循环 |
 
-→ 详见 [[sources/learn-shareai/s15-Agent团队.md|s15 Agent 团队]]
+→ 详见 [[sources/agent/learn-shareai/s15-Agent团队.md|s15 Agent 团队]]
 
 ### s16 团队协议
 
@@ -226,7 +226,7 @@ s15-s19 完成了从单 agent 到多 agent 平台的跃迁。
 - RequestRecord 落盘到 `.team/requests/`，保证可恢复
 - 状态机：pending → approved / rejected / expired
 
-→ 详见 [[sources/learn-shareai/s16-团队协议.md|s16 团队协议]]
+→ 详见 [[sources/agent/learn-shareai/s16-团队协议.md|s16 团队协议]]
 
 ### s17 自主代理
 
@@ -239,7 +239,7 @@ s15-s19 完成了从单 agent 到多 agent 平台的跃迁。
 - claim_source: "auto" vs "manual"，事件日志记录认领过程
 - 身份重注入：上下文压缩后补回 who-am-I 块
 
-→ 详见 [[sources/learn-shareai/s17-自主代理.md|s17 自主代理]]
+→ 详见 [[sources/agent/learn-shareai/s17-自主代理.md|s17 自主代理]]
 
 ### s18 Worktree 隔离
 
@@ -252,7 +252,7 @@ s15-s19 完成了从单 agent 到多 agent 平台的跃迁。
 - worktree_state（active/kept/removed）与 task status 分开管理
 - events.jsonl 记录完整生命周期，支持崩溃恢复
 
-→ 详见 [[sources/learn-shareai/s18-Worktree隔离.md|s18 Worktree 隔离]]
+→ 详见 [[sources/agent/learn-shareai/s18-Worktree隔离.md|s18 Worktree 隔离]]
 
 ### s19 MCP 与插件
 
@@ -265,7 +265,7 @@ s15-s19 完成了从单 agent 到多 agent 平台的跃迁。
 - **MCP 工具也必须走同一条权限管道**，不能绕开
 - 结果标准化回同一条 tool_result 格式
 
-→ 详见 [[sources/learn-shareai/s19-MCP与插件.md|s19 MCP 与插件]]
+→ 详见 [[sources/agent/learn-shareai/s19-MCP与插件.md|s19 MCP 与插件]]
 
 ### 小结
 

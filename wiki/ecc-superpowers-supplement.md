@@ -4,12 +4,12 @@ description: ECC 插件中纳入 Superpowers 补强的 8 项功能——配置�
 type: concept
 updated: 2026-05-14
 tags: [ecc, superpowers, hooks, rules, context-management, session-memory, token-optimization, subagents]
-sources: [[sources/ecc.md]]
+sources: [[sources/claude-code/ecc.md]]
 ---
 
 # ECC Superpowers 补强配置指南
 
-> 原始资料：[[sources/ecc.md|ECC 完整参考]] | 概念概述：[[wiki/everything-claude-code.md|ECC 插件]]
+> 原始资料：[[sources/claude-code/ecc.md|ECC 完整参考]] | 概念概述：[[wiki/everything-claude-code.md|ECC 插件]]
 >
 > 本文档覆盖 ECC 中与 Superpowers 互补的 8 项功能。除 Rules 需手动安装外，其余功能安装 ECC 插件后自动可用。
 
@@ -53,7 +53,7 @@ ECC 是独立于 Superpowers 的插件，提供**基础设施层**，补充 Supe
 - **信任 hooks 的拦截**：hooks 触发的警告（配置保护、console.log 残留）是硬性约束，不是建议
 - **配合 PreCompact hook**：当 hook 建议压缩时，评估当前是否处于逻辑节点，配合 Strategic Compacting 使用
 
-← [[sources/ecc.md#Hooks 完整清单|ECC Hooks 完整清单]]
+← [[sources/claude-code/ecc.md#Hooks 完整清单|ECC Hooks 完整清单]]
 
 ---
 
@@ -86,9 +86,9 @@ ECC 源目录提供 18 个规则集：common + angular, arkts, cpp, csharp, dart
 - `patterns` — 语言特定模式
 - `hooks` — Hook 文档
 
-← [[sources/2026-05-13-safety-net-hook-fix.md#ECC 规则安装|ECC 规则安装实践]]
+← [[sources/claude-code/2026-05-13-safety-net-hook-fix.md#ECC 规则安装|ECC 规则安装实践]]
 
-← [[sources/ecc.md|ECC 完整参考]] §入门-4
+← [[sources/claude-code/ecc.md|ECC 完整参考]] §入门-4
 
 ---
 
@@ -118,7 +118,7 @@ ECC 的 PreCompact hook + `suggest-compact` 脚本自动介入，在编辑/写�
 /strategic-compact                # ECC 的结构化压缩命令
 ```
 
-← [[sources/ecc.md|ECC 完整参考]] §进阶-2
+← [[sources/claude-code/ecc.md|ECC 完整参考]] §进阶-2
 
 ---
 
@@ -149,7 +149,7 @@ ECC 的 Stop hook 包含 `evaluate-session` 脚本，会话结束时自动运行
 # 会话结束时 Stop hook 自动触发 evaluate-session
 ```
 
-← [[sources/ecc.md|ECC 完整参考]] §进阶-5
+← [[sources/claude-code/ecc.md|ECC 完整参考]] §进阶-5
 
 ---
 
@@ -185,7 +185,7 @@ ECC 的 SessionStart + PreCompact + Stop 三个 hook 协作，自动管理会话
 # 或直接提供文件路径：~/.claude/sessions/2026-05-13-feature-xyz.tmp
 ```
 
-← [[sources/ecc.md|ECC 完整参考]] §进阶-1
+← [[sources/claude-code/ecc.md|ECC 完整参考]] §进阶-1
 
 ---
 
@@ -214,7 +214,7 @@ model: haiku        # 指定模型
 ---
 ```
 
-← [[sources/ecc.md|ECC 完整参考]] §进阶-6
+← [[sources/claude-code/ecc.md|ECC 完整参考]] §进阶-6
 
 ---
 
@@ -237,7 +237,7 @@ model: haiku        # 指定模型
   └─ 否 → 追问（最多 3 轮）→ 子代理补充
 ```
 
-← [[sources/ecc.md|ECC 完整参考]] §进阶-7
+← [[sources/claude-code/ecc.md|ECC 完整参考]] §进阶-7
 
 ---
 
@@ -262,4 +262,4 @@ ECC 提供 `/context-budget` 斜杠命令，分析当前上下文使用情况并
 /context-budget                   # 审计当前上下文使用情况
 ```
 
-← [[sources/ecc.md|ECC 完整参考]] §入门-5
+← [[sources/claude-code/ecc.md|ECC 完整参考]] §入门-5

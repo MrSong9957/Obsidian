@@ -9,7 +9,7 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 # Agent 架构（下）
 
 > 前篇：[[wiki/agent-arch-p1.md|Agent架构（上）]]
-> 详细内容见 [[sources/agent-arch-p2.md]]
+> 详细内容见 [[sources/agent/agent-arch-p2.md]]
 
 ## Harness Engineering 核心原则
 
@@ -26,7 +26,7 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
   原因：挤占上下文，难以验证，会腐烂
   替代：~100 行目录 + docs/ 子目录 + CI 验证文档新鲜度
 
-> 详细内容见 [[sources/agent-arch-p2.md]]
+> 详细内容见 [[sources/agent/agent-arch-p2.md]]
 
 ## 反馈循环关键教训
 
@@ -36,7 +36,7 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - 三种反馈机制：Agent 自我审查（自动化）、Agent 间审查（并行任务）、后台清理任务（定期扫描）
 - 纠正成本低，等待成本高 — PR 短生命周期，测试失败就重跑
 
-> 详细内容见 [[sources/agent-arch-p2.md]]
+> 详细内容见 [[sources/agent/agent-arch-p2.md]]
 
 ## 人话编程核心规则
 
@@ -50,7 +50,7 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
   原因：伪代码不够严格，无法精确双向翻译
   替代：严格遵循 7 条基本规则，保持缩进/冒号/原始名标注
 
-> 详细内容见 [[sources/agent-arch-p2.md]]
+> 详细内容见 [[sources/agent/agent-arch-p2.md]]
 
 ## 人话编程适用范围与生产级要求
 
@@ -59,4 +59,4 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - 教程级只描述核心逻辑，**生产级必须额外覆盖**：前置校验、超时、重试策略、错误分类、边界值、资源释放
 - 意图指定分三个层次：业务意图（Level 3）→ 功能意图（Level 2）→ 实现意图（Level 1），工程师应在 Level 2-3 工作
 
-> 详细内容见 [[sources/agent-arch-p2.md]]
+> 详细内容见 [[sources/agent/agent-arch-p2.md]]

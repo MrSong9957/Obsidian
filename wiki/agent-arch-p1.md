@@ -9,7 +9,7 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 # Agent 架构（上）
 
 > 续篇：[[wiki/agent-arch-p2.md|Agent架构（下）]]
-> 详细内容见 [[sources/agent-arch-p1.md]]
+> 详细内容见 [[sources/agent/agent-arch-p1.md]]
 
 ## Agent 核心架构
 
@@ -21,7 +21,7 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - 技能按需加载：系统提示词只放 name+description（~100 tokens），调用时才加载完整内容
 - 生产版核心洞察：循环本身不变，通过 250 个提示词片段控制循环内的决策质量
 
-> 详细内容见 [[sources/agent-arch-p1.md]]
+> 详细内容见 [[sources/agent/agent-arch-p1.md]]
 
 ## 上下文压缩最小心智模型
 
@@ -34,7 +34,7 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - **信息流向**：完整结果 → 截断+落盘（超大时）→ 占位符（超 3 轮）→ 摘要（超阈值），活跃度递减，保留量递减
 - **关键取舍**：截断+落盘信息不丢可回读；占位符只记"用过什么"；摘要压缩比最高但依赖 LLM 质量，完整历史可通过磁盘恢复
 
-> 来源：[[sources/agent-arch-p1.md]]
+> 来源：[[sources/agent/agent-arch-p1.md]]
 
 ## s_full.py 核心结论
 
@@ -44,7 +44,7 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - 通信通过 MessageBus（文件系统 JSONL）和共享 TaskManager（.tasks/ 目录）
 - s_full 局限：多线程共享同一工作目录，文件操作无锁，同时写同一文件会丢失数据 → s12 用 git worktree 物理隔离解决
 
-> 详细内容见 [[sources/agent-arch-p1.md]]
+> 详细内容见 [[sources/agent/agent-arch-p1.md]]
 
 ## 多智能体四角色框架
 
@@ -55,7 +55,7 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - 框架不硬编码智能体，动态读取 CLAUDE.md 索引发现可用资源
 - 实战验证：评估者捕获了测试者和实现者都遗漏的 API 协议合规性问题，证实"守门员"价值
 
-> 详细内容见 [[sources/agent-arch-p1.md]]
+> 详细内容见 [[sources/agent/agent-arch-p1.md]]
 
 ## System Prompts 六大分类
 
@@ -67,7 +67,7 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - **System Reminders（~40 个）**：运行时动态注入的环境状态通知
 - 关键设计：条件组合（运行时按环境动态拼接）+ 模板变量 + 版本追踪
 
-> 详细内容见 [[sources/agent-arch-p1.md]]
+> 详细内容见 [[sources/agent/agent-arch-p1.md]]
 
 ## s01-s12 学习路径结论
 
@@ -77,4 +77,4 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - **阶段四（s11-s12）自治与隔离**：空闲轮询自动认领任务、git worktree 物理隔离避免文件冲突
 - 关键数据：子代理上限 30 轮，压缩阈值 50000 tokens，保留最近 3 条工具结果
 
-> 详细内容见 [[sources/agent-arch-p1.md]]
+> 详细内容见 [[sources/agent/agent-arch-p1.md]]

@@ -72,4 +72,4 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 
 **核心逻辑**：输出质量取决于输入信息量，视为协作者而非搜索框。
 
-> 详细内容见 sources/claude-collaboration-prompting.md
+> 详细内容见 sources/claude-code/claude-collaboration-prompting.md

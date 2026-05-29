@@ -213,14 +213,14 @@ Docker 构建涉及多个网络层，每层解法不同：
 
 > 以下配置在基础镜像中只需完成一次。`configure.ps1` 已预烘焙部分配置（见下表 ✓ 标记），其余需手动完成。
 >
-> **详细步骤：** [[sources/claude-code-first-time-setup.md|首次安装配置完整指南]]
+> **详细步骤：** [[sources/claude-code/claude-code-first-time-setup.md|首次安装配置完整指南]]
 
 | 配置项 | 操作方式 | 预烘焙 | 详细文档 |
 |--------|---------|--------|---------|
-| **插件市场** | `/plugin` → 添加 `anthropics/claude-plugins-official` | — | [[sources/claude-code-first-time-setup.md#1-安装官方插件市场\|首次配置 §1]] |
-| **官方插件**（6 个） | `/plugin` → 从官方市场安装：GitHub / context7 / skill-creator / learning-output-style / superpowers / frontend-design | — | [[sources/claude-code-first-time-setup.md#2-安装官方插件\|首次配置 §2]] |
-| **Safety Net** | `/plugin marketplace add kenryu42/cc-marketplace` → 安装 → 配置 `settings.json` hook | — | [[sources/claude-code-first-time-setup.md#3-安全网插件safety-net\|首次配置 §3]] |
-| **StatusLine** | Python 脚本 + 管道接入 Safety Net | ✓ | [[sources/claude-code-first-time-setup.md#4-状态栏插件statusline\|首次配置 §4]] |
+| **插件市场** | `/plugin` → 添加 `anthropics/claude-plugins-official` | — | [[sources/claude-code/claude-code-first-time-setup.md#1-安装官方插件市场\|首次配置 §1]] |
+| **官方插件**（6 个） | `/plugin` → 从官方市场安装：GitHub / context7 / skill-creator / learning-output-style / superpowers / frontend-design | — | [[sources/claude-code/claude-code-first-time-setup.md#2-安装官方插件\|首次配置 §2]] |
+| **Safety Net** | `/plugin marketplace add kenryu42/cc-marketplace` → 安装 → 配置 `settings.json` hook | — | [[sources/claude-code/claude-code-first-time-setup.md#3-安全网插件safety-net\|首次配置 §3]] |
+| **StatusLine** | Python 脚本 + 管道接入 Safety Net | ✓ | [[sources/claude-code/claude-code-first-time-setup.md#4-状态栏插件statusline\|首次配置 §4]] |
 | **ECC Rules** | 全局 `~/.claude/rules/ecc/common` + 项目级语言 rules 手动复制 | — | [[wiki/ecc-superpowers-supplement.md#2-rules-语言编码规范\|ECC Rules §2]] |
 | **智谱 MCP** | 4 个 MCP 服务器（视觉/搜索/网页/仓库） | — | [[wiki/zhipu-mcp.md\|智谱 MCP]] |
 
