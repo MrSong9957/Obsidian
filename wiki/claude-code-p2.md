@@ -1,9 +1,9 @@
 ---
 name: Claude Code 工具
-description: Superpowers/SafetyNet/Statusline/子代理技能注入 — 遇到Claude Code插件、安全网、状态栏、子代理技能问题时参考
+description: Superpowers/SafetyNet/Statusline/子代理创建与配置/子代理技能注入 — 遇到Claude Code插件、安全网、状态栏、子代理创建、子代理技能问题时参考
 type: concept
-updated: 2026-05-14
-tags: [claude-code, plugins, superpowers, safety-net, subagent, skill]
+updated: 2026-05-30
+tags: [claude-code, plugins, superpowers, safety-net, subagent, skill, agent]
 originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 ---
 # Claude Code 工具
@@ -67,6 +67,45 @@ originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
 - Safety Net：Windows 需手动配 Hook 和 `SAFETY_NET_PLUGIN_ROOT` 环境变量
 - 任何插件安装前备份：`cp -r ~/.claude/rules ~/.claude/rules.backup`
 - Rules 和 Hooks 都是追加合并，绝不能直接覆盖
+
+## 创建自定义子代理
+
+创建自定义 subagent 有两种方式：交互式 `/agents` 命令（推荐）和手动创建 Markdown 文件。详见 [[sources/claude-code/creating-subagents.md|创建自定义 Subagents 指南]]。
+
+### 创建方法
+
+- **交互式**：`/agents` → Library → Create new agent → Generate with Claude → 配置工具/模型/内存 → 保存
+- **手动**：在 `~/.claude/agents/` 或 `./.claude/agents/` 下创建 `.md` 文件，包含 YAML frontmatter + Markdown 系统提示词
+
+### Frontmatter 核心参数
+
+| 参数 | 必填 | 说明 |
+|------|------|------|
+| `name` | 是 | 唯一标识符，小写字母和连字符 |
+| `description` | 是 | **最关键** — Claude 据此决定何时自动委托任务 |
+| `tools` | 否 | 允许的工具列表（限制工具 = 聚焦执行） |
+| `model` | 否 | `sonnet`（复杂推理）或 `haiku`（简单研究，快速便宜） |
+| `memory` | 否 | `project` 或 `user`，开启持久内存 |
+
+### 项目级 vs 用户级
+
+- **项目级** `./.claude/agents/` — 团队通用代理，可提交 Git 共享
+- **用户级** `~/.claude/agents/` — 个人偏好代理，所有项目可用
+- 配置变更后需重启会话生效
+
+### 五大效率提升特性
+
+1. **隔离高容量操作** — 委托给 subagent 在独立窗口处理，只返回摘要，保持主会话干净
+2. **路径规则按需加载** — `.claude/rules/` 配合 `paths` 字段，只在处理匹配文件时加载规则
+3. **持久内存** — `memory: project` 让代理跨会话记住项目架构和 Bug 模式，越用越聪明
+4. **显式调用** — `@code-reviewer` 直接启动特定代理，无心智负担
+5. **灵活搭配模型** — 简单研究任务用 `haiku`，速度快费用低
+
+### 持久内存最佳实践
+
+- 启用 `memory: project` 后，代理自动创建 `MEMORY.md`，启动时加载前 200 行/25KB
+- **工作前**："帮我审查 PR，顺便检查你的 memory，看看有没有类似代码模式"
+- **完工后**："把你在这次调试中学到的新知识保存到你的 memory 中"
 
 ## 子代理 Skill 工具可用性
 

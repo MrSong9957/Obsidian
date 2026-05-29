@@ -2,13 +2,13 @@
 name: Claude Code 当前配置清单
 description: 本机 Claude Code 完整配置清单（插件/Hooks/状态栏/MCP/技能/代理/规则/团队）— 排查配置问题、新环境迁移时参考
 type: concept
-updated: 2026-05-29
+updated: 2026-05-30
 tags: [claude-code, setup, plugins, hooks, mcp, skills, agents, config]
 ---
 
 # Claude Code 当前配置清单
 
-> 关联概念：[[wiki/claude-code-p1.md|Claude Code 配置]] | [[wiki/claude-code-p2.md|Claude Code 工具]] | [[wiki/claude-code-p3.md|Claude Code 进阶工作流]]
+> 关联概念：[[wiki/claude-code-p1.md|Claude Code 配置]] | [[wiki/claude-code-p2.md|Claude Code 工具]] | [[wiki/claude-code-p3.md|Claude Code 进阶工作流]] | [[wiki/claude-code-personal-config.md|个人 Claude Code 配置]]
 
 本文档记录本机 Claude Code 的实际安装配置，作为排查和迁移的参考。配置变更时需同步更新本文档。
 

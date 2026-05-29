@@ -2,9 +2,9 @@
 name: Claude Code 配置
 description: settings.json/CLAUDE.md/rules/记忆系统/技能位置 — 遇到Claude Code配置、持久化指令、记忆系统问题时参考
 type: concept
-updated: 2026-05-11
+updated: 2026-05-30
 originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
-tags: [claude-code, settings, claudemd, memory, rules]
+tags: [claude-code, settings, claudemd, memory, rules, reference]
 ---
 # Claude Code 配置
 
@@ -13,10 +13,116 @@ tags: [claude-code, settings, claudemd, memory, rules]
 ## settings.json 关键字段
 
 - `showClearContextOnPlanAccept: true` — Plan 模式审批时显示清空上下文选项，释放窗口空间
-- `autoMemoryEnabled: false` — 关闭自动记忆
+- `autoMemoryEnabled: true` — 启用自动记忆
+- `fileCheckpointingEnabled: true` — 编辑前自动快照，支持 `/rewind` 撤销
+- `autoCompactEnabled: true` — 上下文满时自动压缩，避免会话中断
+- `todoFeatureEnabled: true` — 启用任务追踪面板，多步骤任务更清晰
 - `statusLine` — 状态栏配置（type: command/template）
 - `claudeMdExcludes` — monorepo 排除不相关 CLAUDE.md
 - `autoMemoryDirectory` — 自定义记忆存储位置（仅 user/local settings 可配）
+
+## 常用设置速查表
+
+完整设置清单见 [[sources/claude-code/settings-reference.md|Claude Code 完整设置清单]]（100+ 配置项）。
+
+### UI 与显示
+| 设置 | 说明 | 推荐值 |
+|------|------|--------|
+| `theme` | 颜色主题 | `auto` |
+| `editorMode` | 键盘模式 | `normal` 或 `vim` |
+| `verbose` | 显示完整工具输出 | `false` |
+| `showTurnDuration` | 显示每轮对话耗时 | `false` |
+| `showMessageTimestamps` | 显示消息时间戳 | `false` |
+| `tui` | 终端 UI 渲染器 | `default` 或 `fullscreen` |
+| `showClearContextOnPlanAccept` | 计划审批时显示"清除上下文"选项 | `true` |
+
+### 模型与性能
+| 设置 | 说明 | 推荐值 |
+|------|------|--------|
+| `model` | 默认模型 | - |
+| `alwaysThinkingEnabled` | 启用扩展思考 | `true` |
+| `effortLevel` | 思考深度 | `xhigh` |
+| `fastMode` | 快速模式 | `false` |
+| `autoCompactEnabled` | 上下文满时自动压缩 | `true` |
+
+### 权限与安全
+| 设置 | 说明 | 推荐值 |
+|------|------|--------|
+| `permissions.defaultMode` | 默认权限模式 | `default` |
+| `permissions.allow` | 允许的工具规则列表 | `["Bash(npm *)", "Bash(git *)"]` |
+| `permissions.deny` | 拒绝的工具规则列表 | `["Bash(rm -rf *)"]` |
+
+### 记忆与持久化
+| 设置 | 说明 | 推荐值 |
+|------|------|--------|
+| `autoMemoryEnabled` | 启用自动记忆 | `true` |
+| `autoMemoryDirectory` | 自定义记忆存储路径 | - |
+| `fileCheckpointingEnabled` | 编辑前快照文件（支持 /rewind） | `true` |
+
+### 通知
+| 设置 | 说明 | 推荐值 |
+|------|------|--------|
+| `preferredNotifChannel` | 首选通知渠道 | `auto` |
+| `inputNeededNotifEnabled` | 权限提示时推送通知 | `true` |
+
+### 语音
+| 设置 | 说明 | 推荐值 |
+|------|------|--------|
+| `voiceEnabled` | 启用语音模式 | `false` |
+| `voice.mode` | 模式 | `hold` |
+
+### 自动模式
+| 设置 | 说明 | 推荐值 |
+|------|------|--------|
+| `permissions.defaultMode` | 默认权限模式 | `auto` |
+| `useAutoModeDuringPlan` | 计划模式使用自动模式语义 | `true` |
+
+## 常见配置场景
+
+### 场景 1：开启自动记忆
+```json
+{
+  "autoMemoryEnabled": true,
+  "autoMemoryDirectory": "~/.claude/projects/my-project/memory"
+}
+```
+
+### 场景 2：配置自动格式化 Hook
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "prettier --write $FILE"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### 场景 3：允许 npm 命令不弹确认
+```json
+{
+  "permissions": {
+    "allow": ["Bash(npm *)"]
+  }
+}
+```
+
+### 场景 4：开启快速模式和扩展思考
+```json
+{
+  "fastMode": true,
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "xhigh"
+}
+```
 
 ## CLAUDE.md 结构规则
 
