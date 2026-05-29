@@ -18,6 +18,38 @@
 | 编辑 | ✅ | ✅ | ❌ |
 | 删除 | ❌ | 仅标记 deprecated | ❌ |
 
+## Sources 目录分类规则
+
+`sources/` 根目录只保留 `_index.md`，所有资料文件必须归入子目录。
+
+### 现有子目录
+
+| 子目录 | 用途 | 关键词 |
+|--------|------|--------|
+| `agent/` | Agent 架构、多代理系统、ShareAI 系列 | agent, proxy, team, workflow, harness |
+| `claude-code/` | Claude Code 配置、CLI、MCP 集成、system-prompts | claude, mcp, plugin, superpowers, hook |
+| `dev/` | 编程语言、开发实践、前端/后端技术 | rust, frontend, tdd, debugging, code-quality |
+| `feedback/` | 用户反馈、使用经验、改进建议 | feedback, experience, suggestion |
+| `learning/` | 学习方法论、思维模型、认知科学 | learning, methodology, cognition, mental-model |
+| `projects/` | 项目规划、进度记录、发布方案 | project, roadmap, publish, progress |
+| `security/` | 安全实践、密钥管理、漏洞分析 | security, token, credential, vulnerability |
+| `tools/` | CLI 工具、编辑器、开发环境配置 | yazi, obsidian, opencode, token-management |
+
+### 分类判断流程
+
+新资料加入 `sources/` 时：
+
+1. 读取文件 frontmatter 的 `tags`、`description` 字段
+2. 按上表关键词匹配子目录
+3. 若无匹配，评估是否创建新子目录（需与用户确认）
+4. 使用 `git mv` 移动，保持文件名不变
+
+### 约束
+
+- 禁止将文件移回 `sources/` 根目录
+- 移动文件后检查 wiki 层的 `[[wikilink]]` 是否仍有效（Obsidian 通常自动跟踪重命名）
+- `_index.md` 始终留在 `sources/` 根目录
+
 ## 创建新页面规则
 
 1. 概念页使用 `templates/concept.md` 模板
