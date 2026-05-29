@@ -347,3 +347,202 @@ ECC 提供基础设施层，补充 Superpowers 不覆盖的领域。两者分工
 | /save-session /resume-session | 跨会话状态管理 |
 | /learn | 提取可复用模式 |
 ```
+
+---
+
+# 官方四层体系
+
+> 来源：[Claude Code 官方文档 — 记忆系统](https://code.claude.com/docs/zh-CN/memory)（2026-05-30 查阅）
+
+上面的「双层架构模板」是实用模板，这里补充官方文档的完整层级定义。两者不冲突——模板中的「全局 + 项目」对应官方的「用户 + 项目」。
+
+## 四层 CLAUDE.md
+
+| 层级 | 位置 | 谁管理 | 共享范围 | 加载时机 |
+|------|------|--------|---------|---------|
+| 托管策略 | Windows: `C:\Program Files\ClaudeCode\CLAUDE.md`<br>macOS: `/Library/Application Support/ClaudeCode/CLAUDE.md`<br>Linux/WSL: `/etc/claude-code/CLAUDE.md` | IT/DevOps | 组织内所有用户 | 最先加载，不可排除 |
+| 用户指令 | `~/.claude/CLAUDE.md` | 你自己 | 仅你（所有项目） | 第二加载 |
+| 项目指令 | `./CLAUDE.md` 或 `./.claude/CLAUDE.md`（二选一，等效） | 团队 | 通过 git 共享 | 第三加载 |
+| 本地指令 | `./CLAUDE.local.md` | 你自己 | 仅你（当前项目），加入 `.gitignore` | 第四加载，最后读取的内容 |
+
+**关键规则：**
+- 所有层级的内容**拼接**到上下文中，不是相互覆盖
+- 同一目录中，`CLAUDE.local.md` 在 `CLAUDE.md` 之后附加（个人笔记最后读取）
+- 从文件系统根目录向下排序到工作目录——越接近工作目录的指令越晚出现，优先级语义上更高
+
+## 加载顺序详解
+
+Claude Code 从当前工作目录**向上遍历**目录树，在每个目录检查 `CLAUDE.md` 和 `CLAUDE.local.md`。同时，工作目录下的子目录中的 CLAUDE.md **按需加载**（Claude 读取该子目录文件时才注入）。
+
+示例：在 `project/src/app/` 中启动 Claude Code：
+
+```
+启动时加载（从上到下拼接到上下文）：
+  project/CLAUDE.md          ← 最先
+  project/CLAUDE.local.md
+  project/src/CLAUDE.md
+  project/src/CLAUDE.local.md
+  project/src/app/CLAUDE.md
+  project/src/app/CLAUDE.local.md  ← 最后（最高语义优先级）
+
+按需加载（Claude 读取子目录文件时才注入）：
+  project/src/app/utils/CLAUDE.md
+  project/src/app/components/CLAUDE.md
+  ...
+```
+
+**压缩后行为：** 项目根目录 CLAUDE.md 在 `/compact` 后自动重新注入；子目录中的嵌套 CLAUDE.md 不会自动重新注入，需等 Claude 下次读取该子目录文件。
+
+## `.claude/rules/` 规则系统
+
+规则是指令的模块化拆分，按主题组织到 `.claude/rules/` 目录中。与 CLAUDE.md 的区别：规则可以限定到特定文件路径（按需加载），减少上下文噪音。
+
+```
+<project>/
+├── CLAUDE.md                 # 主项目指令
+└── .claude/
+    ├── CLAUDE.md             # 等效的项目指令位置
+    └── rules/
+        ├── code-style.md     # 无 paths → 启动时无条件加载
+        ├── testing.md        # 无 paths → 启动时无条件加载
+        └── api-design.md     # 有 paths → 按需加载
+```
+
+### 无条件规则 vs 路径范围规则
+
+| 类型 | frontmatter | 加载时机 | 用途 |
+|------|-------------|---------|------|
+| 无条件规则 | 无 `paths` 字段 | 启动时加载，与 `.claude/CLAUDE.md` 同优先级 | 全局适用的编码标准 |
+| 路径范围规则 | 有 `paths` 字段（glob 模式） | Claude 处理匹配文件时才加载 | 特定目录/文件类型的规则 |
+
+路径范围规则示例：
+
+```markdown
+---
+paths:
+  - "src/api/**/*.ts"
+---
+
+# API 开发规则
+- 所有端点必须输入验证
+- 使用标准错误响应格式
+```
+
+### 用户级规则
+
+`~/.claude/rules/` 中的个人规则适用于所有项目，在项目规则**之前**加载（项目规则优先级更高）。
+
+## 自动记忆系统
+
+自动记忆让 Claude 跨会话积累知识，无需手动编写。Claude 自行决定什么值得记住（构建命令、调试见解、架构笔记等）。
+
+### 官方机制
+
+| 项目 | 说明 |
+|------|------|
+| 存储位置 | `~/.claude/projects/<project-hash>/memory/` |
+| 入口文件 | `MEMORY.md`（索引，启动时加载前 200 行或 25KB） |
+| 主题文件 | `debugging.md`、`patterns.md` 等（按需读取，启动时不加载） |
+| 共享范围 | 同一 git 仓库的所有 worktrees 和子目录共享 |
+| 跨机器 | 不自动同步，机器本地 |
+| 版本要求 | Claude Code v2.1.59+ |
+| 禁用方式 | 设置 `autoMemoryEnabled: false` 或环境变量 `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1` |
+
+### MEMORY.md 容量限制
+
+| 限制 | 说明 |
+|------|------|
+| 行数 | 前 200 行 |
+| 大小 | 前 25KB |
+| 取先到者 | 行数或大小任一达到即截断 |
+| 超出部分 | 会话启动时不加载 |
+| CLAUDE.md 对比 | 无论长度都完整加载（但较短文件遵守度更高） |
+
+### 自定义存储位置
+
+在 `~/.claude/settings.json` 中设置：
+
+```json
+{
+  "autoMemoryDirectory": "~/my-custom-memory-dir"
+}
+```
+
+必须是绝对路径或以 `~/` 开头。仅从策略和用户设置接受，不从项目或本地设置接受（防止克隆仓库重定向记忆到敏感位置）。
+
+### 个人实践：Symlink 桥接 Obsidian 仓库
+
+通过两个自定义技能（`obsidian-link` + `obsidian-remember`）将项目记忆目录 symlink 到 Obsidian 仓库，实现：
+1. **复用积累**：项目中直接读取已整理的知识文档（wiki/sources/templates）
+2. **同步备份**：通过 Obsidian 仓库的 git 仓库同步到 GitHub
+3. **知识管理**：Claude 自动积累的记忆和手动整理的知识在同一个仓库中
+
+#### 桥接结构
+
+```
+~/.claude/projects/<project-hash>/memory/
+├── MEMORY.md       → symlink → $vault/MEMORY.md
+├── README.md       → symlink → $vault/README.md
+├── wiki/           → symlink → $vault/wiki/
+├── sources/        → symlink → $vault/sources/
+├── skills/         → symlink → $vault/skills/
+└── templates/      → symlink → $vault/templates/
+```
+
+Claude 的自动记忆直接写入 Obsidian 仓库对应位置；Obsidian 侧的编辑实时同步到项目记忆。
+
+#### obsidian-link 技能
+
+> 技能路径：`~/.claude/skills/obsidian-link/SKILL.md`
+
+自动完成从项目记忆目录到 Obsidian 仓库的 symlink 桥接，支持三种环境：
+
+| 环境 | 文件链接方式 | 目录链接方式 | 权限要求 |
+|------|------------|------------|---------|
+| Docker 容器 | Symlink | Symlink | 无（先挂载 volume） |
+| 非 Docker（Linux/macOS） | Symlink | Symlink | 无 |
+| Windows | Symlink | Junction | 管理员或开发者模式 |
+
+流程：获取 Obsidian 路径 → 检测环境 → Docker 则挂载 volume → 发现 vault（扫描 `.obsidian/` 或 `MEMORY.md`）→ 创建 symlink → 验证链接可用。
+
+**Windows 关键细节：**
+- 目录用 Junction（不需要管理员权限），文件用 Symlink（需要管理员或开发者模式）
+- 跨盘符（如 C: 和 E:）不可用硬链接
+- 所有条目必须平铺在 memory 根目录，不能嵌套——Claude Code 不扫描子目录
+
+#### obsidian-remember 技能
+
+> 技能路径：`~/.claude/skills/obsidian-remember/SKILL.md`
+
+管理 Obsidian 知识仓库的写入、更新、去重、合并和拆分。依赖 `obsidian-link`（写入前先验证 symlink 完好）。
+
+**三层架构：**
+
+| 层 | 路径 | 内容 | 权限 |
+|----|------|------|------|
+| 导航索引 | `MEMORY.md` | 每条一行摘要 + 指针，< 200 行 | 仅追加指针 |
+| 结论摘要 | `wiki/` | 成功经验、失败教训、方法论原则 | 可读写 |
+| 原始资料 | `sources/` | 完整过程、调试故事、代码原型 | 可读写，禁止删除 |
+
+**MEMORY.md 入门门槛**（不是所有知识都需要索引）：
+1. 跨会话适用（用户偏好、习惯、方法论）
+2. 跨领域影响（影响多个工作领域的教训）
+3. 高频引用（被频繁引用的约束或方法）
+
+**写入判断流程：**
+```
+新内容 X
+  ├─ 同时包含过程和结论？→ 过程 → sources/，结论 → wiki/
+  ├─ 只有过程？          → sources/{领域}.md
+  ├─ 只有结论？          → wiki/{领域}.md
+  └─ 跨会话适用？        → MEMORY.md 加指针
+```
+
+**领域文档管理：**
+- 按问题领域组织（如 `dev-practice.md`、`agent-arch-p1.md`）
+- 超 600 行必须拆分为 P1/P2
+- 90 天未更新且无引用 → 标记为待删除
+
+#### 当前状态
+
+Obsidian 仓库（`E:/Files/Obsidian`）作为直接工作目录，memory 目录中是普通文件而非 symlink——无需桥接。`obsidian-link` 技能用于新项目或 Docker 环境中连接 Obsidian 知识库。
