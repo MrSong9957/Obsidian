@@ -1,11 +1,10 @@
 ---
 name: obsidian-knowledge-system
-description: |
-  Obsidian 知识库系统的从零实现指南。涵盖三个组件（obsidian-link、obsidian-remember、note-obsidian）
-  的完整内容、依赖关系、注册部署步骤和端到端验证。适用于从零重建或理解系统架构。
+description: Obsidian 知识库系统从零搭建指南
 type: summary
 updated: 2026-04-18
-tags: [obsidian, knowledge-base, skill, deployment]
+tags: obsidian, knowledge-base, skill, deployment
+source: https://example.com
 ---
 
 # Obsidian 知识库系统 — 从零实现指南

@@ -1,18 +1,10 @@
 ---
 name: claude-md
 description: 全局（karpathy 行为准则）+ 项目级（superpowers 工作流）双层 CLAUDE.md 创建方法
-metadata: 
-  node_type: memory
-  type: reference
-  updated: 2026-05-10
-  tags: 
-    - claude-md
-    - template
-    - karpathy
-    - superpowers
-    - kv-cache
-    - two-tier
-  originSessionId: e7e57f29-69b0-4083-b071-95477bbde34e
+type: reference
+updated: 2026-05-10
+tags: claude-md, template, karpathy, superpowers, kv-cache, two-tier
+source: https://example.com
 ---
 
 # CLAUDE.md 双层架构模板

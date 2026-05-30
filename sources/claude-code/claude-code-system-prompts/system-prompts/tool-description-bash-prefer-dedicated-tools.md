@@ -1,3 +1,11 @@
+---
+name: tool-description-bash-prefer-dedicated-tools
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Tool Description: Bash (prefer dedicated tools)'
 description: Warning to prefer dedicated tools over Bash for find, grep, cat, etc.

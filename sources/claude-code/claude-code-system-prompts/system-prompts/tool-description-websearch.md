@@ -1,3 +1,11 @@
+---
+name: tool-description-websearch
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Tool Description: WebSearch'
 description: Tool description for web search functionality

@@ -1,3 +1,11 @@
+---
+name: skill-verify-serverapi-changes-example-for-verify-skill
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Skill: Verify server/API changes (example for Verify skill)'
 description: Example workflow for verifying a server/API change, as part of the Verify skill.

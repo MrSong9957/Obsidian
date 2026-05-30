@@ -3,7 +3,8 @@ name: 芒格100思维模型
 description: 查理·芒格跨学科思维模型完整参考 — 涵盖通用/数理/系统/物理/生物/心理/经济/军事8大类共100个模型
 type: reference
 updated: 2026-04-24
-tags: [mental-models, munger, decision-making, thinking-framework]
+tags: mental-models, munger, decision-making, thinking-framework
+source: https://example.com
 ---
 
 # 查理芒格的100个思维模型

@@ -1,3 +1,11 @@
+---
+name: data-files-api-reference-python
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Data: Files API reference — Python'
 description: Python Files API reference including file upload, listing, deletion, and usage in messages

@@ -1,3 +1,11 @@
+---
+name: skill-init-claudemd-and-skill-setup-new-version
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Skill: /init CLAUDE.md and skill setup (new version)'
 description: A comprehensive onboarding flow for setting up CLAUDE.md and related skills/hooks in the current repository, including codebase exploration, user interviews, and iterative proposal refinement.

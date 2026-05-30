@@ -1,3 +1,11 @@
+---
+name: 2026-05-15-token-management
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 # Token 获取与管理
 
 ## 2026-05-15 建立集中管理

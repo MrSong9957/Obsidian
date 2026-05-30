@@ -1,3 +1,11 @@
+---
+name: yazi-theme-setup
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 # Yazi 主题安装与配色配置
 
 ## 安装环境

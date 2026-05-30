@@ -3,8 +3,8 @@ name: Claude Code 进阶工作流
 description: 上下文管理/Hooks配置范式/子代理限定/MCP管理/并行工作流/编辑器选择 — 10个月实战经验提炼
 type: concept
 updated: 2026-05-13
-tags: [claude-code, hooks, subagents, mcp, context-management, workflow, editor, session-memory, token-optimization, evals]
-sources: [[sources/claude-code/ecc.md]]
+tags: claude-code, hooks, subagents, mcp, context-management, workflow, editor, session-memory, token-optimization, evals
+source: [sources/claude-code/ecc.md]
 ---
 
 # Claude Code 进阶工作流

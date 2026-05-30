@@ -1,3 +1,11 @@
+---
+name: tool-description-request_teach_access-part-of-teach-mode
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Tool Description: request_teach_access (part of teach mode)'
 description: Describes a tool that requests permission to guide the user through a task step-by-step using fullscreen tooltip overlays instead of direct access

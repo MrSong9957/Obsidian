@@ -1,3 +1,11 @@
+---
+name: system-prompt-agent-thread-notes
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'System Prompt: Agent thread notes'
 description: Behavioral guidelines for agent threads covering absolute paths, response formatting, emoji avoidance, and tool call punctuation

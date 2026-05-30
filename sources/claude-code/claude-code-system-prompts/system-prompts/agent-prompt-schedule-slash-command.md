@@ -1,3 +1,11 @@
+---
+name: agent-prompt-schedule-slash-command
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Agent Prompt: /schedule slash command'
 description: Guides the user through scheduling, updating, listing, or running remote Claude Code agents on cron triggers via the Anthropic cloud API

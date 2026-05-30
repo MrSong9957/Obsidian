@@ -1,3 +1,11 @@
+---
+name: system-prompt-memory-description-of-user-feedback
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'System Prompt: Memory description of user feedback'
 description: Describes the user feedback memory type that stores guidance about work approaches, emphasizing recording both successes and failures and checking for contradictions with team memories

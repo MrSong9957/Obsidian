@@ -1,3 +1,11 @@
+---
+name: skill-build-with-claude-api
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Skill: Build with Claude API'
 description: Main routing guide for building LLM-powered applications with Claude, including language detection, surface selection, and architecture overview

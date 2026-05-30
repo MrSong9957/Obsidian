@@ -3,8 +3,8 @@ name: Token 管理
 description: Token 集中管理架构、各服务 token 获取方式、Docker 环境变量注入规则
 type: concept
 updated: 2026-05-29
-tags: [credentials, tokens, docker, management, security, mimo, provider]
-sources: [[sources/tools/2026-05-15-token-management.md]], [[sources/tools/mimo-provider-debug.md]]
+tags: credentials, tokens, docker, management, security, mimo, provider
+source: [sources/tools/2026-05-15-token-management.md]], [[sources/tools/mimo-provider-debug.md]
 ---
 
 # Token 管理

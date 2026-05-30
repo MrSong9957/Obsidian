@@ -3,7 +3,8 @@ name: 个人 Claude Code 配置
 description: 个人 Claude Code 配置偏好 — 记录用户主动选择的设置、推荐配置理由、配置历史
 type: concept
 updated: 2026-05-30
-tags: [claude-code, settings, personal, config]
+tags: claude-code, settings, personal, config
+source: https://example.com
 ---
 
 # 个人 Claude Code 配置
@@ -42,6 +43,7 @@ tags: [claude-code, settings, personal, config]
 | `alwaysThinkingEnabled` | `true` | - | 启用扩展思考 |
 | `effortLevel` | `xhigh` | - | 思考深度设为最高 |
 | `showThinkingSummaries` | `true` | 2026-05-30 | 显示思考摘要 |
+| 上下文窗口 | `默认` | 2026-05-30 | 使用默认上下文，不指定 [200k] 或 [1m] |
 
 ### 权限与安全
 
@@ -113,6 +115,11 @@ tags: [claude-code, settings, personal, config]
 - **原因：** 确保所有输出都是中文
 - **效果：** Claude 默认用中文回复
 
+### 上下文窗口（200k）
+- **原因：** 1M 上下文对 token 消耗太大，日常任务 200k 完全够用，性价比更高
+- **效果：** 默认使用 200k 上下文，需要时可通过 `/model` 切换到 1M（第三方 API 下仍可选）
+- **后备：** 遇到上下文不够用时，优先考虑压缩/摘要而非直接切 1M
+
 ## 配置历史
 
 | 日期 | 操作 | 说明 |
@@ -124,6 +131,8 @@ tags: [claude-code, settings, personal, config]
 | 2026-05-30 | 设置 language 为 chinese | 首选响应语言为中文 |
 | 2026-05-30 | 启用 UI 显示设置 | showTurnDuration、showMessageTimestamps、terminalProgressBarEnabled、spinnerTipsEnabled |
 | 2026-05-30 | 启用 showThinkingSummaries | 显示思考摘要 |
+| 2026-05-30 | 设置上下文窗口为 200k | 默认 200k，1M 太贵非必要，可通过 /model 切换 |
+| 2026-05-30 | 修改 MiMo 模型声明 | 移除所有上下文后缀，使用默认值 |
 
 ## 如何修改配置
 

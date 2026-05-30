@@ -1,3 +1,11 @@
+---
+name: claude-code-cli-path-fix
+description: Claude Code CLI 符号链接丢失导致命令找不到的修复方法
+type: reference
+updated: 2026-05-30
+tags: [claude-code, cli, troubleshooting, windows, symlink]
+source: self
+---
 # Claude Code CLI 命令找不到的修复
 
 ## 问题现象

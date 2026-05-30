@@ -1,8 +1,10 @@
 ---
 name: OpenCode 配置指南
 description: OpenCode 完整配置参考——安装、配置文件、Provider、MCP、指令文件、与 Claude Code 对比
-tags: [opencode, configuration, mcp, provider, agents-md]
+type: concept
 updated: 2026-05-17
+tags: opencode, configuration, mcp, provider, agents-md
+source: https://example.com
 ---
 
 # OpenCode 配置指南

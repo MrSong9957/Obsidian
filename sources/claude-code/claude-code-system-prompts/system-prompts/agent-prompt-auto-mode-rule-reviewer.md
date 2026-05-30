@@ -1,3 +1,11 @@
+---
+name: agent-prompt-auto-mode-rule-reviewer
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Agent Prompt: Auto mode rule reviewer'
 description: Reviews and critiques user-defined auto mode classifier rules for clarity, completeness, conflicts, and actionability

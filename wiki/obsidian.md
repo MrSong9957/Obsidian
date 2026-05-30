@@ -3,8 +3,8 @@ name: Obsidian
 description: Obsidian CLI工具使用/知识仓库管理 — 遇到Obsidian操作或知识管理问题时参考
 type: concept
 updated: 2026-04-17
-tags: [obsidian, knowledge-management]
-originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
+tags: obsidian, knowledge-management
+source: https://example.com
 ---
 # Obsidian
 

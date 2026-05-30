@@ -1,9 +1,10 @@
 ---
 name: 开发实践（详细）
 description: TDD/调试案例/代码讲解/提示词技巧完整内容 — 需要详细案例或完整解释时参考
+type: concept
 updated: 2026-04-17
-tags: [dev, tdd, debugging, prompt, code-quality, examples]
-originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
+tags: dev, tdd, debugging, prompt, code-quality, examples
+source: https://example.com
 ---
 # 开发实践（完整版）
 

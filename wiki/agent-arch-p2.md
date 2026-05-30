@@ -3,8 +3,8 @@ name: Agent 架构（下）
 description: Harness工程方法论/人话编程规范 — 遇到AI协作方法论、自然语言编程规范问题时参考
 type: concept
 updated: 2026-04-17
-tags: [agent, harness, natural-language, methodology]
-originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
+tags: agent, harness, natural-language, methodology
+source: https://example.com
 ---
 # Agent 架构（下）
 

@@ -1,3 +1,11 @@
+---
+name: agent-prompt-quick-git-commit
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Agent Prompt: Quick git commit'
 description: Streamlined prompt for creating a single git commit with pre-populated context

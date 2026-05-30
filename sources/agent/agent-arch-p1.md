@@ -1,9 +1,10 @@
 ---
 name: Agent 架构（上）- 详细资料
 description: Agent循环/多智能体框架/系统提示词/教学脚本的完整详细内容
+type: concept
 updated: 2026-04-17
-tags: [agent, architecture, multi-agent, system-prompts]
-originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
+tags: agent, architecture, multi-agent, system-prompts
+source: https://example.com
 ---
 # Agent 架构（上）- 详细资料
 

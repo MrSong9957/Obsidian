@@ -1,9 +1,10 @@
 ---
 name: Claude Code 配置（完整参考）
 description: settings.json/CLAUDE.md/rules/记忆系统/技能位置的完整参考文档，含代码示例、安装步骤和排错指南
+type: concept
 updated: 2026-04-17
-tags: [claude-code, settings, claudemd, memory, rules]
-originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
+tags: claude-code, settings, claudemd, memory, rules
+source: https://example.com
 ---
 # Claude Code 配置（完整参考）
 

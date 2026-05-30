@@ -3,8 +3,8 @@ name: 前端与 UI
 description: UI设计原则/终端UI测试/Playwright自动化/技术栈策略 — 遇到前端设计、UI测试、技术选型问题时参考
 type: concept
 updated: 2026-04-17
-tags: [frontend, ui, testing, playwright, tech-stack]
-originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
+tags: frontend, ui, testing, playwright, tech-stack
+source: https://example.com
 ---
 # 前端与 UI
 

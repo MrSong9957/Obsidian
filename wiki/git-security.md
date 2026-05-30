@@ -3,7 +3,8 @@ name: Git 安全实践
 description: Git 认证安全、token 管理、credential 配置 — 避免明文 token 暴露
 type: concept
 updated: 2026-04-25
-tags: [git, security, credentials, docker]
+tags: git, security, credentials, docker
+source: https://example.com
 ---
 
 # Git 安全实践

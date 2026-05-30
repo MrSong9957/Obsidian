@@ -3,8 +3,8 @@ name: Email Assistant 项目路线图
 description: 项目发展方向的三阶段战略决策 — 开源 Build in Public → AI Skill 框架 → SaaS，含多平台发布方案
 type: concept
 updated: 2026-05-14
-tags: [project, roadmap, strategy, email-assistant, open-source, publish, social-media]
-sources: [[sources/projects/project-roadmap.md]], [[sources/projects/publish-plan.md]]
+tags: project, roadmap, strategy, email-assistant, open-source, publish, social-media
+source: [sources/projects/project-roadmap.md]], [[sources/projects/publish-plan.md]
 ---
 
 # Email Assistant 项目路线图

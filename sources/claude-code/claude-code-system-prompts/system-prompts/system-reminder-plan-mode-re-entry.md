@@ -1,3 +1,11 @@
+---
+name: system-reminder-plan-mode-re-entry
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'System Reminder: Plan mode re-entry'
 description: System reminder sent when the user enters Plan mode after having previously exited it either via shift+tab or by approving Claude's plan.

@@ -1,3 +1,11 @@
+---
+name: system-prompt-description-part-of-memory-instructions
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'System Prompt: Description part of memory instructions'
 description: Field for describing _what_ the memory is.  Part of a bigger effort to instruct Claude how to create memories.

@@ -1,3 +1,11 @@
+---
+name: system-prompt-subagent-delegation-examples
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'System Prompt: Subagent delegation examples'
 description: Provides example interactions showing how a coordinator agent should delegate tasks to subagents, handle waiting states, and report results

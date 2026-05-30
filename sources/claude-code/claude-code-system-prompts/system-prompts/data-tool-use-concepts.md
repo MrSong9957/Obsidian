@@ -1,3 +1,11 @@
+---
+name: data-tool-use-concepts
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Data: Tool use concepts'
 description: Conceptual foundations of tool use with the Claude API including tool definitions, tool choice, and best practices

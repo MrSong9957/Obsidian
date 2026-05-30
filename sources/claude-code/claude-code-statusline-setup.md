@@ -1,3 +1,11 @@
+---
+name: claude-code-statusline-setup
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 # Claude Code 状态栏插件安装指南
 
 ## 概述

@@ -1,3 +1,11 @@
+---
+name: data-agent-sdk-patterns-python
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Data: Agent SDK patterns — Python'
 description: Python Agent SDK patterns including custom tools, hooks, subagents, MCP integration, and session resumption

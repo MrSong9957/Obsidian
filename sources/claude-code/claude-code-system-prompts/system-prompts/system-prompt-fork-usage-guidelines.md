@@ -1,3 +1,11 @@
+---
+name: system-prompt-fork-usage-guidelines
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'System Prompt: Fork usage guidelines'
 description: Instructions for when to fork subagents and rules against reading fork output mid-flight or fabricating fork results

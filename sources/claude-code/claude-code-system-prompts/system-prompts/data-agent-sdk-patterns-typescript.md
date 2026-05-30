@@ -1,3 +1,11 @@
+---
+name: data-agent-sdk-patterns-typescript
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Data: Agent SDK patterns — TypeScript'
 description: TypeScript Agent SDK patterns including basic agents, hooks, subagents, and MCP integration

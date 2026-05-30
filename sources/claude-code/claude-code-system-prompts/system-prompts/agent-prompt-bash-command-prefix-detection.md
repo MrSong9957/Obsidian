@@ -1,3 +1,11 @@
+---
+name: agent-prompt-bash-command-prefix-detection
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Agent Prompt: Bash command prefix detection'
 description: System prompt for detecting command prefixes and command injection

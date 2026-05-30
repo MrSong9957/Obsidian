@@ -1,3 +1,11 @@
+---
+name: data-agent-sdk-reference-typescript
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Data: Agent SDK reference — TypeScript'
 description: TypeScript Agent SDK reference including installation, quick start, custom tools, and hooks

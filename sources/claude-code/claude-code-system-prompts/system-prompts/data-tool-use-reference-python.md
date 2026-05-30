@@ -1,3 +1,11 @@
+---
+name: data-tool-use-reference-python
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Data: Tool use reference — Python'
 description: Python tool use reference including tool runner, manual agentic loop, code execution, and structured outputs

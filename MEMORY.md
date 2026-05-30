@@ -20,6 +20,7 @@
 - 学习习惯：学霸七法（框架/反向/深层/逻辑/分科/渐进/理解>数量）+AI辅助 → [[wiki/learning-habits.md|详情]]([wiki/learning-habits.md](wiki/learning-habits.md))
 - 技术栈：原型 HTML/CSS/JS，正式 Flutter，后端 Python/Rust → [[wiki/frontend.md|详情]]([wiki/frontend.md](wiki/frontend.md))
 - 开发方法：默认 TDD，代码质量由 AI 发现最佳实践 → [[wiki/dev-practice.md|详情]]([wiki/dev-practice.md](wiki/dev-practice.md))
+- 编程认知：必须用四层分离法（设计/验证/诊断/决策），禁止 vibe coding → [[wiki/cognitive-coding-method.md|详情]]([wiki/cognitive-coding-method.md](wiki/cognitive-coding-method.md))
 
 ## 经验教训
 - Claude Code：技能存放/SKILL开发/文档双链/Hooks复盘 → [[wiki/claude-code-p1.md|详情]]([wiki/claude-code-p1.md](wiki/claude-code-p1.md))

@@ -3,7 +3,8 @@ name: Claude Code 首次安装配置指南
 description: 首次安装或初始化 Claude Code 后的完整配置流程 — 新环境首次配置时按此文档执行
 type: concept
 updated: 2026-05-07
-tags: [claude-code, setup, plugins, first-time]
+tags: claude-code, setup, plugins, first-time
+source: https://example.com
 ---
 
 # Claude Code 首次安装配置指南

@@ -3,7 +3,8 @@ name: Email Assistant 项目发展规划
 description: 项目发展方向分析、三阶段路线图（开源→框架→SaaS）、定位决策的完整过程
 type: process
 updated: 2026-05-11
-tags: [project, roadmap, strategy, email-assistant]
+tags: project, roadmap, strategy, email-assistant
+source: https://example.com
 ---
 
 # Email Assistant 项目发展规划

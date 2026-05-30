@@ -1,3 +1,11 @@
+---
+name: agent-prompt-batch-slash-command
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Agent Prompt: /batch slash command'
 description: Instructions for orchestrating a large, parallelizable change across a codebase.

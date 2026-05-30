@@ -1,3 +1,11 @@
+---
+name: agent-prompt-explore
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Agent Prompt: Explore'
 description: System prompt for the Explore subagent

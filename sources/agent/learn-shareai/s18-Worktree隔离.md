@@ -1,8 +1,9 @@
 ---
-name: "s18 Worktree 隔离"
-description: "任务板解决做什么，worktree 解决在哪做而不互相踩到"
+name: s18 Worktree 隔离
+description: 任务板解决做什么，worktree 解决在哪做而不互相踩到
+type: concept
 updated: 2026-05-07
-tags: [agent, learn-shareai, s18]
+tags: agent, learn-shareai, s18
 source: https://learn.shareai.run/zh/s18/
 ---
 

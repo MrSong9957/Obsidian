@@ -1,8 +1,9 @@
 ---
-name: "s15 Agent 团队"
-description: "子 agent 适合一次性委派；团队系统解决长期在线、能继续接活、能互相协作"
+name: s15 Agent 团队
+description: 子 agent 适合一次性委派；团队系统解决长期在线、能继续接活、能互相协作
+type: concept
 updated: 2026-05-07
-tags: [agent, learn-shareai, s15]
+tags: agent, learn-shareai, s15
 source: https://learn.shareai.run/zh/s15/
 ---
 

@@ -3,7 +3,8 @@ name: Docker 容器内安装 Python 版本
 description: 容器网络受限环境下安装 Python 版本的经验路线图
 type: feedback
 updated: 2026-05-14
-tags: [docker, python, networking, experience]
+tags: docker, python, networking, experience
+source: https://example.com
 ---
 
 # Docker 容器内安装 Python 版本

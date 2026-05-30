@@ -3,8 +3,8 @@ name: Python 邮件开发
 description: IMAP/SMTP asyncio 编程实战经验、QQ 邮箱特性、HTML 邮件处理 — 遇到 Python 邮件开发问题时参考
 type: concept
 updated: 2026-05-11
-tags: [python, email, imap, smtp, asyncio]
-sources: [[sources/projects/email-assistant-journey.md]]
+tags: python, email, imap, smtp, asyncio
+source: [sources/projects/email-assistant-journey.md]
 ---
 # Python 邮件开发
 

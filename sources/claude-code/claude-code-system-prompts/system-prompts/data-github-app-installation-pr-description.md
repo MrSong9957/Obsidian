@@ -1,3 +1,11 @@
+---
+name: data-github-app-installation-pr-description
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Data: GitHub App installation PR description'
 description: Template for PR description when installing Claude Code GitHub App integration

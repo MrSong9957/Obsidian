@@ -1,3 +1,11 @@
+---
+name: agent-prompt-pr-comments-slash-command
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Agent Prompt: /pr-comments slash command'
 description: System prompt for fetching and displaying GitHub PR comments

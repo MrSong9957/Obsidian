@@ -1,8 +1,9 @@
 ---
-name: "s08 Hook 系统"
-description: "不改主循环代码，也能在关键时机插入额外行为"
+name: s08 Hook 系统
+description: 不改主循环代码，也能在关键时机插入额外行为
+type: concept
 updated: 2026-05-07
-tags: [agent, learn-shareai, s08]
+tags: agent, learn-shareai, s08
 source: https://learn.shareai.run/zh/s08/
 ---
 

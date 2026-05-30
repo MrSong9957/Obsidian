@@ -3,7 +3,8 @@ name: Claude 协作提示词技巧
 description: 10 条从协作角度优化 Claude 输出质量的方法，包含具体提示词模板和核心逻辑
 type: reference
 updated: 2026-04-20
-tags: [claude, prompt-engineering, collaboration, techniques]
+tags: claude, prompt-engineering, collaboration, techniques
+source: https://example.com
 ---
 
 # Claude 协作提示词技巧：10 条方法

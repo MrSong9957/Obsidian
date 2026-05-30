@@ -1,3 +1,11 @@
+---
+name: tool-description-teamdelete
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Tool Description: TeamDelete'
 description: Tool description for the TeamDelete tool

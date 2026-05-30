@@ -3,8 +3,8 @@ name: 思维模型
 description: 跨学科思维模型框架（芒格100模型）— 决策质量提升、避免认知偏误、系统思考时参考
 type: concept
 updated: 2026-04-24
-tags: [mental-models, decision-making, cognition, munger, thinking-framework]
-sources: [[sources/learning/charlie-munger-mental-models.md]]
+tags: mental-models, decision-making, cognition, munger, thinking-framework
+source: [sources/learning/charlie-munger-mental-models.md]
 ---
 
 # 思维模型

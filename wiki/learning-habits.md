@@ -3,7 +3,8 @@ name: 学习习惯
 description: 学霸七法为主要学习方法，辅以螺旋上升/认知习惯/语言哲学等，含技能发展参考 — 学习方法、效率提升、认知提升时参考
 type: concept
 updated: 2026-05-21
-tags: [learning, methodology, ai-skills, cognition, rust, language-learning, study-skills]
+tags: learning, methodology, ai-skills, cognition, rust, language-learning, study-skills
+source: https://example.com
 ---
 # 学习习惯
 

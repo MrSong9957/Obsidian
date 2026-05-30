@@ -1,3 +1,11 @@
+---
+name: agent-prompt-prompt-suggestion-generator-v2
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Agent Prompt: Prompt Suggestion Generator v2'
 description: V2 instructions for generating prompt suggestions for Claude Code

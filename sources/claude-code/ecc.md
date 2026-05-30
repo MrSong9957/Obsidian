@@ -1,12 +1,10 @@
 ---
 name: ECC 完整参考
-description: "@affaanmustafa 的 Everything Claude Code 完整参考 — Skills/Hooks/Subagents/MCPs/Plugins/Session Memory/Token 经济学/Evals/33 个 Hooks 清单"
+description: @affaanmustafa 的 Everything Claude Code 完整参考 — Skills/Hooks/Subagents/MCPs/Plugins/Session Memory/Token 经济学/Evals/33 个 Hooks 清单
 type: reference
 updated: 2026-05-13
-tags: [claude-code, skills, hooks, subagents, mcp, plugins, context-management, session-memory, token-optimization, evals, parallel-workflow]
-source:
-  - https://x.com/affaanmustafa/status/2012378465664745795
-  - https://x.com/affaanmustafa/status/2014040193557471352
+tags: claude-code, skills, hooks, subagents, mcp, plugins, context-management, session-memory, token-optimization, evals, parallel-workflow
+source: https://github.com/anthropics/claude-code
 ---
 
 # ECC 完整参考

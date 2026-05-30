@@ -1,3 +1,11 @@
+---
+name: system-reminder-plan-mode-is-active-5-phase
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'System Reminder: Plan mode is active (5-phase)'
 description: Enhanced plan mode system reminder with parallel exploration and multi-agent planning

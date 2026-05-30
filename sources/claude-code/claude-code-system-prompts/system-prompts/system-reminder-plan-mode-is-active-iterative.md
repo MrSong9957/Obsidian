@@ -1,3 +1,11 @@
+---
+name: system-reminder-plan-mode-is-active-iterative
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'System Reminder: Plan mode is active (iterative)'
 description: Iterative plan mode system reminder for main agent with user interviewing workflow

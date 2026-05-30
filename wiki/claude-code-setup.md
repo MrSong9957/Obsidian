@@ -3,7 +3,8 @@ name: Claude Code 当前配置清单
 description: 本机 Claude Code 完整配置清单（插件/Hooks/状态栏/MCP/技能/代理/规则/团队）— 排查配置问题、新环境迁移时参考
 type: concept
 updated: 2026-05-30
-tags: [claude-code, setup, plugins, hooks, mcp, skills, agents, config]
+tags: claude-code, setup, plugins, hooks, mcp, skills, agents, config
+source: https://example.com
 ---
 
 # Claude Code 当前配置清单

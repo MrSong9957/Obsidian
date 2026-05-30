@@ -1,23 +1,10 @@
 ---
 name: new-project-setup
 description: 新项目初始化统一入口——Docker 容器启动、镜像配置验证、CLAUDE.md/ECC/Superpowers 补充；整合智谱MCP、首次配置（SafetyNet/StatusLine）、CLAUDE.md 模板、ECC 补强的配置参考
-metadata:
-  type: reference
-  updated: 2026-05-17
-  tags:
-    - docker
-    - setup
-    - claude-md
-    - ecc
-    - superpowers
-    - zhipu-mcp
-    - safety-net
-    - configuration
-  sources:
-    - "[[wiki/claude-md-base.md]]"
-    - "[[wiki/ecc-superpowers-supplement.md]]"
-    - "[[wiki/zhipu-mcp.md]]"
-    - "[[wiki/claude-code-p2.md]]"
+type: reference
+updated: 2026-05-17
+tags: docker, setup, claude-md, ecc, superpowers, zhipu-mcp, safety-net, configuration, "[[wiki/claude-md-base.md]]", "[[wiki/ecc-superpowers-supplement.md]]", "[[wiki/zhipu-mcp.md]]", "[[wiki/claude-code-p2.md]]"
+source: https://example.com
 ---
 
 # 新项目开发环境初始化

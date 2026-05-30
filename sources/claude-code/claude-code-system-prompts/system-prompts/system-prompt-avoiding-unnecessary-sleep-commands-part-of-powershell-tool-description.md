@@ -1,3 +1,11 @@
+---
+name: system-prompt-avoiding-unnecessary-sleep-commands-part-of-powershell-tool-description
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'System Prompt: Avoiding Unnecessary Sleep Commands (part of PowerShell tool description)'
 description: Guidelines for avoiding unnecessary sleep commands in PowerShell scripts, including alternatives for waiting and notification

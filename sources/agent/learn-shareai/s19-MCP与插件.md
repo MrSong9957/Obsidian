@@ -1,8 +1,9 @@
 ---
-name: "s19 MCP 与插件"
-description: "工具不必都写死在主程序里——外部进程也可以把能力接进你的 agent"
+name: s19 MCP 与插件
+description: 工具不必都写死在主程序里——外部进程也可以把能力接进你的 agent
+type: concept
 updated: 2026-05-07
-tags: [agent, learn-shareai, s19]
+tags: agent, learn-shareai, s19
 source: https://learn.shareai.run/zh/s19/
 ---
 

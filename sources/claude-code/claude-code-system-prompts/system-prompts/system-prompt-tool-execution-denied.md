@@ -1,3 +1,11 @@
+---
+name: system-prompt-tool-execution-denied
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'System Prompt: Tool execution denied'
 description: System prompt for when tool execution is denied

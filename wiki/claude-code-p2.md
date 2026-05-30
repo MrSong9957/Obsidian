@@ -3,8 +3,8 @@ name: Claude Code 工具
 description: Superpowers/SafetyNet/Statusline/子代理创建与配置/子代理技能注入 — 遇到Claude Code插件、安全网、状态栏、子代理创建、子代理技能问题时参考
 type: concept
 updated: 2026-05-30
-tags: [claude-code, plugins, superpowers, safety-net, subagent, skill, agent]
-originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
+tags: claude-code, plugins, superpowers, safety-net, subagent, skill, agent
+source: https://example.com
 ---
 # Claude Code 工具
 

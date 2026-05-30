@@ -3,8 +3,8 @@ name: Email Assistant 架构决策
 description: Email Assistant 项目的关键设计决策及理由 — 遇到类似邮件助手项目时参考架构选型
 type: concept
 updated: 2026-05-11
-tags: [email, architecture, decision, claude-code, skill]
-sources: [[sources/projects/email-assistant-journey.md]]
+tags: email, architecture, decision, claude-code, skill
+source: [sources/projects/email-assistant-journey.md]
 ---
 # Email Assistant 架构决策
 

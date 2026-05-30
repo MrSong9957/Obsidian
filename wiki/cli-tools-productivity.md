@@ -3,7 +3,8 @@ name: 十个提升生产力的 CLI 工具
 description: 10 个提升开发生产力的 CLI 工具推荐及核心功能 — 选择提升效率的 CLI 工具时参考
 type: summary
 updated: 2026-04-05
-tags: [cli, productivity]
+tags: cli, productivity
+source: https://example.com
 ---
 
 # 十个提升生产力的 CLI 工具推荐

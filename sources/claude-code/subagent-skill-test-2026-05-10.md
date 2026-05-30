@@ -3,7 +3,8 @@ name: 子代理 Skill 工具可用性测试
 description: 2026-05-10 实测子代理/团队成员能否使用 Skill 工具，记录所有尝试方案和结果
 type: feedback
 updated: 2026-05-10
-tags: [claude-code, subagent, skill, test]
+tags: claude-code, subagent, skill, test
+source: https://example.com
 ---
 
 # 子代理 Skill 工具可用性测试

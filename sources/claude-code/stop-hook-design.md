@@ -1,8 +1,10 @@
 ---
 name: Stop Hook Memory Review 设计文档
 description: V4 最终方案（关键词触发 + 后台 agent）的完整实现记录
+type: concept
 updated: 2026-04-18
-tags: [claude-code, hooks, memory-review, design]
+tags: claude-code, hooks, memory-review, design
+source: https://example.com
 ---
 
 # V4 复盘机制 — 完整实现记录

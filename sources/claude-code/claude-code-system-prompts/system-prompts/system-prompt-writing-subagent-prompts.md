@@ -1,3 +1,11 @@
+---
+name: system-prompt-writing-subagent-prompts
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'System Prompt: Writing subagent prompts'
 description: Guidelines for writing effective prompts when delegating tasks to subagents, covering context-inheriting vs fresh subagent scenarios

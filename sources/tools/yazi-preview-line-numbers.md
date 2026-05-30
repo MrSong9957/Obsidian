@@ -1,3 +1,11 @@
+---
+name: yazi-preview-line-numbers
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 # Yazi 预览行号 — 方案探索与实现
 
 ## 需求

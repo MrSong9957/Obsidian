@@ -1,3 +1,11 @@
+---
+name: data-streaming-reference-python
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Data: Streaming reference — Python'
 description: Python streaming reference including sync/async streaming and handling different content types

@@ -1,3 +1,11 @@
+---
+name: skill-build-with-claude-api-reference-guide
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Skill: Build with Claude API (reference guide)'
 description: Template for presenting language-specific reference documentation with quick task navigation

@@ -3,8 +3,8 @@ name: Agent 架构（上）
 description: Agent循环/多智能体框架/系统提示词/教学脚本 — 遇到Agent架构设计、多智能体协作、系统提示词问题时参考
 type: concept
 updated: 2026-04-18
-tags: [agent, architecture, multi-agent, system-prompts]
-originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
+tags: agent, architecture, multi-agent, system-prompts
+source: https://example.com
 ---
 # Agent 架构（上）
 

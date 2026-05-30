@@ -1,9 +1,10 @@
 ---
 name: 网络与 API（详细）
 description: MCP安装完整指南、配置参考、故障排除 — 安装或排查 MCP 问题时参考
+type: concept
 updated: 2026-04-17
-tags: [network, api, mcp, installation, troubleshooting]
-originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
+tags: network, api, mcp, installation, troubleshooting
+source: https://example.com
 ---
 # 智谱 AI MCP 服务器安装指南（完整版）
 

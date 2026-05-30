@@ -1,3 +1,11 @@
+---
+name: system-prompt-option-previewer
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'System Prompt: Option previewer'
 description: System prompt for previewing UI options in a side-by-side layout

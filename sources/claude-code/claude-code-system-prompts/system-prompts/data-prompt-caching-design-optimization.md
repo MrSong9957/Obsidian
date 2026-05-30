@@ -1,3 +1,11 @@
+---
+name: data-prompt-caching-design-optimization
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Data: Prompt Caching — Design & Optimization'
 description: Document on how to design prompt-building code for effective caching, including placement patterns and anti-patterns.

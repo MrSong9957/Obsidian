@@ -1,3 +1,11 @@
+---
+name: system-prompt-insights-at-a-glance-summary
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'System Prompt: Insights at a glance summary'
 description: Generates a concise 4-part summary (what's working, hindrances, quick wins, ambitious workflows) for the insights report

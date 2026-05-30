@@ -2,7 +2,9 @@
 name: Git Token 安全认证方式
 description: 避免在 git remote URL 中使用明文 token，改用 credential store
 type: feedback
-originSessionId: 18058196-ecbb-4486-97b6-eabb3a4c6305
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
 ---
 Git remote URL 中禁止明文 token，改用 credential store 方案。
 

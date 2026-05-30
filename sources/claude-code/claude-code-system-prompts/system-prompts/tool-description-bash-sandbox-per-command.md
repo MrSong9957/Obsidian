@@ -1,3 +1,11 @@
+---
+name: tool-description-bash-sandbox-per-command
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Tool Description: Bash (sandbox — per-command)'
 description: Treat each command individually; default to sandbox for future commands

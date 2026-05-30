@@ -3,7 +3,8 @@ name: Email Assistant 开发历程
 description: Email Assistant 项目从零到一的完整开发过程、调试故事、踩坑记录
 type: process
 updated: 2026-05-11
-tags: [email, python, imap, smtp, skill, debugging]
+tags: email, python, imap, smtp, skill, debugging
+source: https://example.com
 ---
 
 # Email Assistant 开发历程

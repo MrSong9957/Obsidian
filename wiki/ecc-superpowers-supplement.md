@@ -3,8 +3,8 @@ name: ECC Superpowers 补强配置指南
 description: ECC 插件中纳入 Superpowers 补强的 8 项功能——配置方式、使用时机、行为规则，作为今后开发和 CLAUDE.md 编写的指导
 type: concept
 updated: 2026-05-14
-tags: [ecc, superpowers, hooks, rules, context-management, session-memory, token-optimization, subagents]
-sources: [[sources/claude-code/ecc.md]]
+tags: ecc, superpowers, hooks, rules, context-management, session-memory, token-optimization, subagents
+source: [sources/claude-code/ecc.md]
 ---
 
 # ECC Superpowers 补强配置指南

@@ -3,8 +3,8 @@ name: 开发实践
 description: TDD/代码质量/调试方法论/代码讲解/提示词技巧/KV缓存设计/协作提示词 — 遇到开发质量、调试方法、提示词优化问题时参考
 type: concept
 updated: 2026-04-17
-tags: [dev, tdd, debugging, prompt, code-quality]
-originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
+tags: dev, tdd, debugging, prompt, code-quality
+source: https://example.com
 ---
 # 开发实践
 

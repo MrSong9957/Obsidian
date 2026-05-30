@@ -1,10 +1,10 @@
 ---
 name: project-persona-style-progress
 description: 人格化邮件回复功能开发进度（2026-05-15），已合并 master，事项已迁移至 wiki/todos.md
-metadata:
-  node_type: memory
-  type: project
-  originSessionId: c38de8a1-0b08-42ea-83ab-918d9acbbfce
+type: project
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
 ---
 
 # 人格化邮件回复 — 开发进度

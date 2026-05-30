@@ -3,11 +3,8 @@ name: Yazi 文件管理器
 description: Yazi 配置经验 — 主题安装、配色系统、Windows 配置路径
 type: summary
 updated: 2026-05-09
-tags: [cli, yazi, config, theme]
-sources:
-  - "[[sources/tools/yazi-theme-setup.md]]"
-  - "[[sources/tools/yazi-wrap-fix.md]]"
-  - "[[sources/tools/yazi-preview-line-numbers.md]]"
+tags: cli, yazi, config, theme
+source: self
 ---
 
 # Yazi 文件管理器

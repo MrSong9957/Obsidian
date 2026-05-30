@@ -1,9 +1,10 @@
 ---
 name: Obsidian（详细）
 description: Obsidian CLI完整参考/快捷键/自动化脚本 — 需要完整命令或配置细节时参考
+type: concept
 updated: 2026-04-17
-tags: [obsidian, cli, reference]
-originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
+tags: obsidian, cli, reference
+source: https://example.com
 ---
 # Obsidian CLI 完整参考
 

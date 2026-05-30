@@ -1,25 +1,10 @@
 ---
 name: rust
 description: Rust 语言安装、环境配置、工具链使用、核心概念（枚举/模式匹配/错误处理/宏）、内存管理与堆漏洞利用安全分析
-metadata:
-  node_type: memory
-  type: reference
-  updated: 2026-05-28
-  tags:
-    - rust
-    - toolchain
-    - installation
-    - cargo
-    - heap-exploitation
-    - memory-safety
-    - enum
-    - pattern-matching
-    - error-handling
-    - macros
-    - ownership
-    - borrowing
-    - lifetime
-  originSessionId: eb3af0e1-2c1a-40de-b846-89abc033dc80
+type: reference
+updated: 2026-05-28
+tags: rust, toolchain, installation, cargo, heap-exploitation, memory-safety, enum, pattern-matching, error-handling, macros, ownership, borrowing, lifetime
+source: https://example.com
 ---
 
 # Rust 基础内容
@@ -982,3 +967,161 @@ println!("{}", result);  // "I survive!" — 完好无损
 类比：大括号是一扇门。`return` 就像在关门前把钥匙扔给外面的人——东西已经转移了，关门时销毁的只是留在里面的"孤儿"。
 
 > **一句话总结**：Rust 的设计哲学是**编译时折磨程序员，运行时保护程序**。所有权/借用/生命周期三个机制形成闭环——写的时候多花时间和编译器吵架，换来的是生产环境永远不会因为内存问题而崩溃。
+
+## 8. Docker 容器中编译 Rust 的完整踩坑记录（2026-05-29）
+
+### 环境
+
+- **容器**：Debian 12 (bookworm)，WSL2 Docker
+- **用户**：`app` (uid=1000)，有 sudo 权限
+- **Rust**：1.96.0 via rustup（默认安装）
+- **目标**：编译 vault-checker（依赖 serde、clap、regex、walkdir、colored）
+
+### 问题链
+
+```
+cargo build 失败
+  → linker `cc` not found（没有 C 编译器）
+    → sudo apt-get install -y gcc（安装成功）
+      → undefined symbol: gnu_get_libc_version
+        → Rust 1.96.0 需要 glibc 2.38，容器只有 2.36
+          → 升级 glibc 到 2.41（从 Debian trixie 源）
+            → 仍然报错
+              → 发现 cc 指向 musl-gcc 而非系统 gcc
+                → 修复 cc 符号链接
+                  → 编译成功！
+```
+
+### 解决步骤
+
+#### Step 1: 安装 gcc
+
+容器以 `app` 用户运行（非 root），但有 sudo 权限：
+
+```bash
+sudo apt-get update
+sudo apt-get install -y gcc
+```
+
+> **关键发现**：docker-compose.yml 虽然写了 `user: "0:0"`，但 entrypoint.sh 会切换到 `app` 用户。所以需要用 `sudo`。
+
+#### Step 2: 升级 glibc
+
+Debian 12 bookworm 的 glibc 2.36 不满足 Rust 1.96.0 的要求（需要 2.38+ 的 `gnu_get_libc_version` 符号）。
+
+```bash
+# 添加 Debian trixie（testing）源
+echo "deb http://deb.debian.org/debian trixie main" | sudo tee /etc/apt/sources.list.d/trixie.list
+sudo apt-get update
+
+# 升级 glibc
+sudo apt-get install -y libc6/trixie
+```
+
+升级后 glibc 版本：2.41-12+deb13u3
+
+> **注意**：升级 glibc 是高风险操作，可能导致系统不稳定。在生产环境中应谨慎。
+
+#### Step 3: 修复 cc 符号链接
+
+这是最关键的一步。之前尝试安装 musl 交叉编译器时创建了 `cc` 符号链接指向 musl-gcc：
+
+```bash
+# 检查 cc 指向哪里
+ls -la /usr/local/bin/cc
+# 输出：/usr/local/bin/cc -> /tmp/x86_64-linux-musl-cross/bin/x86_64-linux-musl-gcc（错误！）
+
+# 修复：指向系统 gcc
+sudo ln -sf /usr/bin/gcc /usr/local/bin/cc
+
+# 验证
+cc --version
+# 输出：gcc (Debian 12.2.0-14+deb12u1) 12.2.0
+```
+
+> **根因**：`cc` 是 Rust/cargo 默认的链接器。如果它指向 musl-gcc，链接器会使用 musl 的 ld 而非系统的 ld，导致找不到 glibc 符号。
+
+#### Step 4: 使用兼容的 Rust 版本 + musl 目标
+
+Rust 1.96.0 的标准库编译时依赖 glibc 2.38+。虽然我们升级了 glibc，但为了更稳定的编译，使用 Rust 1.85.0 + musl 目标：
+
+```bash
+# 安装 Rust 1.85.0
+rustup install 1.85.0
+
+# 为 1.85.0 添加 musl 目标
+rustup target add x86_64-unknown-linux-musl --toolchain 1.85.0
+
+# 下载 musl 交叉编译器（用作 musl 目标的链接器）
+curl -sSL https://musl.cc/x86_64-linux-musl-cross.tgz -o /tmp/musl-cross.tgz
+tar xzf /tmp/musl-cross.tgz -C /tmp/
+```
+
+#### Step 5: 配置 Cargo
+
+创建 `项目目录/.cargo/config.toml`：
+
+```toml
+[target.x86_64-unknown-linux-musl]
+linker = "/tmp/x86_64-linux-musl-cross/bin/x86_64-linux-musl-gcc"
+```
+
+> **重要**：不要设置 `[build] target` 或 `[host]` 部分。`[build] target` 会导致所有构建（包括 proc-macro）都用 musl 链接器；`[host]` 配置在某些情况下不生效。
+
+#### Step 6: 编译
+
+```bash
+cargo +1.85.0 build --release --target x86_64-unknown-linux-musl
+```
+
+输出二进制文件：`target/x86_64-unknown-linux-musl/release/vault-checker`
+
+### 踩坑总结
+
+| 问题 | 原因 | 解决方案 |
+|------|------|---------|
+| `linker 'cc' not found` | 没有 C 编译器 | `sudo apt-get install -y gcc` |
+| `gnu_get_libc_version` undefined | Rust 1.96.0 需要 glibc 2.38+ | 升级 glibc 或用旧版 Rust |
+| 升级 glibc 后仍报错 | `cc` 指向 musl-gcc | `sudo ln -sf /usr/bin/gcc /usr/local/bin/cc` |
+| `can't find crate for core` | musl 目标未安装 | `rustup target add x86_64-unknown-linux-musl` |
+| YAML 解析失败 | serde_yaml 太严格 | 手动解析 frontmatter |
+
+### 关键认知
+
+1. **`cc` 符号链接是核心**：Rust/cargo 默认用 `cc` 作为链接器。它指向什么决定了链接时能找到哪些库。
+
+2. **proc-macro 始终用 host 目标编译**：即使指定 `--target x86_64-unknown-linux-musl`，proc-macro（serde derive、clap derive）仍然用 host 链接器编译。所以 host 的 `cc` 必须能正确链接。
+
+3. **musl 目标 vs glibc 目标**：musl 目标的二进制文件不依赖 glibc，更 portable。但 proc-macro 仍然需要 host 链接器。
+
+4. **glibc 版本兼容性**：Rust 工具链的版本和 glibc 版本需要匹配。新 Rust 可能需要新 glibc。
+
+5. **Debian trixie 源**：可以用来升级 glibc 等核心库，但要谨慎。
+
+### 快速复现脚本
+
+```bash
+#!/bin/bash
+# 在 Docker 容器中设置 Rust 编译环境
+
+# 1. 安装 gcc
+sudo apt-get update && sudo apt-get install -y gcc
+
+# 2. 升级 glibc（可选，如果 Rust 版本需要）
+echo "deb http://deb.debian.org/debian trixie main" | sudo tee /etc/apt/sources.list.d/trixie.list
+sudo apt-get update && sudo apt-get install -y libc6/trixie
+
+# 3. 确保 cc 指向系统 gcc
+sudo ln -sf /usr/bin/gcc /usr/local/bin/cc
+
+# 4. 安装兼容的 Rust 版本
+rustup install 1.85.0
+rustup target add x86_64-unknown-linux-musl --toolchain 1.85.0
+
+# 5. 下载 musl 交叉编译器
+curl -sSL https://musl.cc/x86_64-linux-musl-cross.tgz -o /tmp/musl-cross.tgz
+tar xzf /tmp/musl-cross.tgz -C /tmp/
+
+# 6. 编译项目
+cargo +1.85.0 build --release --target x86_64-unknown-linux-musl
+```

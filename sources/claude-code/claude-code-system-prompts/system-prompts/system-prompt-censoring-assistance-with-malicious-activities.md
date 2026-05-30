@@ -1,3 +1,11 @@
+---
+name: system-prompt-censoring-assistance-with-malicious-activities
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'System Prompt: Censoring assistance with malicious activities'
 description: Guidelines for assisting with authorized security testing, defensive security, CTF challenges, and educational contexts while censoring requests for malicious activities

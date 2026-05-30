@@ -1,8 +1,9 @@
 ---
-name: "s12 Worktree 绑定"
-description: "各干各的目录, 互不干扰——任务管目标, worktree 管目录（旧版）"
+name: s12 Worktree 绑定
+description: 各干各的目录, 互不干扰——任务管目标, worktree 管目录（旧版）
+type: concept
 updated: 2026-05-07
-tags: [agent, learn-shareai, s12]
+tags: agent, learn-shareai, s12
 source: https://learn.shareai.run/zh/s12/
 ---
 

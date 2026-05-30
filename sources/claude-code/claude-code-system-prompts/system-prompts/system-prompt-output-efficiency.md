@@ -1,3 +1,11 @@
+---
+name: system-prompt-output-efficiency
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'System Prompt: Output efficiency'
 description: Instructs Claude to be concise and direct in text output, leading with answers over reasoning and limiting responses to essential information

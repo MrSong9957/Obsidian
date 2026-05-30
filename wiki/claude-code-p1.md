@@ -3,8 +3,8 @@ name: Claude Code 配置
 description: settings.json/CLAUDE.md/rules/记忆系统/技能位置 — 遇到Claude Code配置、持久化指令、记忆系统问题时参考
 type: concept
 updated: 2026-05-30
-originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
-tags: [claude-code, settings, claudemd, memory, rules, reference]
+tags: claude-code, settings, claudemd, memory, rules, reference
+source: https://example.com
 ---
 # Claude Code 配置
 

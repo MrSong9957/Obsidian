@@ -2,12 +2,9 @@
 name: Harness Engineering: Leveraging Codex in an Agent-First World
 description: OpenAI 团队历时 5 个月用 0 行人工代码构建产品的实验总结，提出 Harness Engineering 方法论
 type: article
-url: https://openai.com/index/harness-engineering/
-author: OpenAI Team
-date: 2026-01
-language: en
-tags: [ai, methodology, agent, codex, harness-engineering]
-retrieved: 2026-04-10
+updated: 2026-05-30
+tags: ai, methodology, agent, codex, harness-engineering
+source: https://example.com
 ---
 
 # Harness Engineering: Leveraging Codex in an Agent-First World

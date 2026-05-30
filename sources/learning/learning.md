@@ -1,9 +1,10 @@
 ---
 name: 学习方法（完整资料）
 description: 学霸七法为主要学习方法，辅以AI时代技能发展/学习方法论/认知提升习惯的完整资料
+type: concept
 updated: 2026-05-21
-tags: [learning, methodology, ai-skills, cognition]
-originSessionId: 4f80973e-007a-4eb7-b13e-fd6c0fed9227
+tags: learning, methodology, ai-skills, cognition
+source: https://example.com
 ---
 # 学习方法（完整资料）
 

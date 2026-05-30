@@ -1,3 +1,11 @@
+---
+name: data-http-error-codes-reference
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Data: HTTP error codes reference'
 description: Reference for HTTP error codes returned by the Claude API with common causes and handling strategies

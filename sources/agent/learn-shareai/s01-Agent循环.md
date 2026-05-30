@@ -1,8 +1,9 @@
 ---
-name: "s01 Agent 循环"
-description: "把模型+工具连接成能持续推进任务的主循环——agent 的核心秘密"
+name: s01 Agent 循环
+description: 把模型+工具连接成能持续推进任务的主循环——agent 的核心秘密
+type: concept
 updated: 2026-05-07
-tags: [agent, learn-shareai, s01]
+tags: agent, learn-shareai, s01
 source: https://learn.shareai.run/zh/s01/
 ---
 

@@ -1,3 +1,11 @@
+---
+name: system-prompt-tone-and-style-code-references
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'System Prompt: Tone and style (code references)'
 description: Instruction to include file_path:line_number when referencing code

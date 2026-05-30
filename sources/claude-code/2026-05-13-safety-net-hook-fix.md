@@ -3,7 +3,8 @@ name: Safety Net Hook 参数修复 + ECC 规则全量安装
 description: 排查 cc-safety-net --hook 报错 "Unknown option: --hook" 的调试过程，以及 ECC 规则的全局+项目安装实践
 type: debugging-story
 updated: 2026-05-13
-tags: [claude-code, cc-safety-net, hook, ecc, rules, debugging]
+tags: claude-code, cc-safety-net, hook, ecc, rules, debugging
+source: https://example.com
 ---
 
 # Safety Net Hook 参数修复 + ECC 规则全量安装

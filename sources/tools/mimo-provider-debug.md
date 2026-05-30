@@ -1,3 +1,11 @@
+---
+name: mimo-provider-debug
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 # MiMo Provider 切换调试记录
 
 **日期：** 2026-05-29

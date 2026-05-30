@@ -1,3 +1,11 @@
+---
+name: skill-loop-slash-command
+description: 一句话说明
+type: concept
+updated: 2026-05-30
+tags: [tag1, tag2]
+source: https://example.com
+---
 <!--
 name: 'Skill: /loop slash command'
 description: Parses user input into an interval and prompt, converts the interval to a cron expression, and schedules a recurring task
