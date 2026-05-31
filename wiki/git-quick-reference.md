@@ -82,7 +82,28 @@ git merge feat/新功能名
 git branch -d feat/新功能名
 ```
 
-## 四、应急处理
+## 四、安全注意事项
+
+### Remote URL 禁止明文 token
+
+**禁止：** 在 `git remote set-url` 中嵌入 token（如 `https://TOKEN@github.com/...`）
+**原因：** `git remote -v` 会暴露明文 token，有泄露风险
+**替代方案：**
+
+```bash
+# 1. remote URL 不含 token
+git remote set-url origin https://github.com/user/repo.git
+
+# 2. 用 credential store 持久化认证
+echo "https://username:TOKEN@github.com" > ~/.git-credentials
+chmod 600 ~/.git-credentials
+git config --global credential.helper store
+
+# 3. Token 从 .env 读取，不硬编码
+export GITHUB_TOKEN=$(grep GITHUB_TOKEN path/to/.env | cut -d= -f2)
+```
+
+## 五、应急处理
 
 | 问题 | 解决 |
 |------|------|
