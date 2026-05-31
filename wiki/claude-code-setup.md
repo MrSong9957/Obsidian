@@ -2,7 +2,7 @@
 name: Claude Code 当前配置清单
 description: 本机 Claude Code 完整配置清单（插件/Hooks/状态栏/MCP/技能/代理/规则/团队）— 排查配置问题、新环境迁移时参考
 type: concept
-updated: 2026-05-30
+updated: 2026-06-01
 tags: claude-code, setup, plugins, hooks, mcp, skills, agents, config
 source: https://example.com
 ---
@@ -79,34 +79,105 @@ source: https://example.com
 
 ## 状态栏（StatusLine）
 
-### 配置
+### 配置（综合版，当前使用）
 
 ```json
 "statusLine": {
   "type": "command",
-  "command": "python ~/.claude/scripts/statusline.py | npx cc-safety-net --statusline"
+  "command": "py -3 \"C:/Users/<user>/.claude/scripts/statusline.py\" | npx -y cc-safety-net --statusline"
 }
+```
+
+### 显示效果
+
+```
+mimo-v2.5-pro | PycharmProjects/test | main | ████░░░░░░ 47% | 测试状态栏显示 | $10.44 288t 4f 2h23m | 🛡️ Safety Net ✅
+   模型名         目录路径(2级)       Git分支   进度条(4色)      当前任务(中文)     成本/工具/文件/时长   安全网插件cc-safety-net
 ```
 
 ### 管道结构
 
-`statusline.py`（模型/目录/分支/上下文进度条）→ `cc-safety-net --statusline`（附加安全网状态指示器）
+`statusline.py`（综合版）→ `cc-safety-net --statusline`（附加安全网状态指示器）
 
-### 脚本
+### 综合版特性
 
-- 主脚本：`~/.claude/scripts/statusline.py`（Python 版，推荐）
+| 元素 | 来源 | 说明 |
+|------|------|------|
+| 模型名 | stdin `model.display_name` | 当前使用的模型 |
+| 目录路径 | stdin `workspace.current_dir` | 压缩为最后 2 级，~ 表示 home |
+| Git 分支 | `git rev-parse --abbrev-ref HEAD` | 自动向上搜索 .git 目录 |
+| 上下文进度条 | stdin `context_window.remaining_percentage` | ECC 4 色阈值：<50% 绿、<65% 黄、<80% 橙、≥80% 红 |
+| 当前任务 | `~/.claude/todos/*.json` | 读取 `in_progress` 状态的 `activeForm` 字段 |
+| 成本/工具/文件/时长 | `/tmp/ecc-metrics-{session}.json` | 由 `ecc-metrics-bridge.js` hook 写入 |
+| 安全网 | `cc-safety-net --statusline` | 管道追加，由 safety-net 插件提供 |
+
+### 依赖配置
+
+状态栏依赖以下 hook 写入数据（已在 settings.json 中配置）：
+
+```json
+// PostToolUse hook — 写入会话指标到 bridge 文件
+{
+  "matcher": "*",
+  "hooks": [{
+    "type": "command",
+    "command": "node \"<ECC_ROOT>/scripts/hooks/run-with-flags.js\" \"post:metrics-bridge\" \"scripts/hooks/ecc-metrics-bridge.js\" \"standard,strict\"",
+    "timeout": 5,
+    "async": true
+  }]
+}
+```
+
+Bridge 文件路径：`/tmp/ecc-metrics-{session_id}.json`（Node.js `os.tmpdir()`）
+
+### 脚本位置
+
+- **主脚本**：`~/.claude/scripts/statusline.py`（综合版，融合旧版目录/分支 + ECC 指标/任务）
 - 备选脚本：`~/.claude/scripts/statusline.sh`（Bash 版，无 jq 依赖）
 - 调试脚本：`~/.claude/scripts/debug_path.py`
 
 ### stdin JSON 关键字段
 
 - `model.display_name` — 模型名称
-- `workspace.current_dir` — 当前目录（压缩为最后 2 层）
-- `context_window.used_percentage` — 上下文窗口使用百分比（带颜色进度条：<50% 绿、<80% 黄、>=80% 红）
+- `workspace.current_dir` — 当前目录
+- `context_window.remaining_percentage` — 上下文窗口剩余百分比
+- `session_id` — 会话 ID（用于查找 bridge 文件和 todo 文件）
 
 ### 已知问题
 
-Windows 上 `python` 可能解析为 Windows Store 存根，应使用 `py` 替代。修复计划记录在 `~/.claude/plans/git-goofy-mountain.md`。
+Windows 上 `python` 可能解析为 Windows Store 存根，应使用 `py -3` 替代。
+
+---
+
+### 备选：简易版状态栏
+
+如不需要当前任务和会话指标，可使用简易版：
+
+```json
+"statusLine": {
+  "type": "command",
+  "command": "py -3 \"C:/Users/<user>/.claude/scripts/statusline-simple.py\" | npx -y cc-safety-net --statusline"
+}
+```
+
+简易版只显示：模型名 | 目录路径 | Git 分支 | 进度条 | 安全网，无当前任务和成本指标。
+
+---
+
+### 备选：ECC 原版状态栏
+
+ECC 插件自带的状态栏脚本：
+
+```json
+"statusLine": {
+  "type": "command",
+  "command": "node \"<ECC_ROOT>/scripts/hooks/ecc-statusline.js\""
+}
+```
+
+显示：模型名 | 当前任务 | $成本 工具数 文件数 时长 | 目录名 | 进度条
+
+特点：目录仅显示最后一级，无 Git 分支。
 
 ---
 
@@ -143,7 +214,7 @@ Windows 上 `python` 可能解析为 Windows Store 存根，应使用 `py` 替�
 | `Bash\|Write\|Edit\|MultiEdit` | `governance-capture.js` | 治理日志 | 10s | - |
 | `*` | `mcp-health-check.js` | MCP 服务器健康检查 | - | - |
 
-### PostToolUse（8 个）
+### PostToolUse（9 个）
 
 | 匹配器 | 脚本 | 功能 | 超时 | 异步 |
 |--------|------|------|------|------|
@@ -155,6 +226,7 @@ Windows 上 `python` 可能解析为 Windows Store 存根，应使用 `py` 替�
 | `Edit` | `post-edit-console-warn.js` | console.log 残留检查 | - | - |
 | `Bash\|Write\|Edit\|MultiEdit` | `governance-capture.js` | 治理日志 | - | - |
 | `*` | `observe.sh` | 持续学习观察器 | - | async |
+| `*` | `ecc-metrics-bridge.js` | 会话指标桥接（状态栏依赖） | 5s | async |
 
 ### 其他事件
 
@@ -294,6 +366,234 @@ Hook 脚本通过环境变量引用插件目录：
 - 更换状态栏脚本 → 更新「状态栏」
 - 增减 MCP 服务器 → 更新「MCP 服务器」
 - 增减技能/命令/规则/代理 → 更新对应章节
+
+---
+
+---
+
+## 附录：综合版 statusline.py 完整脚本
+
+> 路径：`~/.claude/scripts/statusline.py`，通过 `py -3 "C:/Users/<user>/.claude/scripts/statusline.py" | npx -y cc-safety-net --statusline` 调用。
+
+```python
+import sys
+import json
+import os
+import re
+import subprocess
+import tempfile
+from pathlib import Path
+
+# ============================================================
+# Context bar thresholds (ECC standard)
+# ============================================================
+AUTO_COMPACT_BUFFER = 16.5  # Reserve for auto-compact overhead
+
+# ============================================================
+# ANSI color helpers
+# ============================================================
+def _c(code: int, text: str) -> str:
+    return f"\033[{code}m{text}\033[0m"
+
+def green(t):  return _c(32, t)
+def yellow(t): return _c(33, t)
+def red(t):    return _c(31, t)
+def orange(t): return _c(38;5;208", t)
+def dim(t):    return _c(2, t)
+def bold(t):   return _c(1, t)
+
+# ============================================================
+# Git branch detection
+# ============================================================
+def get_git_branch() -> str:
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+            capture_output=True, text=True, timeout=3,
+            cwd=os.environ.get("CLAUDE_WORKING_DIR", "."),
+        )
+        if result.returncode == 0:
+            return result.stdout.strip()
+    except Exception:
+        pass
+    return ""
+
+# ============================================================
+# Path shortening
+# ============================================================
+def shorten_path(path: str, n: int = 2) -> str:
+    parts = Path(path).parts
+    if len(parts) <= n:
+        return path
+    return os.sep.join(parts[-n:])
+
+# ============================================================
+# Context bar (4-color: green < 50%, yellow < 65%, orange < 80%, red >= 80%)
+# ============================================================
+def build_context_bar(context_used_pct: float, width: int = 10) -> str:
+    if context_used_pct < 0:
+        return dim("N/A")
+    used = max(0, min(100, round(context_used_pct)))
+    filled = round(used / 100 * width)
+    empty = width - filled
+    bar = "█" * filled + "░" * empty
+
+    if used < 50:
+        colored_bar = green(bar)
+    elif used < 65:
+        colored_bar = yellow(bar)
+    elif used < 80:
+        colored_bar = orange(bar)
+    else:
+        colored_bar = red(bar)
+
+    return f"{colored_bar} {used}%"
+
+# ============================================================
+# Duration formatting
+# ============================================================
+def format_duration(seconds: float) -> str:
+    if seconds < 60:
+        return f"{int(seconds)}s"
+    minutes = int(seconds // 60)
+    if minutes < 60:
+        return f"{minutes}m"
+    hours = minutes // 60
+    mins = minutes % 60
+    return f"{hours}h{mins}m"
+
+# ============================================================
+# Current task from todo files
+# ============================================================
+def read_current_task(session_id: str) -> str:
+    """Read active task from todo files."""
+    if not session_id:
+        return ""
+    try:
+        todo_dir = Path.home() / ".claude" / "todos"
+        if not todo_dir.exists():
+            return ""
+        for f in todo_dir.glob(f"{session_id[:8]}*-agent-*.json"):
+            try:
+                data = json.loads(f.read_text(encoding="utf-8"))
+                if data.get("status") == "in_progress" and data.get("activeForm"):
+                    return data["activeForm"]
+            except Exception:
+                continue
+    except Exception:
+        pass
+    return ""
+
+# ============================================================
+# ECC metrics bridge reader
+# ============================================================
+def read_bridge(session_id: str) -> dict:
+    """Read ECC metrics bridge file from temp directory."""
+    if not session_id:
+        return {}
+    try:
+        safe_id = "".join(c for c in session_id if c.isalnum() or c in "-_")
+        tmpdir = os.environ.get("TEMP") or os.environ.get("TMP") or os.environ.get("TMPDIR") or "/tmp"
+        bridge_path = os.path.join(tmpdir, f"ecc-metrics-{safe_id}.json")
+        if os.path.exists(bridge_path):
+            with open(bridge_path, "r", encoding="utf-8") as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return {}
+
+# ============================================================
+# Main: read stdin JSON from Claude Code
+# ============================================================
+def main():
+    try:
+        data = json.loads(sys.stdin.read())
+    except Exception:
+        print(dim("statusline: no input"))
+        return
+
+    # Extract fields from stdin
+    model = data.get("model", {})
+    model_name = model.get("display_name") or model.get("id", "unknown")
+    session_id = data.get("session_id", "")
+
+    # Context usage
+    context_window = data.get("context_window", {})
+    context_used_pct = context_window.get("used_percentage", -1)
+    context_remaining_pct = context_window.get("remaining_percentage", 100)
+
+    # Calculate real usage accounting for auto-compact buffer
+    # ECC logic: remaining_pct includes buffer, so subtract it to get usable
+    usable = max(0, ((context_remaining_pct - AUTO_COMPACT_BUFFER) / (100 - AUTO_COMPACT_BUFFER)) * 100)
+    used = max(0, min(100, round(100 - usable)))
+
+    # Working directory
+    cwd = data.get("cwd", os.getcwd())
+    short_cwd = shorten_path(cwd)
+
+    # Git branch
+    branch = get_git_branch()
+
+    # ECC bridge metrics
+    bridge = read_bridge(session_id)
+    tool_count = bridge.get("tool_count", 0)
+    files_modified = bridge.get("files_modified_count", 0)
+    cost = bridge.get("total_cost_usd", 0)
+
+    # Duration from bridge
+    first_ts = bridge.get("first_timestamp", 0)
+    elapsed = 0
+    if first_ts:
+        import time
+        elapsed = time.time() - first_ts / 1000  # bridge stores ms
+
+    # Current task
+    task = read_current_task(session_id)
+
+    # Build status line parts
+    parts = []
+
+    # Model
+    parts.append(bold(model_name))
+
+    # Directory
+    parts.append(dim(short_cwd))
+
+    # Git branch
+    if branch:
+        parts.append(dim(branch))
+
+    # Context bar
+    parts.append(build_context_bar(used))
+
+    # Current task (if any)
+    if task:
+        parts.append(yellow(task))
+
+    # Metrics: cost | tools | files | duration
+    metrics = []
+    if cost > 0:
+        metrics.append(f"${cost:.2f}")
+    if tool_count > 0:
+        metrics.append(f"{tool_count}t")
+    if files_modified > 0:
+        metrics.append(f"{files_modified}f")
+    if elapsed > 0:
+        metrics.append(format_duration(elapsed))
+    if metrics:
+        parts.append(dim(" ".join(metrics)))
+
+    # Output (cc-safety-net will append safety indicator via pipe)
+    print(" | ".join(parts))
+
+if __name__ == "__main__":
+    main()
+```
+
+**关键实现细节：**
+- `read_bridge()` 使用 `os.environ.get("TEMP")` 而非 `tempfile.gettempdir()`，因为 Python 的 `tempfile` 在 Windows 上会追加 `\claude` 子目录，与 Node.js 的 `os.tmpdir()` 路径不一致
+- `build_context_bar()` 的 `used` 值通过 auto-compact buffer 公式计算，而非直接使用 stdin 的 `used_percentage`
+- `read_current_task()` 按 session_id 前缀匹配 todo 文件，取第一个 `status == "in_progress"` 的任务
 
 ---
 

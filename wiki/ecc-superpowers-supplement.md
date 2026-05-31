@@ -2,7 +2,7 @@
 name: ECC Superpowers 补强配置指南
 description: ECC 插件中纳入 Superpowers 补强的 8 项功能——配置方式、使用时机、行为规则，作为今后开发和 CLAUDE.md 编写的指导
 type: concept
-updated: 2026-05-14
+updated: 2026-05-31
 tags: ecc, superpowers, hooks, rules, context-management, session-memory, token-optimization, subagents
 source: [sources/claude-code/ecc.md]
 ---
@@ -263,3 +263,217 @@ ECC 提供 `/context-budget` 斜杠命令，分析当前上下文使用情况并
 ```
 
 ← [[sources/claude-code/ecc.md|ECC 完整参考]] §入门-5
+
+---
+
+## 9. Agents — 全局代理注册
+
+### 配置（手动安装）
+
+插件机制无法自动分理 agents 文件到全局目录，必须手动复制。
+
+```bash
+cp -r ~/.claude/plugins/marketplaces/ecc/agents/*.md ~/.claude/agents/
+```
+
+### 说明
+
+- ECC 提供 63 个语言/框架专用代理（python-reviewer、rust-reviewer、go-reviewer 等）
+- 全局安装后，所有项目可通过 `Agent` 工具的 `subagent_type` 参数调用
+- ECC 更新后需重新执行复制命令以同步最新代理定义
+
+### 与 Rules 的区别
+
+| 项目 | Rules | Agents |
+|------|-------|--------|
+| 全局安装 | `cp -r rules/common ~/.claude/rules/ecc/` | `cp -r agents/*.md ~/.claude/agents/` |
+| 项目级安装 | 按技术栈选择性复制 | 不需要（agents 全局即可） |
+| 加载方式 | CLAUDE.md 拼接或按需加载 | `Agent` 工具按名称调用 |
+
+### 注意事项
+
+- 新环境迁移时必须执行此步骤，否则 `Agent` 工具找不到对应代理
+- ECC 更新后需重新执行复制命令以同步最新代理定义
+- 已存在的同名文件会被覆盖，无需手动清理
+
+---
+
+## 10. CLAUDE.md 模板库
+
+### 模板位置
+
+ECC 插件提供 7 个 CLAUDE.md 模板，位于：
+
+```
+~/.claude/plugins/marketplaces/ecc/docs/zh-CN/examples/
+```
+
+### 使用层级说明
+
+| 层级 | 是否使用 ECC 模板 | 说明 |
+|------|-------------------|------|
+| **用户级** `~/.claude/CLAUDE.md` | 否 | 使用 [[wiki/claude-md-base.md\|双层架构模板]] 中的 Karpathy 行为准则，不使用 ECC 的 user-CLAUDE.md |
+| **项目级** `./CLAUDE.md` | 参考 | 从下方模板中选择最接近的作为起点，按需裁剪 |
+
+### 项目级模板清单
+
+| 模板文件 | 适用场景 | 技术栈 |
+|----------|----------|--------|
+| `CLAUDE.md` | 通用项目模板（基础） | 通用，可适配任何技术栈 |
+| `django-api-CLAUDE.md` | Django REST API | Python 3.12+, Django 5.x, DRF, PostgreSQL, Celery |
+| `go-microservice-CLAUDE.md` | Go 微服务 | Go 1.22+, PostgreSQL, gRPC, sqlc, Wire |
+| `laravel-api-CLAUDE.md` | Laravel API | PHP 8.2+, Laravel 11.x, PostgreSQL, Redis |
+| `rust-api-CLAUDE.md` | Rust API 服务 | Rust 1.78+, Axum, SQLx, PostgreSQL, Tokio |
+| `saas-nextjs-CLAUDE.md` | Next.js SaaS 应用 | Next.js 15, Supabase, Stripe, Tailwind, Playwright |
+
+> `user-CLAUDE.md` 是 ECC 提供的用户级模板示例，仅供参考，实际使用 [[wiki/claude-md-base.md#第一层：全局 CLAUDE.md|Karpathy 行为准则]] 作为用户级配置。
+
+### 模板共性结构
+
+所有项目级模板遵循统一结构：
+
+1. **项目概述** — 技术栈、架构描述
+2. **关键规则** — 语言约定、数据库、认证、错误处理、代码风格
+3. **文件结构** — 目录树及各目录职责
+4. **关键模式** — 常用代码模式（含示例代码）
+5. **环境变量** — 必需和可选配置
+6. **测试策略** — 测试命令和覆盖率要求
+7. **ECC 工作流** — 可用的 ECC 斜杠命令
+8. **Git 工作流** — 提交格式、CI/CD 流程
+
+### 使用方式
+
+1. **新建项目时**：选择最接近的模板作为起点，复制到项目根目录
+2. **自定义**：根据实际技术栈和项目需求修改
+3. **增量添加**：可从多个模板中提取特定模式组合
+
+### 模板亮点
+
+| 模板 | 特色模式 |
+|------|----------|
+| Django | 服务层模式、序列化器分离读写、Factory Boy 测试 |
+| Go | 仓库接口模式、表格驱动测试、哨兵错误 |
+| Laravel | Action 模式、Form Request + DTO、Policy 授权 |
+| Rust | thiserror 错误枚举、IntoResponse 映射、sqlx 编译时检查 |
+| Next.js SaaS | Server Action 模式、RLS 安全、Stripe Webhook 处理 |
+| 通用基础 | Prompt Defense 防御基线、API 响应格式、错误处理 |
+
+### 参考
+
+模板位于 ECC 插件的 `docs/zh-CN/examples/` 目录，可直接查看完整内容：
+
+```bash
+# 查看所有模板
+ls ~/.claude/plugins/marketplaces/ecc/docs/zh-CN/examples/
+
+# 查看特定模板
+cat ~/.claude/plugins/marketplaces/ecc/docs/zh-CN/examples/django-api-CLAUDE.md
+```
+
+---
+
+## 11. 高价值隐藏组件
+
+以下组件位于 ECC 插件目录中，直接影响日常使用效率。
+
+### 11.1 项目技术栈自动检测配置
+
+**文件**：`config/project-stack-mappings.json`
+
+`/project-init` 命令读取此文件，自动检测项目技术栈并推荐对应的 skills、rules、commands。
+
+**覆盖 18 种技术栈**：TypeScript、React、Next.js、Go、Python、Rust、Java、Spring Boot、Kotlin、Swift、Flutter、Laravel、Ruby、C#、C++、Perl、Django、Android、Docker。
+
+**每种技术栈定义了**：
+- 指示文件（用于自动检测）
+- 推荐 rules
+- 推荐 skills
+- 构建/测试/lint/格式化命令
+- 权限白名单/黑名单
+
+### 11.2 Plan-PRD 模式
+
+**文件**：`docs/PLAN-PRD-PATTERN.md`
+
+结构化规划流程：
+
+```
+/plan-prd 写需求文档 → /plan 写实现计划 → TDD 实现 → /pr 提交
+```
+
+每个阶段产出 `.md` 文件，可跨会话恢复、可审计、可版本控制。
+
+### 11.3 上下文模式文件
+
+**文件**：`contexts/dev.md`、`contexts/research.md`、`contexts/review.md`
+
+三种工作模式的行为规范：
+
+| 模式 | 文件 | 行为 |
+|------|------|------|
+| 开发模式 | `dev.md` | 先写代码后解释 |
+| 研究模式 | `research.md` | 先理解后行动 |
+| 审查模式 | `review.md` | 按严重性分级 |
+
+### 11.4 状态栏配置
+
+**文件**：`examples/statusline.json`
+
+显示信息布局：
+
+```
+模型名 | 当前任务 | $成本 工具数 文件数 时长 | 目录 | 上下文进度条
+```
+
+上下文进度条颜色阈值：
+- <50%：绿色
+- <65%：黄色
+- <80%：橙色
+- ≥80%：红色闪烁
+
+---
+
+## 12. 中价值架构参考
+
+以下组件适用于架构决策和运维参考。
+
+### 12.1 能力表面选择指南
+
+**文件**：`docs/capability-surface-selection.md`
+
+决定能力放哪里的决策树：
+
+```
+rule（确定性约束）→ skill（按需工作流）→ MCP（结构化交互）→ CLI（简单本地操作）→ API（窄远程调用）
+```
+
+### 12.2 故障排除指南
+
+**文件**：`docs/TROUBLESHOOTING.md`
+
+Claude Code 已知 bug 的社区解决方案：
+
+| 问题 | 说明 |
+|------|------|
+| Hook Error 误标 | Hook 正常运行但显示红色错误 |
+| 提前压缩 | 上下文未满时意外触发压缩 |
+| MCP 认证失效 | MCP 服务器认证过期不提示 |
+| Hook 不热重载 | 修改 hook 后需重启才生效 |
+| 529 过载 | 服务器过载时的重试策略 |
+
+### 12.3 命令-代理映射
+
+**文件**：`docs/COMMAND-AGENT-MAP.md`
+
+79 个斜杠命令与代理/skill 的对应关系：
+
+| 命令 | 代理/Skill |
+|------|-----------|
+| `/plan` | planner |
+| `/tdd` | tdd-guide |
+| `/code-review` | code-reviewer |
+| `/build-fix` | build-error-resolver |
+| `/security-review` | security-reviewer |
+| `/e2e` | e2e-runner |
+| `/refactor` | refactor-cleaner |
+| `/docs-update` | doc-updater |

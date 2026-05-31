@@ -35,6 +35,7 @@ source: https://example.com
 | `showMessageTimestamps` | `true` | 2026-05-30 | 显示消息时间戳 |
 | `terminalProgressBarEnabled` | `true` | 2026-05-30 | 启用终端进度条 |
 | `spinnerTipsEnabled` | `true` | 2026-05-30 | 启用加载提示 |
+| `statusLine` | 综合版 | 2026-06-01 | 模型/目录/Git分支/进度条/当前任务/成本指标/安全网 |
 
 ### 模型与性能
 
@@ -133,6 +134,7 @@ source: https://example.com
 | 2026-05-30 | 启用 showThinkingSummaries | 显示思考摘要 |
 | 2026-05-30 | 设置上下文窗口为 200k | 默认 200k，1M 太贵非必要，可通过 /model 切换 |
 | 2026-05-30 | 修改 MiMo 模型声明 | 移除所有上下文后缀，使用默认值 |
+| 2026-06-01 | 升级状态栏为综合版 | 融合旧版目录/分支 + ECC 指标/任务，添加 ecc-metrics-bridge hook |
 
 ## 如何修改配置
 
