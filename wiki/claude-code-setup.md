@@ -570,18 +570,13 @@ def main():
     if task:
         parts.append(yellow(task))
 
-    # Metrics: cost | tools | files | duration
+    # Metrics: cost | tools | files | duration (always show 4 items)
     metrics = []
-    if cost > 0:
-        metrics.append(f"${cost:.2f}")
-    if tool_count > 0:
-        metrics.append(f"{tool_count}t")
-    if files_modified > 0:
-        metrics.append(f"{files_modified}f")
-    if elapsed > 0:
-        metrics.append(format_duration(elapsed))
-    if metrics:
-        parts.append(dim(" ".join(metrics)))
+    metrics.append(f"${cost:.2f}" if cost > 0 else "$0.00")
+    metrics.append(f"{tool_count}t" if tool_count > 0 else "0t")
+    metrics.append(f"{files_modified}f" if files_modified > 0 else "0f")
+    metrics.append(format_duration(elapsed) if elapsed > 0 else "0s")
+    parts.append(dim(" ".join(metrics)))
 
     # Output (cc-safety-net will append safety indicator via pipe)
     print(" | ".join(parts))

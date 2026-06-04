@@ -1,11 +1,15 @@
 ---
-name: Claude Code 工具
+name: claude-code
 description: Superpowers/SafetyNet/Statusline/子代理创建与配置/子代理技能注入 — 遇到Claude Code插件、安全网、状态栏、子代理创建、子代理技能问题时参考
-type: concept
-updated: 2026-05-30
-tags: claude-code, plugins, superpowers, safety-net, subagent, skill, agent
-source: https://example.com
+metadata: 
+  node_type: memory
+  type: concept
+  updated: 2026-05-30
+  tags: "claude-code, plugins, superpowers, safety-net, subagent, skill, agent"
+  source: https://example.com
+  originSessionId: ec32b087-a1b9-49c9-9eb6-7c196d718298
 ---
+
 # Claude Code 工具
 
 > 前篇：[[wiki/claude-code-p1.md|Claude Code 配置]]
@@ -42,13 +46,52 @@ source: https://example.com
 - stdin JSON 字段：`model.display_name` / `workspace.current_dir` / `context_window.used_percentage`
 - 配置：settings.json 中 `statusLine.type` = command 或 template
 - 推荐 Python 版本（比 Bash 版本更稳定）；脚本放 `~/.claude/scripts/statusline.py`
-- 多状态栏合并：用管道 `python statusline.py | npx cc-safety-net --statusline`
+- 多状态栏合并：用管道 `py statusline.py | npx cc-safety-net --statusline`（Windows 必须用 `py`，`python` 返回 exit code 49）
 
 ### Worktree 兼容
 
 - **分支检测 bug：** `get_git_branch()` 用 `os.path.isdir(".git")` 查找仓库，但 worktree 中 `.git` 是文件（指向主仓库），导致跳过 worktree 向上找到主仓库，返回错误分支。修复：改为 `isdir(...) or isfile(...)`
 - **目录显示：** worktree 路径 `<project>/.claude/worktrees/<name>/` 过长且无意义，检测后压缩为 `项目名:worktree名` 格式（如 `project:persona-style`）
 - **普通目录：** 只保留最后 2 层（如 `~/a/b/c` → `b/c`），不足 2 层保持原样
+
+## 切换 API KEY 后诊断流程
+
+切换 `ANTHROPIC_AUTH_TOKEN` 后按以下优先级排查，99% 问题出在 MCP token：
+
+### 1. MCP 断连（99% 是 token 问题）
+
+**症状：** `claude mcp list` 显示服务器 Disconnected
+
+**快速修复：**
+- 智谱 HTTP MCP（zread/web-reader/web-search-prime）的 `Authorization` header 和 zai-mcp-server 的 `Z_AI_API_KEY` env 均已配置为 `${ANTHROPIC_AUTH_TOKEN}` 环境变量引用，切换 token 后**无需手动更新**
+- 如果仍断连，检查环境变量是否生效：`echo $ANTHROPIC_AUTH_TOKEN`，确认值是最新 token
+- 只有硬编码 token 的情况才需手动改 `.claude.json`
+
+**验证：** `claude mcp list` 确认全部 Connected
+
+### 2. StatusLine 失效（Windows `py` vs `python`）
+
+**症状：** 底部状态栏不显示或报错 exit code 49
+
+**快速修复：**
+- Windows 上 `python` 命令返回 exit code 49（不存在），必须用 `py`
+- 确认 settings.json 中 `statusLine.command` 使用 `py statusline.py`
+- 快速验证：
+  ```bash
+  echo '{"model":{"display_name":"test"},"workspace":{"current_dir":"."},"context_window":{"remaining_percentage":80},"session_id":""}' | py ~/.claude/scripts/statusline.py
+  ```
+
+### 3. Hooks 报错
+
+**症状：** `claude mcp list` 显示 "hook references ${CLAUDE_PLUGIN_ROOT} but not associated with a plugin"
+
+**诊断与修复：**
+1. **原因：** ECC 插件升级后 `plugins/cache/` 路径变化（如 `everything-claude-code/1.8.0` → `ecc/2.0.0-rc.1`），settings.json 中的旧 hooks 失效
+2. **确认插件自解析：** ECC v2+ 自带 `hooks/hooks.json`，能自动解析正确路径
+3. **清理 settings.json：** 删除所有 `${CLAUDE_PLUGIN_ROOT}` 引用的 ECC hooks，只保留 Safety Net 和 block-no-verify
+4. **更新插件路径：** 用 Glob 搜索 `plugins/cache/` 确认 `CLAUDE_PLUGIN_ROOT` 和 `SAFETY_NET_PLUGIN_ROOT` 的实际版本路径
+
+**最终验证：** `claude mcp list` 确认全部 Connected 且无 hook 错误
 
 ## GitHub MCP 插件认证
 

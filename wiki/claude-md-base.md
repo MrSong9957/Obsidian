@@ -234,6 +234,7 @@ source: https://example.com
 - **任务计划**：`docs/superpowers/plans/YYYY-MM-DD-<name>.md`
 - **个人技能**：`~/.claude/skills/<name>/SKILL.md`
 - **Worktree 目录**：`.worktrees/`（项目本地隐藏，必须 git check-ignore 验证）
+- **Obsidian 仓库**：`E:\Files\Obsidian`
 
 ---
 

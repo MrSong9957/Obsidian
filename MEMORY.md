@@ -41,6 +41,9 @@
 - 人格化邮件回复：已合并 master，待办已迁移 → [[wiki/todos.md|待办事项]](wiki/todos.md)
 - 新项目初始化：Docker 容器 → 验证镜像配置 → 补充缺失项（Git/CLAUDE.md/ECC rules/目录结构） → [[wiki/new-project-setup.md|详情]](wiki/new-project-setup.md)
 - Rust 安装：容器用 USTC 镜像脚本；Windows 免 VS 选 GNU 工具链 `x86_64-pc-windows-gnu` → [[sources/dev/rust.md|详情]](sources/dev/rust.md)
+- OpenCode 桥接 v2：log 修复/parseHookOutput/output.args 写回/permission.asked；input.tool 是字符串；Stop/SessionEnd 在 CLI 不触发；watcher 实测 40+ 次 PostToolUse 写入确认 100% 工作 → [[wiki/opencode-bridge.md|详情]]([wiki/opencode-bridge.md](wiki/opencode-bridge.md))
+- ECC→OpenCode 集成：agent frontmatter 格式必须转换（model 删除、tools 数组→对象、color 映射）；不能把全部 .md 复制到 agents/ 目录 → [[wiki/opencode-bridge.md#ECC Agent 格式兼容性|详情]]([wiki/opencode-bridge.md](wiki/opencode-bridge.md))
+- OpenCode 代理配置：通过 opencode.jsonc 的 agent 部分添加/覆盖代理，mode:"primary" 出现在切换列表；源码修改仅在需要自定义逻辑时 → [[wiki/opencode-bridge.md#代理配置|详情]]([wiki/opencode-bridge.md](wiki/opencode-bridge.md))
 
 ## 知识库索引
 - 本文件未覆盖的内容 → [README.md](README.md)（冷数据，按领域导航）

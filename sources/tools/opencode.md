@@ -2,7 +2,7 @@
 name: OpenCode 配置指南
 description: OpenCode 完整配置参考——安装、配置文件、Provider、MCP、指令文件、与 Claude Code 对比
 type: concept
-updated: 2026-05-17
+updated: 2026-06-02
 tags: opencode, configuration, mcp, provider, agents-md
 source: https://example.com
 ---
@@ -14,21 +14,24 @@ OpenCode（[anomalyco/opencode](https://github.com/anomalyco/opencode)）是开�
 ## 安装
 
 ```bash
-# npm
-npm i -g opencode-ai@latest
-
-# Homebrew（macOS/Linux，推荐）
-brew install anomalyco/tap/opencode
-
-# curl 脚本
+# curl 脚本（推荐）
 curl -fsSL https://opencode.ai/install | bash
+
+# npm
+npm i -g opencode-ai
+
+# bun
+bun add -g opencode-ai
+
+# Homebrew（macOS/Linux）
+brew install anomalyco/tap/opencode
 
 # Windows
 choco install opencode
 scoop install opencode
 ```
 
-其他：Arch Linux (`pacman -S opencode`)、mise (`mise use -g opencode`)、nix。
+其他：Arch Linux (`paru -S opencode` 或 `pacman -S opencode`)、mise (`mise use -g opencode`)、nix。
 
 ## 配置文件体系
 
