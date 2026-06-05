@@ -1,9 +1,9 @@
 ---
 name: Claude Code 当前配置清单
-description: 本机 Claude Code 完整配置清单（插件/Hooks/状态栏/MCP/技能/代理/规则/团队）— 排查配置问题、新环境迁移时参考
+description: 本机 Claude Code 完整配置清单 + 自检清单（插件/Hooks/状态栏/MCP/技能/代理/规则/团队/经验教训）— 定期巡检、排查配置问题、新环境迁移时参考
 type: concept
-updated: 2026-06-01
-tags: claude-code, setup, plugins, hooks, mcp, skills, agents, config
+updated: 2026-06-04
+tags: claude-code, setup, plugins, hooks, mcp, skills, agents, config, checklist
 source: https://example.com
 ---
 
@@ -28,6 +28,12 @@ source: https://example.com
 | 自动更新 | 已禁用 | `CLAUDE_CODE_AUTO_UPDATE=0` |
 | Tool Search | 已启用 | `CLAUDE_CODE_TOOL_SEARCH_ENABLED=1` |
 | Agent Teams | 已启用 | `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` |
+
+### 经验教训
+
+- **持久化优先级**：Hooks（硬约束）> CLAUDE.md > 无条件 rules > scoped rules > MEMORY.md 前 200 行 > 主题文件 > 口头约定。安全关键规则必须用 Hook 实现，CLAUDE.md 的"软"规则无法替代 ← [[wiki/claude-code-p1.md]]
+- **上下文窗口管理**：配置 20-30 个 MCP 没问题，但**同时启用 <10 个**，**活跃工具 <80 个**。用 `disabledMcpServers` 按项目禁用不用的 MCP ← [[wiki/claude-code-p3.md]]
+- **settings.json 关键隐藏字段**：`showClearContextOnPlanAccept`（Plan 审批时释放窗口）、`autoCompactEnabled`（上下文满时自动压缩）、`fileCheckpointingEnabled`（编辑前快照支持 `/rewind`）← [[wiki/claude-code-p1.md]]
 
 ### API 配置
 
@@ -70,10 +76,15 @@ source: https://example.com
 | GitHub 仓库 | `/plugin marketplace add <repo>` → `/plugin install` | ECC 通过此渠道安装，需先添加仓库为自定义市场 |
 | cc-marketplace | `/plugin marketplace add kenryu42/cc-marketplace` | Safety Net 专用市场 |
 
-### 插件黑名单
 
-- `code-review@claude-plugins-official`
-- `fizz@testmkt-marketplace`
+### 经验教训
+
+- **安装前备份**：任何插件安装前必须 `cp -r ~/.claude/rules ~/.claude/rules.backup`，Rules 和 Hooks 都是追加合并，绝不能直接覆盖 ← [[wiki/claude-code-p2.md]]
+- **Safety Net Windows 配置**：Windows 需手动配 Hook 和 `SAFETY_NET_PLUGIN_ROOT` 环境变量，不会自动配置 ← [[wiki/claude-code-p2.md]]
+- **Safety Net 状态栏 fallback**：`isPluginEnabled()` 只读 `CLAUDE_SETTINGS_PATH`（IDE 设为项目级路径），文件不存在或不包含 `enabledPlugins` 时直接返回 false。修复：增加 fallback 回退 `~/.claude/settings.json` 全局配置；状态栏命令改用 `node "${SAFETY_NET_PLUGIN_ROOT}/dist/bin/cc-safety-net.js" --statusline` 而非 `npx -y`（npx 从 npm 拉缓存，不走本地修改）。插件升级后需重新打补丁，长期方案向上游提 PR ← [[wiki/claude-code-setup.md]]
+- **Skill 双目录部署**：项目目录（开发）和 `~/.claude/skills/`（运行）是两份独立副本，改代码后必须 `cp` 同步，否则 Skill 调用仍用旧版 ← [[wiki/claude-code-p1.md]]
+- **技能链调用**：Skill 内引用其他 Skill 时必须用 Skill 工具加载完整内容，不能跳过 ← [[wiki/claude-code-p1.md]]
+- **子代理无法调用 Skill**：子代理和团队成员都不能使用 Skill 工具，父代理必须预加载技能内容并用 `---SKILL_NAME START/END---` 标记注入 prompt ← [[wiki/claude-code-p2.md]]
 
 ---
 
@@ -84,7 +95,7 @@ source: https://example.com
 ```json
 "statusLine": {
   "type": "command",
-  "command": "py -3 \"C:/Users/<user>/.claude/scripts/statusline.py\" | npx -y cc-safety-net --statusline"
+  "command": "py -3 \"C:/Users/<user>/.claude/scripts/statusline.py\" | node \"${SAFETY_NET_PLUGIN_ROOT}/dist/bin/cc-safety-net.js\" --statusline"
 }
 ```
 
@@ -147,6 +158,13 @@ Bridge 文件路径：`/tmp/ecc-metrics-{session_id}.json`（Node.js `os.tmpdir(
 
 Windows 上 `python` 可能解析为 Windows Store 存根，应使用 `py -3` 替代。
 
+### 经验教训
+
+- **Windows `py` vs `python`**：`python` 命令返回 exit code 49（不存在），必须用 `py` 或 `py -3` ← [[wiki/claude-code-p2.md]]
+- **Worktree `.git` 是文件**：worktree 中 `.git` 是文件（指向主仓库），不是目录。`get_git_branch()` 原先用 `isdir` 会跳过 worktree 找到错误分支，修复为 `isdir(...) or isfile(...)` ← [[wiki/claude-code-p2.md]]
+- **`read_bridge()` 路径**：必须用 `os.environ.get("TEMP")` 而非 `tempfile.gettempdir()`，因为 Python 的 `tempfile` 在 Windows 上会追加 `\claude` 子目录，与 Node.js 的 `os.tmpdir()` 路径不一致 ← [[wiki/claude-code-setup.md]]
+- **切换 API KEY 后 StatusLine 失效**：先检查 `py` 命令是否正常，再用 `echo '...' | py statusline.py` 验证脚本本身 ← [[wiki/claude-code-p2.md]]
+
 ---
 
 ### 备选：简易版状态栏
@@ -193,6 +211,12 @@ ECC 插件自带的状态栏脚本：
 | memory | stdio | `npx -y @modelcontextprotocol/server-memory@2026.1.26` | 知识图谱记忆 |
 | playwright | stdio | `npx -y @playwright/mcp@0.0.69 --extension` | 浏览器自动化 |
 | sequential-thinking | stdio | `npx -y @modelcontextprotocol/server-sequential-thinking@2025.12.18` | 序列化思考 |
+
+### 经验教训
+
+- **GitHub MCP 认证**：插件 `.mcp.json` 用 `${GITHUB_PERSONAL_ACCESS_TOKEN}` header 认证，变量缺失时回退到 OAuth 动态注册（Copilot 端点不支持），报错 `Incompatible auth server`。必须在 settings.json 的 `env` 中添加该变量 ← [[wiki/claude-code-p2.md]]
+- **切换 API KEY 后 MCP 断连**：99% 是 token 问题。智谱 HTTP MCP 和 zai-mcp-server 已配置为 `${ANTHROPIC_AUTH_TOKEN}` 环境变量引用，切换后无需手动改。验证：`claude mcp list` ← [[wiki/claude-code-p2.md]]
+- **HTTP MCP 无需本地安装**：Cloudflare/ClickHouse 等 HTTP 类型 MCP 直接 URL 连接，`npx -y` 类型首次调用自动安装 ← [[wiki/claude-code-p3.md]]
 
 ---
 
@@ -247,6 +271,13 @@ Hook 脚本通过环境变量引用插件目录：
 - `CLAUDE_PLUGIN_ROOT` → ECC 插件根目录（v1.8.0）
 - `SAFETY_NET_PLUGIN_ROOT` → Safety Net 插件根目录（v0.7.1）
 
+### 经验教训
+
+- **Hook 类型选择**：prompt hook 返回 `{"ok": false, "reason": "..."}` 可让主 Claude 继续工作（拥有完整上下文和工具权限），command hook + `claude -p` 子进程需读 transcript 重建上下文，有冷启动和终端乱码风险 ← [[wiki/claude-code-p1.md]]
+- **Stop Hook 演进 V1→V4**：command+claude-p（V1）→ prompt hook ok:false（V2）→ prompt hook+后台 agent（V3，过度触发）→ 关键词触发+后台 agent（V4，当前方案）。教训：自动触发的 hook 评估器难以准确判断对话是否有复盘价值，用户主动触发更可靠 ← [[wiki/claude-code-p1.md]]
+- **ECC 升级后 Hooks 报错**：ECC 插件升级后 `plugins/cache/` 路径变化，settings.json 中旧 hooks 失效报 "not associated with a plugin"。ECC v2+ 自带 `hooks/hooks.json` 自解析路径，settings.json 只保留 Safety Net 和 block-no-verify ← [[wiki/claude-code-p2.md]]
+- **Hooks 范式**：PreToolUse 用于长命令提醒用 tmux、写 .md 阻止；PostToolUse 用于自动格式化/类型检查/console.log 检查；Stop 用于审计残留 ← [[wiki/claude-code-p3.md]]
+
 ---
 
 ## 技能（Skills，5 个）
@@ -264,6 +295,11 @@ Hook 脚本通过环境变量引用插件目录：
 ### 技能依赖链
 
 `obsidian-remember` → `obsidian-link`（remember 依赖 link）
+
+### 经验教训
+
+- **SKILL.md 结构**：纯自然语言指令，定义触发条件 → 操作流程（含 bash 命令模板）→ 输出格式 → 安全约束 ← [[wiki/claude-code-p1.md]]
+- **.env 加载策略**：Skill 的 `_load_dotenv()` 用 fallback 列表加载多个 .env，`os.environ.setdefault` 保证先加载的优先，解决部署目录和开发目录凭证分散问题 ← [[wiki/claude-code-p1.md]]
 
 ---
 
@@ -312,6 +348,12 @@ Hook 脚本通过环境变量引用插件目录：
 | doc-updater | 文档更新 |
 | rust-reviewer | Rust 代码审查 |
 
+### 经验教训
+
+- **限制工具 = 聚焦执行**：给子代理的工具越少，越不容易跑偏。子代理 + 技能 = 自动化组合 ← [[wiki/claude-code-p3.md]]
+- **传递目标上下文**：给子代理传递目标上下文而不只是查询——帮其判断该包含什么。迭代检索模式：评估返回值 → 不充分则追问 → 最多 3 轮 ← [[wiki/claude-code-p3.md]]
+- **`description` 最关键**：Claude 据此决定何时自动委托任务，写不好会导致从不触发或误触发 ← [[wiki/claude-code-p2.md]]
+
 ---
 
 ## 团队（Teams，1 个）
@@ -354,6 +396,24 @@ Hook 脚本通过环境变量引用插件目录：
 | `~/.claude/sessions/` | 会话记录 |
 | `~/.claude/tasks/` | 任务追踪 |
 | `~/.claude/teams/` | 代理团队 |
+
+---
+
+## 自检概览
+
+定期巡检时按此表逐项验证：
+
+| 自检项 | 验证方法 | 期望结果 |
+|--------|----------|----------|
+| 插件状态 | `/plugins` | 8 个插件全部 loaded |
+| MCP 连接 | `claude mcp list` | 全部 Connected，无 hook 错误 |
+| 状态栏 | 看底部状态栏 | 显示模型/目录/分支/进度/安全网 |
+| Hooks 生效 | 执行 `rm -rf /tmp/test` | Safety Net 拦截 |
+| 技能可用 | `/docker-dev-container` | 技能内容加载 |
+| 规则加载 | 问 Claude "你加载了哪些 rules" | 列出 9 个 rules 文件 |
+| API 连接 | 任意对话 | 正常回复，无 auth 错误 |
+| 上下文余量 | 看进度条 | <50% 绿色 |
+| 插件路径 | Glob `plugins/cache/` | env 变量指向实际版本路径 |
 
 ---
 

@@ -29,7 +29,7 @@
 - 上下文管理：当前完整保留，旧的才压缩（截断+落盘→占位符→摘要）→ [[wiki/agent-arch-p1.md|详情]]([wiki/agent-arch-p1.md](wiki/agent-arch-p1.md))
 - 决策：跨学科思维模型框架（芒格100模型），高频模型含反向思考/概率思维/二阶思维 → [[wiki/mental-models.md|详情]]([wiki/mental-models.md](wiki/mental-models.md))
 - 凭证/Provider：token 集中管理在 D:\Files\.env；MiMo 用 AUTH_TOKEN 非 API_KEY，域名 xiaomimimo.com（非 xiaomimimimo.com） → [[wiki/token-management.md|详情]](wiki/token-management.md)
-- Yazi：Windows 配置在 `%AppData%\yazi\config\`，非 Linux `~/.config/yazi/`；PowerShell 写多行 TOML 用数组语法 → [[wiki/yazi.md|详情]]([wiki/yazi.md](wiki/yazi.md))
+- Yazi：WinGet 安装需重启终端；`file.exe` 必须在 PATH（Git usr/bin）；`ya pkg` 缺 LICENSE 会报错需手动部署 → [[wiki/yazi.md|详情]]([wiki/yazi.md](wiki/yazi.md))
 - 技能链调用：技能内引用其他技能时必须用 Skill 工具加载完整内容，不能跳过 → [feedback-skill-chain-discipline](feedback-skill-chain-discipline.md)
 - 子代理/团队成员技能注入：均无法调用 Skill 工具，父代理预加载内容注入 prompt → [feedback-subagent-skill-injection](feedback-subagent-skill-injection.md)
 - 技能文件同步：改 project/email_cli.py 或 SKILL.md 后必须 cp 到 ~/.claude/skills/email-assistant/，否则技能调用用旧版 → [feedback-skill-file-sync](feedback-skill-file-sync.md)

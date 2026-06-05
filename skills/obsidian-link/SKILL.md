@@ -192,87 +192,100 @@ ls wiki/ | head -5
 
 当环境检测结果为非 Docker + Windows 时，使用以下方案。
 
+### 前置：迁移已有记忆内容
+
+**在创建任何链接之前**，检查 `$MEMORY_DIR` 是否有项目专属记忆文件：
+
+```bash
+ls "$MEMORY_DIR"
+```
+
+如果存在非 Obsidian 的内容（如项目特定的 `*.md` 文件）：
+1. 将内容合并到 Obsidian wiki 的合适位置
+2. 在 Obsidian MEMORY.md 中添加对应索引条目
+3. 确认用户同意后删除项目记忆文件
+
+**不要直接覆盖**，否则项目专属记忆会丢失。
+
 ### 关键发现
 
 - **Claude Code 只读取 `memory/MEMORY.md` 作为纯文本注入系统提示，不扫描子目录。** 因此所有内容必须平铺在 memory 根目录，不能嵌套（如 `memory/obsidian/` 下的内容不会被发现）。
 - **Windows 上目录 Junction 不需要管理员权限，文件 Symlink 需要。** 这是两种不同的机制。
 - **跨盘符（如 C: 和 E:）不可用硬链接。**
 
-### 链接策略
+### 方案 A：整体目录 Junction（推荐）
 
-```
-Windows 非 Docker 环境
-       │
-       ▼
-  判断用户是否有管理员权限或已开启开发者模式
-       │
-       ├─ 有管理员权限 / 开发者模式
-       │     │
-       │     ▼
-       │   目录用 Junction（不需要权限）：
-       │     New-Item -ItemType Junction -Path $MEMORY_DIR/$item -Target $VAULT/$item
-       │   文件用 Symlink（需要权限）：
-       │     New-Item -ItemType SymbolicLink -Path $MEMORY_DIR/$file -Target $VAULT/$file
-       │
-       └─ 无管理员权限
-             │
-             ▼
-           目录用 Junction（仍然不需要权限）
-           文件改为直接复制（不同步，需手动更新）
+将整个 memory 目录替换为指向 vault 根的单个 Junction。**最简洁、无需管理员权限、双向同步。**
+
+```bash
+# 1. 清空 memory 目录（前置步骤已完成迁移）
+MEMORY_DIR="<项目记忆目录>"  # 如 C:/Users/<user>/.claude/projects/E--Files-Projects-rust-my-project/memory
+VAULT="<Obsidian 仓库路径>"  # 如 E:/Files/Obsidian
+
+rm -rf "$MEMORY_DIR"
+
+# 2. 创建整体 Junction（从 Git Bash 调用 PowerShell，注意 \$ 转义）
+powershell -Command "New-Item -ItemType Junction -Path '$MEMORY_DIR' -Target '$VAULT'"
 ```
 
-### 需要链接的条目
+**注意**：从 Git Bash 调用 PowerShell 时，变量用单引号包裹避免 Bash 展开：
+- ✅ `powershell -Command "... -Path '\$VAR' ..."`（Bash 转义）
+- ✅ `powershell -Command "... -Path 'C:/path' ..."`（硬编码路径）
+- ❌ `powershell -Command "... -Path \"$VAR\" ..."`（Bash 会吞掉 `$VAR`）
 
-| 条目 | 类型 | 链接方式 |
-|------|------|----------|
-| MEMORY.md | 文件 | Symlink（需管理员）或复制 |
-| README.md | 文件 | Symlink（需管理员）或复制 |
-| LLM-WIKI-ARCHITECTURE.md | 文件 | Symlink（需管理员）或复制 |
-| wiki/ | 目录 | Junction |
-| sources/ | 目录 | Junction |
-| skills/ | 目录 | Junction |
-| templates/ | 目录 | Junction |
+优点：一个 Junction 覆盖所有文件和目录，vault 中的 MEMORY.md、wiki/、sources/ 等全部可用。
+缺点：vault 中的 .git/、.obsidian/ 等也会暴露（不影响 Claude Code 读取）。
 
-### 重要：平铺，不要嵌套
+### 方案 B：逐条链接（备选）
 
-所有条目必须直接链接到 memory 根目录，不要创建 `memory/obsidian/` 中间层。原因：Claude Code 不扫描子目录，嵌套后 MEMORY.md 中引用的 `wiki/xxx.md` 路径会失效。
+当不希望暴露 vault 全部内容时使用。目录用 Junction，文件用 Symlink 或复制。
 
-### 管理员 PowerShell 命令（文件 Symlink）
+```bash
+MEMORY_DIR="<项目记忆目录>"
+VAULT="<Obsidian 仓库路径>"
 
-如果用户有管理员权限或已开启开发者模式，指导用户在管理员 PowerShell 中运行：
+# 目录：Junction（无需管理员权限）
+powershell -Command "New-Item -ItemType Junction -Path '$MEMORY_DIR/wiki' -Target '$VAULT/wiki'"
+powershell -Command "New-Item -ItemType Junction -Path '$MEMORY_DIR/sources' -Target '$VAULT/sources'"
 
-```powershell
-$dir = "<项目记忆目录路径>"
-$vault = "<Obsidian 仓库路径>"
-
-# 删除已有的副本文件（如有）
-Remove-Item "$dir\MEMORY.md" -Force -ErrorAction SilentlyContinue
-Remove-Item "$dir\README.md" -Force -ErrorAction SilentlyContinue
-Remove-Item "$dir\LLM-WIKI-ARCHITECTURE.md" -Force -ErrorAction SilentlyContinue
-
-# 创建 Symlink
-New-Item -ItemType SymbolicLink -Path "$dir\MEMORY.md" -Target "$vault\MEMORY.md"
-New-Item -ItemType SymbolicLink -Path "$dir\README.md" -Target "$vault\README.md"
-New-Item -ItemType SymbolicLink -Path "$dir\LLM-WIKI-ARCHITECTURE.md" -Target "$vault\LLM-WIKI-ARCHITECTURE.md"
+# 文件：尝试 Symlink，失败则复制
+powershell -Command "New-Item -ItemType SymbolicLink -Path '$MEMORY_DIR/MEMORY.md' -Target '$VAULT/MEMORY.md'" \
+  || cp "$VAULT/MEMORY.md" "$MEMORY_DIR/MEMORY.md"
 ```
 
-如果用户无法获取管理员权限，建议开启 Windows 开发者模式（设置 → 系统 → 开发者选项），之后文件 Symlink 不再需要管理员权限。
+如果 Symlink 创建失败（无管理员/未开启开发者模式），建议用户开启 Windows 开发者模式（设置 → 系统 → 开发者选项）。
+
+### 验证
+
+使用 Git Bash 命令验证（PowerShell 的 `Target` 属性可能显示错误盘符，不可靠）：
+
+```bash
+# 方案 A：验证整体 Junction
+readlink "$MEMORY_DIR"
+# 应输出 vault 路径，如 /e/Files/Obsidian/
+
+# 通用：验证关键文件可读
+head -3 "$MEMORY_DIR/MEMORY.md"
+ls "$MEMORY_DIR/wiki/" | head -5
+ls "$MEMORY_DIR/sources/" | head -5
+```
 
 ## 输出
 
 完成后向用户展示：
 
-1. **链接结构图**：显示所有创建的 symlink 及其目标
-2. **访问验证**：确认每个链接都可读取
+1. **链接结构图**：显示 Junction/symlink 及其目标
+2. **访问验证**：确认关键文件可读
 3. **下一步建议**：
    - MEMORY.md 偏好会在下次会话自动加载
    - wiki/sources 内容可通过 Claude Code 的 Read 工具按需读取
-   - 在 Obsidian 侧编辑的内容会实时同步到项目
+   - 在 Obsidian 侧编辑的内容会实时同步到项目（方案 A 全双向，方案 B 仅目录双向）
 
 ## 边界情况
 
 - **vault 不含 MEMORY.md**：提示用户是否从模板创建，或仅链接已有内容
-- **项目记忆目录已有内容**：备份旧文件到 `.bak`，然后创建 symlink
+- **项目记忆目录已有内容**：先迁移到 Obsidian wiki，再创建链接（见「前置」步骤）
 - **非标准项目路径**：通过 `find` 查找实际记忆目录，不硬编码路径
 - **Windows WSL 环境**：宿主机路径格式可能需要转换（`C:\Users\...` → `/mnt/c/Users/...`）
-- **符号链接权限**：如果创建失败，检查文件系统是否支持 symlink（某些 Windows 环境需要管理员权限）
+- **Junction 跨盘符**：Junction 支持跨盘符（如 C: → E:），不需要同盘
+- **PowerShell 编码问题**：Git Bash 调用 PowerShell 可能出现中文乱码，不影响实际执行

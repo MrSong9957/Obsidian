@@ -113,7 +113,7 @@ cargo 1.95.0 (f2d3ce0bd 2026-03-21)
 
 安装两个核心插件：
 - **rust-analyzer**：代码高亮、实时语法检查、智能补全和类型推导
-- **Native Debug**：断点单步调试
+- **Native Debug**：一个 VS Code 调试扩展，提供基于 GDB / LLDB 的原生代码调试能力。它让你可以在 VS Code 里对编译后的原生二进制程序设置断点、单步执行、查看变量——就像在 IDE 里调试 Java 或 C# 一样。Rust 编译出来的二进制文件是原生机器码（和 C/C++ 一样），不像 Python/Java 有自己的调试协议。调试原生代码需要 GDB（Linux/MinGW）或 LLDB（macOS/MSVC）这类底层调试器。Native Debug 就是把 GDB/LLDB 接入 VS Code 的桥梁。
 
 安装后彻底重启 VS Code，确保读取到新的环境变量。
 
@@ -196,6 +196,10 @@ Cargo 是 Rust 的官方构建系统和包管理器，两个核心职责：
 cargo new my-project
 cargo new --lib my-lib
 
+# 在已有 Git 仓库内创建项目时，cargo new 不会生成 .gitignore 等 Git 文件
+# 使用 --vcs=git 可强制生成 Git 文件，无视已有仓库的限制
+cargo new --vcs=git my-project
+
 # 构建
 cargo build           # debug
 cargo build --release  # release
@@ -229,6 +233,12 @@ cargo publish
 
 # 基准测试
 cargo bench
+
+# 生成项目文档并在浏览器中打开
+cargo doc --open
+
+# 只生成当前项目的文档（跳过依赖，更快）
+cargo doc --no-deps --open
 ```
 
 ## 5. 项目结构

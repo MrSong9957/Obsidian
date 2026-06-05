@@ -1,13 +1,31 @@
 ---
-name: Yazi 文件管理器
-description: Yazi 配置经验 — 主题安装、配色系统、Windows 配置路径
-type: summary
-updated: 2026-05-09
-tags: cli, yazi, config, theme
-source: self
+name: yazi
+description: Yazi 安装、配置经验 — Windows 安装、主题配色、预览插件、踩坑记录
+metadata: 
+  node_type: memory
+  type: summary
+  updated: 2026-06-05
+  tags: "cli, yazi, config, theme, windows"
+  source: self
+  originSessionId: 42a3e0e7-65d6-4a16-8633-30e9a0b95b7e
 ---
 
 # Yazi 文件管理器
+
+## 安装（Windows）
+
+- WinGet 安装：`winget install sxyazi.yazi`，安装后**需重启终端**才能使用 `yazi`/`ya` 命令
+- 版本 26.5.6（2026-06-05 实测）
+- **Windows 依赖**：`file.exe` 必须在 PATH 中，否则报 `Cannot find 'file' to detect the file's MIME type`
+  - `file.exe` 在 `E:\Program Files (x86)\Git\usr\bin\`（Git for Windows 自带）
+  - 修复：将该目录加到用户 PATH
+  - PowerShell：`[Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", "User") + ";E:\Program Files (x86)\Git\usr\bin", "User")`
+
+## 插件安装踩坑
+
+- `ya pkg add MrSong9957/code-ln` 可能因包缺少 LICENSE 文件而报错中断（exit code 1）
+- 文件实际已下载到 `%LOCALAPPDATA%\yazi\packages\<hash>\` 目录
+- 手动修复：`mkdir -p "$APPDATA/yazi/config/plugins/code-ln.yazi" && cp "$LOCALAPPDATA/yazi/packages/<hash>/main.lua" "$APPDATA/yazi/config/plugins/code-ln.yazi/"`
 
 ## 主题配色
 
