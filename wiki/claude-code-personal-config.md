@@ -42,7 +42,7 @@ source: https://example.com
 | 设置 | 值 | 启用日期 | 说明 |
 |------|-----|----------|------|
 | `alwaysThinkingEnabled` | `true` | - | 启用扩展思考 |
-| `effortLevel` | `xhigh` | - | 思考深度设为最高 |
+| `effortLevel` | `max` | - | 思考深度设为最高（通过环境变量 `CLAUDE_CODE_EFFORT_LEVEL=max`） |
 | `showThinkingSummaries` | `true` | 2026-05-30 | 显示思考摘要 |
 | 上下文窗口 | `默认` | 2026-05-30 | 使用默认上下文，不指定 [200k] 或 [1m] |
 
@@ -132,7 +132,8 @@ source: https://example.com
 | 2026-05-30 | 设置 language 为 chinese | 首选响应语言为中文 |
 | 2026-05-30 | 启用 UI 显示设置 | showTurnDuration、showMessageTimestamps、terminalProgressBarEnabled、spinnerTipsEnabled |
 | 2026-05-30 | 启用 showThinkingSummaries | 显示思考摘要 |
-| 2026-05-30 | 设置上下文窗口为 200k | 默认 200k，1M 太贵非必要，可通过 /model 切换 |
+| 2026-05-30 | 设置上下文窗口为默认 | 默认上下文，1M 太贵非必要，可通过 /model 切换 |
+| 2026-06-07 | 更新 effortLevel 文档值 | 从 `xhigh` 更正为 `max`，与实际环境变量一致 |
 | 2026-05-30 | 修改 MiMo 模型声明 | 移除所有上下文后缀，使用默认值 |
 | 2026-06-01 | 升级状态栏为综合版 | 融合旧版目录/分支 + ECC 指标/任务，添加 ecc-metrics-bridge hook |
 

@@ -2,7 +2,7 @@
 name: Claude Code 当前配置清单
 description: 本机 Claude Code 完整配置清单 + 自检清单（插件/Hooks/状态栏/MCP/技能/代理/规则/团队/经验教训）— 定期巡检、排查配置问题、新环境迁移时参考
 type: concept
-updated: 2026-06-04
+updated: 2026-06-07
 tags: claude-code, setup, plugins, hooks, mcp, skills, agents, config, checklist
 source: https://example.com
 ---
@@ -21,12 +21,16 @@ source: https://example.com
 |--------|-----|------|
 | `defaultMode` | `"auto"` | 自动批准所有工具调用 |
 | `alwaysThinkingEnabled` | `true` | 始终启用扩展思考 |
-| `effortLevel` | `"high"` | 高推理强度 |
+| `effortLevel` | `"max"` | 最高推理强度（env: `CLAUDE_CODE_EFFORT_LEVEL="max"`） |
 | `skipDangerousModePermissionPrompt` | `true` | 跳过危险模式确认 |
 | `skipAutoPermissionPrompt` | `true` | 跳过自动权限确认 |
 | `includeCoAuthoredBy` | `false` | 禁用 co-authored-by 署名 |
-| 自动更新 | 已禁用 | `CLAUDE_CODE_AUTO_UPDATE=0` |
-| Tool Search | 已启用 | `CLAUDE_CODE_TOOL_SEARCH_ENABLED=1` |
+| `autoMemoryEnabled` | `true` | 自动记忆功能 |
+| `todoFeatureEnabled` | `true` | Todo 任务追踪 |
+| `language` | `"chinese"` | 中文输出 |
+| `disableRemoteControl` | `true` | 禁用远程控制 |
+| 自动更新 | 已禁用 | `DISABLE_AUTOUPDATER=1` |
+| Tool Search | 已启用 | `ENABLE_TOOL_SEARCH=true` |
 | Agent Teams | 已启用 | `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` |
 
 ### 经验教训
@@ -39,8 +43,8 @@ source: https://example.com
 
 | 配置项 | 值 |
 |--------|-----|
-| 自定义端点 | `https://token-plan-cn.xiaomimimo.com/anthropic` |
-| 模型映射 | 所有模型 → `mimo-v2.5` / `mimo-v2.5-pro` |
+| 自定义端点 | `https://open.bigmodel.cn/api/anthropic` |
+| 模型映射 | `glm-5.1`（Opus/默认） / `glm-5-turbo`（Sonnet/Haiku/Reasoning） |
 
 ---
 
@@ -95,7 +99,7 @@ source: https://example.com
 ```json
 "statusLine": {
   "type": "command",
-  "command": "py -3 \"C:/Users/<user>/.claude/scripts/statusline.py\" | node \"${SAFETY_NET_PLUGIN_ROOT}/dist/bin/cc-safety-net.js\" --statusline"
+  "command": "py ~/.claude/scripts/statusline.py | node \"${SAFETY_NET_PLUGIN_ROOT}/dist/bin/cc-safety-net.js\" --statusline"
 }
 ```
 
@@ -222,7 +226,20 @@ ECC 插件自带的状态栏脚本：
 
 ## Hooks 系统
 
-### PreToolUse（11 个）
+> **架构说明**：settings.json 只保留 2 个用户级 hooks（Safety Net + block-no-verify）。其余 hooks 由 ECC 插件自带的 `hooks/hooks.json` 自动注入，无需手动维护。以下列表为完整生效的 hooks。
+
+### settings.json 中的 Hooks（2 个）
+
+| 匹配器 | 脚本 | 功能 | 超时 |
+|--------|------|------|------|
+| `Bash` | `cc-safety-net.js --claude-code` | Safety Net 危险命令拦截 | 15s |
+| `Bash` | `npx block-no-verify@1.1.2` | 阻止未验证的 git 操作 | - |
+
+### ECC 插件注入的 Hooks
+
+以下 hooks 由 ECC v2.0.0-rc.1 自动注册，不在 settings.json 中：
+
+#### PreToolUse（9 个）
 
 | 匹配器 | 脚本 | 功能 | 超时 | 异步 |
 |--------|------|------|------|------|
@@ -268,8 +285,8 @@ ECC 插件自带的状态栏脚本：
 ### Hook 脚本来源
 
 Hook 脚本通过环境变量引用插件目录：
-- `CLAUDE_PLUGIN_ROOT` → ECC 插件根目录（v1.8.0）
-- `SAFETY_NET_PLUGIN_ROOT` → Safety Net 插件根目录（v0.7.1）
+- `CLAUDE_PLUGIN_ROOT` → ECC 插件根目录（v2.0.0-rc.1）
+- `SAFETY_NET_PLUGIN_ROOT` → Safety Net 插件根目录（v0.9.0）
 
 ### 经验教训
 
@@ -280,15 +297,13 @@ Hook 脚本通过环境变量引用插件目录：
 
 ---
 
-## 技能（Skills，5 个）
+## 技能（Skills，3 个）
 
 路径：`~/.claude/skills/`
 
 | 技能 | 功能 | 触发方式 |
 |------|------|----------|
-| `bug-remember/` | 自学习 bug 修复系统，查询已知修复经验库 | 中英文重复 bug 关键词 |
 | `docker-dev-container/` | 创建 Docker 开发环境（Claude Code + OpenCode） | `/docker-dev-container` |
-| `learned/` | 自动学习技能占位目录（当前为空） | 自动 |
 | `obsidian-link/` | Obsidian 仓库与项目记忆 symlink 桥接 | `/obsidian-link` |
 | `obsidian-remember/` | Obsidian 知识仓库管理（三层架构：sources/wiki/MEMORY.md） | `/obsidian-remember` |
 
@@ -331,9 +346,11 @@ Hook 脚本通过环境变量引用插件目录：
 
 ---
 
-## 自定义代理（Agents）
+## 自定义代理（Agents，10 + 52 个）
 
 路径：`~/.claude/agents/`
+
+### 用户自定义代理（10 个）
 
 | 代理 | 用途 |
 |------|------|
@@ -347,6 +364,10 @@ Hook 脚本通过环境变量引用插件目录：
 | refactor-cleaner | 死代码清理 |
 | doc-updater | 文档更新 |
 | rust-reviewer | Rust 代码审查 |
+
+### ECC 插件提供的代理（52 个）
+
+ECC v2.0.0-rc.1 自动安装了大量领域专用代理，包括但不限于：`a11y-architect`、`code-explorer`、`cpp-reviewer`、`dart-build-resolver`、`django-reviewer`、`fastapi-reviewer`、`flutter-reviewer`、`go-reviewer`、`java-reviewer`、`kotlin-reviewer`、`network-architect`、`python-reviewer`、`react-reviewer`、`rust-build-resolver`、`swift-reviewer`、`typescript-reviewer` 等。完整列表见 `~/.claude/agents/` 目录。
 
 ### 经验教训
 

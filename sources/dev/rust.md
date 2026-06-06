@@ -1,9 +1,9 @@
 ---
 name: rust
-description: Rust 语言安装、环境配置、工具链使用、核心概念（枚举/模式匹配/错误处理/宏）、内存管理与堆漏洞利用安全分析
+description: Rust 语言安装、环境配置、工具链使用、核心概念（枚举/模式匹配/错误处理/宏）、内存管理与堆漏洞利用安全分析、查阅类型与文档的五种方法
 type: reference
-updated: 2026-05-28
-tags: rust, toolchain, installation, cargo, heap-exploitation, memory-safety, enum, pattern-matching, error-handling, macros, ownership, borrowing, lifetime
+updated: 2026-06-07
+tags: rust, toolchain, installation, cargo, heap-exploitation, memory-safety, enum, pattern-matching, error-handling, macros, ownership, borrowing, lifetime, rust-analyzer, cargo-doc, documentation, docs.rs
 source: https://example.com
 ---
 
@@ -1135,3 +1135,83 @@ tar xzf /tmp/musl-cross.tgz -C /tmp/
 # 6. 编译项目
 cargo +1.85.0 build --release --target x86_64-unknown-linux-musl
 ```
+
+## 9. 开发实用技巧：查阅类型与文档的五种方法
+
+rust-analyzer 虽然强大，但有时会因为索引卡住、正在编译、或代码有严重语法错误而"罢工"。以下五种方法从日常到兜底，覆盖所有场景。
+
+### 方法一：编辑器悬停提示（rust-analyzer）
+
+**日常开发的首选方式。** VS Code 安装 rust-analyzer 扩展后，将鼠标悬停在任意变量、函数或类型上，即可看到完整的类型签名、文档注释和来源信息。
+
+- **优点**：零成本、实时、无需离开编辑器
+- **局限**：索引未完成时无响应；代码有严重语法错误时可能罢工；需要等待后台分析
+
+> [!tip] 索引卡住时的快速恢复
+> `Ctrl+Shift+P` → 输入 `rust-analyzer: Restart Server` 重启分析器，通常能解决大部分卡死问题。
+
+### 方法二：用 `cargo doc --open` 生成本地文档（离线最强兜底）
+
+Rust 的包管理器 Cargo 自带文档生成工具，会把项目中用到的所有第三方依赖包（包括标准库）的官方文档下载并编译到本地。
+
+```bash
+cargo doc --open
+```
+
+- **完全离线**：不需要联网，文档就在本地电脑上
+- **绝对准确**：生成的文档版本与当前项目 `Cargo.toml` 里依赖的版本完全一致
+- **网页查看**：在浏览器中弹出精美网页，左侧是所有的类和方法，右侧有详细解释、返回值、参数以及示例代码（Example），右上角搜索框可直接搜方法名
+
+> [!info] 快捷用法
+> `cargo doc --no-deps --open` 只生成当前项目的文档（跳过依赖，更快）。日常查看第三方库文档时不推荐，因为缺依赖信息。
+
+### 方法三：查阅在线官方文档（联网时首选）
+
+联网状态下想快速查看某个知名库或标准库的方法：
+
+- **标准库（std）**：[Rust 标准库官方文档](https://doc.rust-lang.org/std/)
+- **第三方库（Crates）**：[Docs.rs](https://docs.rs/) — Rust 生态的文档大本营，搜索框输入 crate 名称（如 `rand`），即可看到该版本下所有结构体、枚举和它们的方法、返回值类型
+
+### 方法四：故意报错让编译器告诉你（极客绝招）
+
+不想打开浏览器，只想在终端里快速确认某个方法的返回值类型？利用 Rust 强类型和严格编译的特性，**故意写错类型，让编译器在报错信息里告诉你精确类型**：
+
+```rust
+// 想知道 guess.trim().parse() 返回什么？故意赋给一个错误类型
+let x: () = guess.trim().parse();
+```
+
+然后运行 `cargo check` 或 `cargo build`，编译器会直接报错：
+
+```
+error[E0308]: mismatched types
+expected `()`, found `Result<u32, ParseIntError>`
+```
+
+编译器在报错信息里直接给出了精确的返回值类型 `Result<u32, ParseIntError>`。
+
+### 方法五：用 `std::any::type_name_of_val` 在运行期打印
+
+想在程序运行时亲眼看到某个值的真实类型：
+
+```rust
+let result = guess.trim().parse();
+
+// 打印出 result 的具体类型
+println!("返回值的类型是: {}", std::any::type_name_of_val(&result));
+```
+
+运行程序后，控制台会输出该值的真实类型名称。
+
+> [!warning] 注意
+> `type_name_of_val` 返回的类型名称是编译器内部的描述字符串，仅供调试用，其具体格式不保证稳定。不要在正式代码中依赖它的输出格式做逻辑判断。
+
+### 总结建议
+
+| 场景 | 推荐方法 |
+|------|---------|
+| 日常写代码，rust-analyzer 正常工作 | 方法一（编辑器悬停） |
+| rust-analyzer 卡死，想快速确认返回值类型 | 方法四（故意报错）最快 |
+| 想系统了解某个方法的用法、参数、官方例程 | 方法二（`cargo doc --open`）体验最好 |
+| 联网状态，想快速查某个知名库 | 方法三（Docs.rs） |
+| 需要在运行时确认类型 | 方法五（`type_name_of_val`） |
