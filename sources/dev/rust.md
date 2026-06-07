@@ -1,6 +1,6 @@
 ---
 name: rust
-description: Rust 语言安装、环境配置、工具链使用、核心概念（枚举/模式匹配/错误处理/宏）、内存管理与堆漏洞利用安全分析、查阅类型与文档的五种方法
+description: Rust 语言安装、环境配置、工具链使用、核心概念（枚举/模式匹配/错误处理/宏）、内存管理与堆漏洞利用安全分析、查阅类型与文档的六种方法
 type: reference
 updated: 2026-06-07
 tags: rust, toolchain, installation, cargo, heap-exploitation, memory-safety, enum, pattern-matching, error-handling, macros, ownership, borrowing, lifetime, rust-analyzer, cargo-doc, documentation, docs.rs
@@ -1136,9 +1136,9 @@ tar xzf /tmp/musl-cross.tgz -C /tmp/
 cargo +1.85.0 build --release --target x86_64-unknown-linux-musl
 ```
 
-## 9. 开发实用技巧：查阅类型与文档的五种方法
+## 9. 开发实用技巧：查阅类型与文档的六种方法
 
-rust-analyzer 虽然强大，但有时会因为索引卡住、正在编译、或代码有严重语法错误而"罢工"。以下五种方法从日常到兜底，覆盖所有场景。
+rust-analyzer 虽然强大，但有时会因为索引卡住、正在编译、或代码有严重语法错误而"罢工"。以下六种方法从日常到兜底，覆盖所有场景。
 
 ### 方法一：编辑器悬停提示（rust-analyzer）
 
@@ -1206,6 +1206,25 @@ println!("返回值的类型是: {}", std::any::type_name_of_val(&result));
 > [!warning] 注意
 > `type_name_of_val` 返回的类型名称是编译器内部的描述字符串，仅供调试用，其具体格式不保证稳定。不要在正式代码中依赖它的输出格式做逻辑判断。
 
+### 方法六：用 `rustup doc --std` 打开本地预装标准库文档
+
+Rust 在安装编译器时，已经把整套标准库的 HTML 文档打包下载到了你的电脑里。用一条命令就能直接在浏览器中打开，**不需要开项目，不需要联网**：
+
+```bash
+rustup doc --std
+```
+
+- **效果**：直接在浏览器中打开 Rust 标准库（Standard Library）的官方本地网页
+- **与 `cargo doc --open` 的关键区别**：它不会把任何东西保存到你的项目 `target/` 目录里，仅仅是用浏览器打开安装 Rust 编译器（通过 rustup）时已经打包下载到电脑里的整套 HTML 文档
+- **适用场景**：只想查标准库 API，不想开项目、不想等 `cargo doc` 生成
+
+> [!tip] 更多 rustup doc 变体
+> - `rustup doc --book` — 打开 *The Rust Programming Language* 官方书籍
+> - `rustup doc --reference` — 打开 Rust Reference（语言规范）
+> - `rustup doc`（不带参数）— 打开本地文档首页，包含以上所有入口
+>
+> 文档版本与当前 rustup 工具链版本完全一致，切换工具链后文档也会对应更新。
+
 ### 总结建议
 
 | 场景 | 推荐方法 |
@@ -1215,3 +1234,4 @@ println!("返回值的类型是: {}", std::any::type_name_of_val(&result));
 | 想系统了解某个方法的用法、参数、官方例程 | 方法二（`cargo doc --open`）体验最好 |
 | 联网状态，想快速查某个知名库 | 方法三（Docs.rs） |
 | 需要在运行时确认类型 | 方法五（`type_name_of_val`） |
+| 只想查标准库 API，不想开项目、不想等生成 | 方法六（`rustup doc --std`）最快最轻量 |
