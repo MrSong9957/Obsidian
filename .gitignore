@@ -3,7 +3,38 @@
 
 # Claude 本地配置（不同步）
 .claude/settings.local.json
+.claude/
 
-# Python 缓存
+# 环境与密钥
+.env
+docker/.env
+docker/docker-compose.override.yml
+
+# Python
 __pycache__/
 *.pyc
+.venv/
+*.egg-info/
+.pytest_cache/
+
+# 测试与工具缓存
+.playwright-mcp/
+
+# GSD / mi-code 运行时
+.planning/
+.mi-code/
+
+# IDE
+.vscode/
+.idea/
+
+# 临时 / 原型输出
+Files/
+CLI/Python/HTML/
+
+# Skills 目录（本地运行时生成）
+cli/python/skills/
+CLI/Python/skills/
+
+# 上下文落盘目录（运行时生成）
+CLI/Python/.transcripts/
