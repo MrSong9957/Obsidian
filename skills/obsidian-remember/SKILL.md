@@ -318,20 +318,36 @@ wiki 文件 P 有新增内容
 
 当用户要求检查或维护仓库时，执行以下检查：
 
+**第一步：运行自动化检测脚本**
+
+```bash
+python {SKILL_DIR}/scripts/vault_checker.py
 ```
-1. 扫描 wiki/ 所有领域文档
-2. 检查每个文档：
-   ├─ frontmatter 完整性（name, description, type, updated, tags）
+
+脚本输出含义：
+- `All files have complete metadata.` — 所有文件 frontmatter 齐全
+- `Found N file(s) with missing metadata:` — 列出每个文件缺失的字段（name/description/type/updated/tags/source）
+
+如需自动修复缺失字段（插入默认值）：
+
+```bash
+python {SKILL_DIR}/scripts/vault_checker.py --fix
+```
+
+**第二步：手动检查（脚本不覆盖的项目）**
+
+```
+1. 检查每个文档：
    ├─ description 质量（是否清晰描述覆盖范围）
    ├─ 文档行数（> 600 行标记为待拆分）
    ├─ 文件命名规范（kebab-case）
    ├─ wikilinks 有效性
    └─ 文档老化（updated 超过 90 天 → 标记为待删除，见 §8）
-3. 检查 MEMORY.md：
+2. 检查 MEMORY.md：
    ├─ 行数（< 200 行）
    ├─ 每个指针指向的文件是否存在
    └─ 是否有领域文档未被索引
-4. 汇总报告，按优先级分级：
+3. 汇总报告，按优先级分级：
    ├─ P0（必须修复）：缺失 frontmatter、超大文件
    ├─ P1（建议修复）：description 不清晰、断链、老化文档
    └─ P2（可选优化）：接近阈值的文件

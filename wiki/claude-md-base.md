@@ -235,6 +235,7 @@ source: https://example.com
 - **个人技能**：`~/.claude/skills/<name>/SKILL.md`
 - **Worktree 目录**：`.worktrees/`（项目本地隐藏，必须 git check-ignore 验证）
 - **Obsidian 仓库**：`E:\Files\Obsidian`
+- ECC 插件 agents 目录：~/.claude/plugins/cache/ecc/ecc/2.0.0-rc.1/agents/，共 64 个
 
 ---
 
@@ -261,7 +262,6 @@ source: https://example.com
 │   ├── patterns.md              # 设计模式
 │   ├── performance.md           # 性能优化
 │   └── hooks.md                 # Hooks 系统
-├── agents/                      # Agent 定义文件
 └── skills/                      # 技能定义
 
 <project>/
