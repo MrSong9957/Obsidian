@@ -3,3 +3,7 @@
 
 # Claude 本地配置（不同步）
 .claude/settings.local.json
+
+# Python 缓存
+__pycache__/
+*.pyc
