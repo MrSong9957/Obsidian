@@ -44,6 +44,8 @@
 - OpenCode 桥接 v2：log 修复/parseHookOutput/output.args 写回/permission.asked；input.tool 是字符串；Stop/SessionEnd 在 CLI 不触发；watcher 实测 40+ 次 PostToolUse 写入确认 100% 工作 → [[wiki/opencode-bridge.md|详情]]([wiki/opencode-bridge.md](wiki/opencode-bridge.md))
 - ECC→OpenCode 集成：agent frontmatter 格式必须转换（model 删除、tools 数组→对象、color 映射）；不能把全部 .md 复制到 agents/ 目录 → [[wiki/opencode-bridge.md#ECC Agent 格式兼容性|详情]]([wiki/opencode-bridge.md](wiki/opencode-bridge.md))
 - OpenCode 代理配置：通过 opencode.jsonc 的 agent 部分添加/覆盖代理，mode:"primary" 出现在切换列表；源码修改仅在需要自定义逻辑时 → [[wiki/opencode-bridge.md#代理配置|详情]]([wiki/opencode-bridge.md](wiki/opencode-bridge.md))
+- cc switch 重置：切换 API KEY 时用过时模板重写 settings.json，通用配置已修正存入 wiki → [[wiki/claude-code-setup.md#cc switch 通用配置模板|详情]](wiki/claude-code-setup.md)
+- 缓存优化：第三方 API 缓存命中率低，根因是 `cch` 哈希值变化；设置 `CLAUDE_CODE_ATTRIBUTION_HEADER=0` 可部分解决 → [[wiki/claude-code-setup.md#缓存优化|详情]](wiki/claude-code-setup.md)
 
 ## 知识库索引
 - 本文件未覆盖的内容 → [README.md](README.md)（冷数据，按领域导航）
