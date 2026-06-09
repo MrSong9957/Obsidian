@@ -50,7 +50,7 @@ done
 ```
 vault/
 ├── MEMORY.md              # 记忆索引 + 管理规则（始终在上下文中）
-├── README.md              # 知识库导航索引（由人维护）
+├── README.md              # 知识库导航索引（自动维护）
 ├── sources/               # 原始资料层（一事一档，可读写，禁止删除）
 ├── wiki/                  # Wiki 层（按标签集中分类，LLM 可读写）
 │   └── {topic}.md         # 同类摘要集中在一个文件，靠 tags 分类
@@ -59,12 +59,12 @@ vault/
 
 **权限矩阵：**
 
-| 操作 | sources/ | wiki/ | MEMORY.md | README.md |
-|------|----------|-------|-----------|-----------|
-| 读取 | ✅ | ✅ | ✅ | ✅ |
-| 创建 | ✅ | ✅ | 仅追加指针 | ❌ |
-| 编辑 | ✅ | ✅ | 仅更新指针 | ❌ |
-| 删除 | ❌ | 仅标记 deprecated | ❌ | ❌ |
+| 操作 | sources/ | wiki/ | MEMORY.md | README.md | _index.md |
+|------|----------|-------|-----------|-----------|-----------|
+| 读取 | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 创建 | ✅ | ✅ | 仅追加指针 | ❌ | ❌ |
+| 编辑 | ✅ | ✅ | 仅更新指针 | ✅ | ✅ |
+| 删除 | ❌ | 仅标记 deprecated | ❌ | ❌ | ❌ |
 
 **文件放置规则：** feedback/project/reference 类详档放 wiki/，根目录只放 MEMORY.md、README.md、LLM-WIKI-ARCHITECTURE.md。
 
@@ -222,6 +222,47 @@ wiki 文件 P 有新增内容
 
 **MEMORY.md 不得超过 200 行。**
 
+### 2.5 索引维护
+
+当 wiki/ 或 sources/ 有文件变更时，同步更新对应的索引文件：
+
+**README.md 更新规则：**
+```
+wiki/ 有文件变更
+       │
+       ▼
+  1. 新增文件 → 检查 README.md 对应章节是否需要添加条目
+     ├─ 文件属于已有章节（Claude Code/开发实践/架构与学习/工具指南）→ 添加到对应章节
+     └─ 文件属于新领域 → 创建新章节
+  2. 删除文件 → 从 README.md 移除对应条目
+  3. 更新 README.md 的 updated 字段（如有）
+```
+
+**wiki/_index.md 更新规则：**
+```
+wiki/ 有文件变更
+       │
+       ▼
+  1. 新增文件 → 添加到 _index.md 表格，包含页面名、说明、标签
+  2. 删除文件 → 从 _index.md 移除对应行
+  3. 更新 _index.md 的 updated 字段为当前日期
+```
+
+**sources/_index.md 更新规则：**
+```
+sources/ 有文件变更
+       │
+       ▼
+  1. 新增文件 → 添加到对应子目录的表格
+  2. 删除文件 → 从 _index.md 移除对应行
+  3. 更新 _index.md 的 updated 字段为当前日期
+```
+
+**索引完整性检查（写入操作后自动执行）：**
+- README.md 中的 wikilinks 指向存在的文件
+- wiki/_index.md 包含所有 wiki/ 文件（排除 _index.md 自身）
+- sources/_index.md 包含所有 sources/ 文件（排除 _index.md 自身和子目录集合）
+
 ## 3. 去重检测
 
 ### 3.1 判定标准
@@ -347,9 +388,14 @@ python {SKILL_DIR}/scripts/vault_checker.py --fix
    ├─ 行数（< 200 行）
    ├─ 每个指针指向的文件是否存在
    └─ 是否有领域文档未被索引
-3. 汇总报告，按优先级分级：
+3. 检查索引完整性：
+   ├─ README.md 中的 wikilinks 指向存在的文件
+   ├─ wiki/_index.md 包含所有 wiki/ 文件
+   ├─ sources/_index.md 包含所有 sources/ 文件
+   └─ 索引文件的 updated 字段是否为最新
+4. 汇总报告，按优先级分级：
    ├─ P0（必须修复）：缺失 frontmatter、超大文件
-   ├─ P1（建议修复）：description 不清晰、断链、老化文档
+   ├─ P1（建议修复）：description 不清晰、断链、老化文档、索引缺失
    └─ P2（可选优化）：接近阈值的文件
 ```
 
@@ -508,6 +554,7 @@ wiki_aging_require_confirm_active: true
 □ 7. 如需添加：检查分类容量、执行条目去重（§3.4）
 □ 8. 更新 MEMORY.md
 □ 9. 验证 wikilinks 有效性
+□ 10. 更新索引文件（README.md、wiki/_index.md、sources/_index.md，见 §2.5）
 ```
 
 ## 11. 经验教训记录规范
