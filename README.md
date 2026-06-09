@@ -33,6 +33,7 @@ obsidian/
 |------|------|
 | [[wiki/claude-code-p1.md\|配置]] | settings.json、CLAUDE.md、rules、记忆系统 |
 | [[wiki/claude-code-p2.md\|工具]] | Superpowers、SafetyNet、Statusline |
+| [[wiki/claude-code-setup.md\|当前配置清单]] | 本机完整配置 + 自检清单 + 缓存优化 + cc switch 模板 |
 | [[wiki/claude-md-base.md\|CLAUDE.md 模板]] | 双层架构模板（全局 + 项目级） |
 
 ### 开发实践

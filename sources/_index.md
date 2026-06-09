@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-05-30
+updated: 2026-06-10
 ---
 
 # 原始资料索引
@@ -40,6 +40,11 @@ updated: 2026-05-30
 | [[sources/claude-code/stop-hook-design\|Stop Hook 设计文档]] | V4 最终方案（关键词触发 + 后台 agent） |
 | [[sources/claude-code/subagent-skill-test-2026-05-10\|子代理 Skill 测试]] | 子代理/团队成员能否使用 Skill 工具的实测 |
 | [[sources/claude-code/zhipu-mcp\|智谱 MCP 安装指南]] | 智谱 AI 4 个 MCP 服务器安装与配置 |
+| [[sources/claude-code/creating-subagents\|创建子代理]] | 子代理创建流程 |
+| [[sources/claude-code/ecc-opencode-install\|ECC OpenCode 安装]] | ECC 与 OpenCode 集成安装 |
+| [[sources/claude-code/opencode-auto-mode\|OpenCode 自动模式]] | OpenCode 自动模式配置 |
+| [[sources/claude-code/opencode-bridge-v2\|OpenCode 桥接 v2]] | OpenCode 桥接 v2 实现 |
+| [[sources/claude-code/settings-reference\|Settings 参考]] | settings.json 完整参考 |
 
 ## dev/
 
@@ -86,6 +91,7 @@ updated: 2026-05-30
 | [[sources/tools/yazi-preview-line-numbers\|Yazi 行号预览]] | Yazi 预览行号方案探索与实现 |
 | [[sources/tools/yazi-theme-setup\|Yazi 主题配置]] | Yazi 主题安装与配色配置 |
 | [[sources/tools/yazi-wrap-fix\|Yazi 换行修复]] | Yazi 预览不换行问题排查 |
+| [[sources/tools/mimo-provider-debug\|MiMo Provider 调试]] | MiMo Provider 问题排查 |
 
 ## 集合
 
