@@ -1,7 +1,7 @@
 ---
 name: obsidian-link
 description: |
-  将 Obsidian 仓库连接到当前项目的 Claude Code 记忆系统。
+  将 Obsidian 仓库连接到当前项目的记忆系统（Claude Code 或 OpenCode/MiMoCode）。
   当用户在新项目中想要连接 Obsidian 仓库、挂载知识库、设置记忆链接时使用此技能。
   适用于：新项目初始化、Docker 容器环境、需要跨项目共享 Obsidian 知识库的场景。
   触发短语：连接 Obsidian、挂载知识库、链接仓库、关联记忆、obsidian-link、设置 Obsidian 链接。
@@ -21,8 +21,13 @@ depends: []
 用户提供宿主机 Obsidian 路径
         │
         ▼
-  ┌─ 检测运行环境 ─┐
+  ┌─ 检测记忆系统 ─┐
   │                 │
+  Claude Code    OpenCode/MiMoCode
+  │                 │
+  ▼                 ▼
+  ┌─ 检测运行环境 ─┐   使用数据级记忆
+  │                 │   ~/.local/share/mimocode/memory/
   Docker 容器    非 Docker
   │                 │
   ▼                 ▼
@@ -37,13 +42,13 @@ depends: []
   └────────┬─────────┘
            │
            ▼
-  ┌─── 创建 symlink ──┐
-  │  MEMORY.md        │
-  │  wiki/            │
-  │  sources/         │
-  │  skills/          │
-  │  templates/       │
-  │  README.md        │
+  ┌─── 创建链接 ─────┐
+  │  Claude Code:    │
+  │  symlink/Junction│
+  │                  │
+  │  MiMoCode:       │
+  │  Junction (Win)  │
+  │  symlink (Linux) │
   └────────┬──────────┘
            │
            ▼
@@ -269,6 +274,82 @@ head -3 "$MEMORY_DIR/MEMORY.md"
 ls "$MEMORY_DIR/wiki/" | head -5
 ls "$MEMORY_DIR/sources/" | head -5
 ```
+
+## 第七步：OpenCode/MiMoCode 方法
+
+当用户使用 OpenCode/MiMoCode 时，使用以下方法链接 Obsidian 仓库。
+
+### 关键差异
+
+- **记忆位置**：OpenCode/MiMoCode 使用数据级记忆，位于 `~/.local/share/mimocode/memory/projects/<pid>/MEMORY.md`
+- **项目 ID**：使用 UUID 格式（如 `f1252ca1-80af-4d8d-ab2c-1280de217e10`）
+- **无内置集成**：没有原生的 Obsidian 集成功能
+
+### 分步指南
+
+#### 1. 查找 MiMoCode 记忆目录
+
+```bash
+# Windows
+MEMORY_ROOT="C:\Users\$USERNAME\.local\share\mimocode\memory"
+
+# Linux/macOS
+MEMORY_ROOT="$HOME/.local/share/mimocode/memory"
+```
+
+#### 2. 定位项目记忆目录
+
+```bash
+# 查找项目 ID（UUID 格式）
+ls "$MEMORY_ROOT/projects/"
+
+# 进入项目记忆目录
+PROJECT_ID="<项目 UUID>"
+PROJECT_MEMORY_DIR="$MEMORY_ROOT/projects/$PROJECT_ID"
+```
+
+#### 3. 创建链接（Windows）
+
+使用目录 Junction 链接整个 Obsidian 仓库：
+
+```bash
+# 备份现有记忆目录
+BACKUP_DIR="$PROJECT_MEMORY_DIR.bak"
+mv "$PROJECT_MEMORY_DIR" "$BACKUP_DIR"
+
+# 创建 Junction
+powershell -Command "New-Item -ItemType Junction -Path '$PROJECT_MEMORY_DIR' -Target '$OBSIDIAN_VAULT_PATH'"
+```
+
+#### 4. 创建链接（Linux/macOS）
+
+使用符号链接：
+
+```bash
+# 备份现有记忆目录
+BACKUP_DIR="$PROJECT_MEMORY_DIR.bak"
+mv "$PROJECT_MEMORY_DIR" "$BACKUP_DIR"
+
+# 创建符号链接
+ln -s "$OBSIDIAN_VAULT_PATH" "$PROJECT_MEMORY_DIR"
+```
+
+#### 5. 验证
+
+```bash
+# 检查 MEMORY.md 是否存在
+ls -la "$PROJECT_MEMORY_DIR/MEMORY.md"
+
+# 验证内容可读
+head -3 "$PROJECT_MEMORY_DIR/MEMORY.md"
+```
+
+### 注意事项
+
+- **Junction 优势**：Windows 上目录 Junction 不需要管理员权限，支持跨盘符
+- **备份重要**：创建链接前务必备份原有记忆内容
+- **实时同步**：链接创建后，Obsidian 中的修改会实时反映到 MiMoCode
+- **项目隔离**：每个项目需要单独创建链接，项目 ID 不同
 
 ## 输出
 
