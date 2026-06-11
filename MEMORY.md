@@ -50,9 +50,4 @@
 ## 知识库索引
 - 本文件未覆盖的内容 → [README.md](README.md)（冷数据，按领域导航）
 - Wiki 目录 → [wiki/](wiki/) | 原始资料 → [sources/](sources/)
-
-## MiMoCode Obsidian 链接方法
-- 记忆位置：`~/.local/share/mimocode/memory/projects/<pid>/MEMORY.md`（数据级，项目 ID 为 UUID）
-- Windows 链接：`powershell -Command "New-Item -ItemType Junction -Path '<memory_dir>/projects/<pid>' -Target '<obsidian_vault_path>'"`
-- Linux 链接：`ln -s <obsidian_vault_path> <memory_dir>/projects/<pid>`
-- 验证：检查链接目录中是否存在 MEMORY.md，验证内容可读
+- MiMoCode Obsidian 链接：Junction/symlink 链接方法 → [[wiki/claude-code-setup.md#MiMoCode Obsidian 链接方法|详情]]

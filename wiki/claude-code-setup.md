@@ -961,3 +961,57 @@ CACHE_FIX_DEBUG=1  # 查看缓存命中情况
 ---
 
 > 来源：`~/.claude/settings.json`、`~/.claude/plugins/installed_plugins.json`、`~/.claude/skills/`、`~/.claude/rules/`、`~/.claude/agents/`、`~/.claude/teams/`、`E:/Files/Obsidian/.claude/`
+
+## MiMoCode Obsidian 链接方法
+
+MiMoCode（OpenCode 分支）使用数据级记忆，与 Claude Code 的项目级记忆不同。
+
+### 关键差异
+
+| 项目 | Claude Code | MiMoCode |
+|------|-------------|----------|
+| 记忆位置 | `.claude/projects/<slug>/memory/` | `~/.local/share/mimocode/memory/projects/<pid>/` |
+| 项目标识 | 路径派生的 slug | UUID（如 `f1252ca1-80af-4d8d-ab2c-1280de217e10`） |
+| 链接方式 | Symlink/Junction | Junction（Windows）/ Symlink（Linux） |
+
+### 操作步骤
+
+**1. 查找 MiMoCode 记忆目录**
+
+```bash
+# Windows
+MEMORY_ROOT="C:\Users\$USERNAME\.local\share\mimocode\memory"
+
+# Linux/macOS
+MEMORY_ROOT="$HOME/.local/share/mimocode/memory"
+```
+
+**2. 定位项目记忆目录**
+
+```bash
+ls "$MEMORY_ROOT/projects/"  # 查找项目 UUID
+PROJECT_MEMORY_DIR="$MEMORY_ROOT/projects/<项目UUID>"
+```
+
+**3. 创建链接**
+
+```bash
+# Windows：Junction（无需管理员权限，支持跨盘符）
+powershell -Command "New-Item -ItemType Junction -Path '$PROJECT_MEMORY_DIR' -Target 'E:\Files\Obsidian'"
+
+# Linux/macOS：Symlink
+ln -s "/path/to/obsidian" "$PROJECT_MEMORY_DIR"
+```
+
+**4. 验证**
+
+```bash
+ls "$PROJECT_MEMORY_DIR/MEMORY.md"  # 检查文件存在
+head -3 "$PROJECT_MEMORY_DIR/MEMORY.md"  # 验证内容可读
+```
+
+### 注意事项
+
+- 创建链接前务必备份原有记忆目录（`mv dir dir.bak`）
+- 链接后 Obsidian 中的修改会实时反映到 MiMoCode
+- 每个项目需要单独创建链接
