@@ -76,7 +76,7 @@ obsidian/
 | `claude-code/` | Claude Code 配置、CLI、MCP | claude-code-p1、ecc、zhipu-mcp、stop-hook-design |
 | `dev/` | 编程语言、开发实践 | dev-practice、frontend、rust |
 | `learning/` | 学习方法论、思维模型 | charlie-munger-mental-models、learning |
-| `projects/` | 项目规划、进度记录 | email-assistant-journey、project-roadmap、publish-plan |
+| `projects/` | 项目规划、进度记录 | email-assistant-journey、project-roadmap、publish-plan、mimocode-reading-guide |
 | `security/` | 安全实践、密钥管理 | feedback_git-token-security |
 | `tools/` | CLI 工具、编辑器配置 | obsidian、opencode、yazi-*、token-management |
 

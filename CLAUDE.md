@@ -1,124 +1,93 @@
-# CLAUDE.md
+# LLM Wiki 管理协议
 
----
+## 你的角色
 
-## Superpowers
+你是本 Obsidian 仓库的知识管理员。
+仓库是一个三层结构的知识库：
 
-### 开发工作流
+- `sources/` = 原始资料（可读写，禁止删除）
+- `wiki/` = 结构化知识（你可以读写）
+- `templates/` = 页面模板（创建新页面时遵循）
 
-遵循 Superpowers 七阶段工作流：
+## 权限矩阵
 
-#### 1. 头脑风暴（Brainstorming）
-写代码之前，先通过提问细化需求，探索替代方案，分段展示设计供验证。
+| 操作 | sources/ | wiki/ | templates/ |
+|------|----------|-------|------------|
+| 读取 | ✅ | ✅ | ✅ |
+| 创建 | ✅ | ✅ | ❌ |
+| 编辑 | ✅ | ✅ | ❌ |
+| 删除 | ❌ | 仅标记 deprecated | ❌ |
 
-#### 2. Git Worktree
-设计批准后，创建隔离工作空间（新分支），验证测试基线干净。
+## Sources 目录分类规则
 
-#### 3. 编写计划（Writing Plans）
-将工作拆分为 2-5 分钟的小任务。每个任务包含：精确文件路径、完整代码、验证步骤。
+`sources/` 根目录只保留 `_index.md`，所有资料文件必须归入子目录。
 
-#### 4. 子代理驱动开发（Subagent-Driven Development）
-每个任务分派独立子代理执行，双阶段审查（规格合规 + 代码质量）。
+### 现有子目录
 
-#### 5. 测试驱动开发（TDD）
-严格 RED-GREEN-REFACTOR：先写失败测试 → 看它失败 → 写最小代码 → 看它通过 → 提交。
-测试之前写的代码应删除重写。
+| 子目录 | 用途 | 关键词 |
+|--------|------|--------|
+| `agent/` | Agent 架构、多代理系统、ShareAI 系列 | agent, proxy, team, workflow, harness |
+| `claude-code/` | Claude Code 配置、CLI、MCP 集成、system-prompts | claude, mcp, plugin, superpowers, hook |
+| `dev/` | 编程语言、开发实践、前端/后端技术 | rust, frontend, tdd, debugging, code-quality |
+| `feedback/` | 用户反馈、使用经验、改进建议 | feedback, experience, suggestion |
+| `learning/` | 学习方法论、思维模型、认知科学 | learning, methodology, cognition, mental-model |
+| `projects/` | 项目规划、进度记录、发布方案 | project, roadmap, publish, progress |
+| `security/` | 安全实践、密钥管理、漏洞分析 | security, token, credential, vulnerability |
+| `tools/` | CLI 工具、编辑器、开发环境配置 | yazi, obsidian, opencode, token-management |
 
-#### 6. 代码审查（Code Review）
-任务间进行审查，按严重性报告问题。CRITICAL 级别阻止推进。
+### 分类判断流程
 
-#### 7. 完成分支（Finishing Branch）
-验证测试通过，呈现选项（merge/PR/保留/丢弃），清理 worktree。
+新资料加入 `sources/` 时：
 
----
+1. 读取文件 frontmatter 的 `tags`、`description` 字段
+2. 按上表关键词匹配子目录
+3. 若无匹配，评估是否创建新子目录（需与用户确认）
+4. 使用 `git mv` 移动，保持文件名不变
 
-### 技能库
+### 约束
 
-可用技能通过 `Skill` 工具调用，按阶段归类：
+- 禁止将文件移回 `sources/` 根目录
+- 移动文件后检查 wiki 层的 `[[wikilink]]` 是否仍有效（Obsidian 通常自动跟踪重命名）
+- `_index.md` 始终留在 `sources/` 根目录
 
-#### 规划阶段
-| 技能 | 触发时机 |
-|------|---------|
-| brainstorming | 任何创造性工作（新功能、新组件、行为修改）**之前**必须使用 |
-| writing-plans | 有需求/规格需要拆分为多步任务时，写代码之前 |
-| using-git-worktrees | 需要隔离工作空间、创建 feature 分支时 |
+## 创建新页面规则
 
-#### 执行阶段
-| 技能 | 触发时机 |
-|------|---------|
-| subagent-driven-development | 当前会话中执行已拆分的独立任务 |
-| dispatching-parallel-agents | 2+ 个无依赖的独立任务需要并行时 |
-| executing-plans | 在独立会话中执行已有计划（含审查检查点） |
-| test-driven-development | 实现功能或修复 bug 前，先写测试 |
+1. 概念页使用 `templates/concept.md` 模板
+2. 摘要页使用 `templates/summary.md` 模板
+3. 矛盾页使用 `templates/contradiction.md` 模板
+4. 每个页面的 frontmatter 必须完整填写
+5. 每个 `[[wikilink]]` 必须指向已存在的页面，如果目标页面不存在，先创建再链接
+6. `sources` 字段必须溯源到 `sources/` 中的文件
 
-#### 质量保障
-| 技能 | 触发时机 |
-|------|---------|
-| verification-before-completion | 声称工作完成/修复/通过 **之前**，必须先运行验证 |
-| requesting-code-review | 完成任务、实现大功能、合并前 |
-| receiving-code-review | 收到代码审查反馈时，先验证再实施 |
-| systematic-debugging | 遇到 bug、测试失败、意外行为时，**先观察再修复** |
+## 更新规则
 
-#### 收尾阶段
-| 技能 | 触发时机 |
-|------|---------|
-| finishing-a-development-branch | 实现完成、测试通过后，决定 merge/PR/保留/丢弃 |
+当新资料加入 sources/ 时，执行以下判断：
 
-#### 其他技能
-| 技能 | 触发时机 |
-|------|---------|
-| writing-skills | 创建/编辑技能，或验证技能可用性 |
+1. **ADD**：发现新概念 → 创建新的概念页
+2. **UPDATE**：补充已有概念 → 编辑已有的 wiki 页面
+3. **CONTRADICT**：发现矛盾 → 创建矛盾页
+4. **NOOP**：无新信息 → 不做任何操作
 
----
+## 质量规则
 
-### 设计原则
+- 每条 Wiki 内容必须标注来源（`sources` 字段 + 正文脚注 `[^n]`）
+- 每个脚注必须在"引用索引"区块中定义，格式为 `[[文件名]] L起始行-结束行 — 简要说明`
+- `confidence < 0.7` 的内容必须在页面中标注 `⚠️ 需要人工确认`
+- `severity: high` 的矛盾页必须提示人工裁决
+- 禁止捏造不存在的 `[[wikilink]]`
 
-- 系统化优于临时应对：流程优于猜测
-- 复杂度缩减：简洁是首要目标
+## 行号索引规则
 
-技能分为两类：
-- **刚性技能**（TDD、调试）：严格执行，不走捷径
-- **弹性技能**（模式）：按上下文灵活应用
+行号索引是 Wiki 层的核心溯源机制，确保 AI 和人都能直达原文：
 
-技能优先级：流程技能优先（brainstorming、debugging）→ 实施技能其次（frontend-design 等）
+- **格式**：`L{起始行}-{结束行}`，例如 `L42-58`
+- **每个要点都要标注**：正文中用 `[^1]`、`[^2]` 等脚注标记，底部"引用索引"区块中定义
+- **行号是原文的实际行号**：LLM 在读取 sources/ 文件时记录关键信息所在行，生成 Wiki 页时写入
+- **行号会随原文变化失效**：如果原始资料被替换（新版本），相关 Wiki 页的行号需要重新标注
 
-技能调用：1% 规则，即使只有 1% 可能适用也必须先调用技能；调用顺序：技能检查在澄清问题之前；指令优先级：用户指令 > superpowers 技能 > 默认行为
+## 格式规则
 
-### 铁律
-
-1. **TDD 铁律**：没有失败测试，不写生产代码
-2. **调试铁律**：没有根因调查，不实施修复
-3. **验证铁律**：没有运行证据，不声称完成
-
----
-
-## 项目信息
-
-### 技术栈
-
-Python 3.13+ asyncio | anthropic SDK | prompt-toolkit + Rich | pydantic 2 | diff-match-patch | sqlite3 | click | pytest
-不用：agent 框架、Textual、手写 ANSI
-
----
-
-### 架构
-
-单文件原型 `CLI/Python/agent_loop.py`，数据流：
-`main() → REPL → run_agent_loop() → client.messages.create() → 解析 stop_reason → 工具调用循环`
-
----
-
-### 文件约定
-
-- **设计文档**：`docs/superpowers/specs/YYYY-MM-DD--<name>.md`
-- **任务计划**：`docs/superpowers/plans/YYYY-MM-DD-<name>.md`
-- **个人技能**：`~/.claude/skills/<name>/SKILL.md`
-- **Worktree 目录**：`.worktrees/`（项目本地隐藏，必须 git check-ignore 验证）
-
----
-
-### 项目
-
-**mi-code** — Python AI 终端编程助手，对标 Claude Code 的全功能开源实现。
-- 不用 agent 框架，从底层构建全部能力
-- API 兼容层：Anthropic SDK 0.94.0 → Zhipu GLM
+- 使用 Obsidian 原生语法：wikilinks、frontmatter、callout、tags、脚注
+- 不使用 HTML 标签
+- 不使用自定义语法
+- Markdown 格式遵循 CommonMark 规范

@@ -1,10 +1,10 @@
 ---
-name: OpenCode 桥接
-description: OpenCode plugin 平台行为限制、input.tool 契约、CLAUDE_SETTINGS_PATH override、ECC 桥接关键结论（log 修复/parseHookOutput/aggregateResults/output.args 写回）；代理配置（添加/覆盖/禁用代理）
+name: OpenCode 桥接与 MiMo-Code
+description: OpenCode plugin 平台行为限制、input.tool 契约、ECC 桥接关键结论；MiMo-Code 项目结构、源码阅读顺序、核心架构
 type: concept
-updated: 2026-06-03
-tags: opencode, claude-code, hooks, plugin, bridge, deploy, agent
-source: [sources/claude-code/opencode-bridge-v2.md]
+updated: 2026-06-12
+tags: opencode, mimocode, claude-code, hooks, plugin, bridge, deploy, agent, monorepo, typescript, architecture
+source: [sources/claude-code/opencode-bridge-v2.md, sources/projects/mimocode-reading-guide.md]
 ---
 
 # OpenCode 桥接
@@ -244,3 +244,55 @@ sync.data.agent.filter((x) => x.mode !== "subagent" && !x.hidden)
 - `[[sources/claude-code/settings-reference.md]]` — settings.json 字段参考
 - `[[wiki/claude-code-p3.md]]` — Claude Code 进阶工作流（含 Hooks 配置范式）
 - `[[wiki/dev-practice.md]]` — TDD/调试/代码质量基础
+
+---
+
+## MiMo-Code 项目结构
+
+> MiMo-Code 是基于 OpenCode fork 的 AI 编程智能体，Turborepo monorepo 架构。
+> 详细阅读指南：[[sources/projects/mimocode-reading-guide.md|MiMo-Code 源码阅读指南]]
+
+### 核心包（packages/opencode/src/）
+
+| 目录 | 功能 | 关键文件 |
+|------|------|----------|
+| `agent/` | Agent 系统（定义/配置/prompt） | `agent.ts` |
+| `session/` | 会话管理（生命周期/checkpoint/压缩） | `session.ts`, `checkpoint.ts` |
+| `tool/` | 工具系统（bash/read/write/edit/glob/grep） | `tool.ts` |
+| `provider/` | LLM Provider 集成（20+ 厂商） | `provider.ts` |
+| `memory/` | 跨会话记忆（SQLite FTS5 全文搜索） | `service.ts` |
+| `config/` | 配置管理（mimocode.json 合并层级） | `config.ts` |
+| `effect/` | Effect-TS 运行时（InstanceState/Runner） | `instance-state.ts` |
+| `storage/` | 数据存储（Drizzle ORM + SQLite） | `db.ts` |
+| `server/` | HTTP 服务器（Hono + WebSocket） | `server.ts` |
+| `plugin/` | 插件系统（MiMo/Copilot/Cloudflare） | `loader.ts` |
+| `skill/` | 技能发现与加载 | `discovery.ts` |
+| `workflow/` | 工作流引擎 | `runtime.ts` |
+| `cli/cmd/` | CLI 命令（run/serve/web/agent 等） | `run.ts` |
+| `cli/cmd/tui/` | TUI 界面（SolidJS + opentui） | `app.tsx` |
+
+### 其他包
+
+| 包 | 功能 |
+|---|---|
+| `packages/app/` | Web 前端（SolidJS + Vite） |
+| `packages/desktop/` | 桌面客户端（Electron） |
+| `packages/sdk/` | JavaScript SDK（OpenAPI 生成） |
+| `packages/ui/` | 共享 UI 组件库 |
+| `packages/shared/` | 共享工具函数 |
+| `packages/plugin/` | 插件 SDK |
+| `packages/function/` | Cloudflare Worker API |
+| `packages/console/` | 管理控制台 |
+
+### 阅读路线
+
+```
+1. README.md → 项目概况
+2. index.ts → CLI 入口
+3. run.ts → 核心命令实现
+4. agent/ → Agent 系统
+5. session/ → 会话管理
+6. tool/ → 工具系统
+7. memory/ → 记忆系统
+8. effect/ → Effect-TS 基础设施
+```

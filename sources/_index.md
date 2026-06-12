@@ -73,6 +73,7 @@ updated: 2026-06-10
 | [[sources/projects/project-roadmap\|项目发展规划]] | 项目发展方向三阶段路线图（开源→框架→SaaS） |
 | [[sources/projects/publish-plan\|发布方案]] | Email Assistant 多平台发布方案与一键发布工具 |
 | [[sources/projects/2026-05-14-persona-style-progress\|人格化回复进度]] | 人格化邮件回复功能开发进度（已合并 master） |
+| [[sources/projects/mimocode-reading-guide\|MiMo-Code 源码阅读指南]] | MiMo-Code（OpenCode fork）源码阅读顺序、核心架构、关键技术栈 |
 
 ## security/
 
