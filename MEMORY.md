@@ -44,7 +44,7 @@
 - OpenCode 桥接 v2：log 修复/parseHookOutput/output.args 写回/permission.asked；input.tool 是字符串；Stop/SessionEnd 在 CLI 不触发；watcher 实测 40+ 次 PostToolUse 写入确认 100% 工作 → [[wiki/opencode-bridge.md|详情]]([wiki/opencode-bridge.md](wiki/opencode-bridge.md))
 - ECC→OpenCode 集成：agent frontmatter 格式必须转换（model 删除、tools 数组→对象、color 映射）；不能把全部 .md 复制到 agents/ 目录 → [[wiki/opencode-bridge.md#ECC Agent 格式兼容性|详情]]([wiki/opencode-bridge.md](wiki/opencode-bridge.md))
 - OpenCode 代理配置：通过 opencode.jsonc 的 agent 部分添加/覆盖代理，mode:"primary" 出现在切换列表；源码修改仅在需要自定义逻辑时 → [[wiki/opencode-bridge.md#代理配置|详情]]([wiki/opencode-bridge.md](wiki/opencode-bridge.md))
-- MiMo-Code 源码阅读：6 阶段路线（概况→CLI→架构→特色功能→基础设施→UI），核心看 agent/session/tool 三个目录 → [[sources/projects/mimocode-reading-guide.md|详情]]([sources/projects/mimocode-reading-guide.md](sources/projects/mimocode-reading-guide.md))
+- MiMo-Code 源码阅读：4 模块 19 章路线（参考 Learn ShareAI s01-s19），核心闭环→系统加固→任务运行时→多Agent → [[sources/projects/mimocode-reading-guide.md|详情]]([sources/projects/mimocode-reading-guide.md](sources/projects/mimocode-reading-guide.md))
 - MiMo-Code run.ts 架构：execute() 统一核心（SDK→session→事件订阅→loop()），双模式（本地 bootstrap in-process fetch / 远程 --attach HTTP），权限默认拒绝 question/plan_enter/plan_exit
 - cc switch 重置：切换 API KEY 时用过时模板重写 settings.json，通用配置已修正存入 wiki → [[wiki/claude-code-setup.md#cc switch 通用配置模板|详情]](wiki/claude-code-setup.md)
 - 缓存优化：第三方 API 缓存命中率低，根因是 `cch` 哈希值变化；设置 `CLAUDE_CODE_ATTRIBUTION_HEADER=0` 可部分解决 → [[wiki/claude-code-setup.md#缓存优化|详情]](wiki/claude-code-setup.md)

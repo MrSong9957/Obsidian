@@ -286,13 +286,13 @@ sync.data.agent.filter((x) => x.mode !== "subagent" && !x.hidden)
 
 ### 阅读路线
 
+参考 [Learn ShareAI](https://learn.shareai.run/zh/s01/) 课程结构，从最小闭环逐步扩展：
+
 ```
-1. README.md → 项目概况
-2. index.ts → CLI 入口
-3. run.ts → 核心命令实现
-4. agent/ → Agent 系统
-5. session/ → 会话管理
-6. tool/ → 工具系统
-7. memory/ → 记忆系统
-8. effect/ → Effect-TS 基础设施
+核心闭环:  s01(Agent循环) → s02(工具) → s03(任务) → s04(子代理) → s05(技能) → s06(压缩)
+系统加固:  → s07(权限) → s08(Hook) → s09(记忆) → s10(提示词) → s11(恢复)
+任务运行时: → s12(任务图) → s13(后台) → s14(调度)
+多Agent:  → s15(团队) → s16(协议) → s17(自治) → s18(隔离) → s19(MCP)
 ```
+
+详见 [[sources/projects/mimocode-reading-guide.md|MiMo-Code 源码阅读指南]]
