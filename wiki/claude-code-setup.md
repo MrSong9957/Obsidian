@@ -44,7 +44,7 @@ source: https://example.com
 | 配置项 | 值 |
 |--------|-----|
 | 自定义端点 | `https://token-plan-cn.xiaomimimo.com/anthropic` |
-| 模型映射 | `mimo-v2.5-pro`（Opus/默认） / `mimo-v2.5`（Sonnet/Haiku/Reasoning） |
+| 模型映射 | `mimo-v2.5-pro`（Opus/Reasoning） / `mimo-v2.5`（Sonnet/Haiku） |
 | 认证方式 | `ANTHROPIC_AUTH_TOKEN`（非 `ANTHROPIC_API_KEY`） |
 | 缓存优化 | `CLAUDE_CODE_ATTRIBUTION_HEADER=0`（禁用归因头，提升缓存命中率） |
 

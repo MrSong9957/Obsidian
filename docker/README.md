@@ -1,11 +1,11 @@
 # Docker Dev Container
 
-Fully isolated development environment, configured via `.env` to use Zhipu AI.
+Fully isolated development environment, supporting Zhipu AI and Xiaomi MiMo dual model switching.
 
 ## Architecture
 
 ```
-.env (API Key) -> docker-compose.yml -> container env vars -> Claude Code
+.env (API Key + Model Config) -> docker-compose.yml -> container env vars -> Claude Code
 ```
 
 Config is injected via `.env`, **completely isolated from host**.
@@ -23,7 +23,8 @@ On startup the container automatically checks and restores Claude config:
 
 ```bash
 # 1. Edit .env, fill in API Key
-# ANTHROPIC_API_KEY=your-api-key
+cp .env.example .env
+# Edit .env with your API Key and GitHub Token
 
 # 2. Build and start
 docker compose up -d --build
@@ -38,6 +39,36 @@ claude
 # 5. Test
 claude -p "hello"
 ```
+
+## Model Switching
+
+All model configs are in `.env`. Switch by commenting/uncommenting:
+
+### Zhipu AI (default)
+
+```env
+ANTHROPIC_BASE_URL=https://open.bigmodel.cn/api/anthropic
+ANTHROPIC_API_KEY=your-zhipu-api-key
+ANTHROPIC_DEFAULT_HAIKU_MODEL=glm-5-turbo
+ANTHROPIC_DEFAULT_SONNET_MODEL=glm-5-turbo
+ANTHROPIC_DEFAULT_OPUS_MODEL=glm-5.2
+ANTHROPIC_MODEL=glm-5.2
+ANTHROPIC_REASONING_MODEL=glm-5.2
+```
+
+### Xiaomi MiMo
+
+```env
+ANTHROPIC_BASE_URL=https://token-plan-cn.xiaomimimo.com/anthropic
+ANTHROPIC_API_KEY=your-xiaomi-api-key
+ANTHROPIC_DEFAULT_HAIKU_MODEL=mimo-v2.5
+ANTHROPIC_DEFAULT_SONNET_MODEL=mimo-v2.5
+ANTHROPIC_DEFAULT_OPUS_MODEL=mimo-v2.5-pro
+ANTHROPIC_MODEL=mimo-v2.5-pro
+ANTHROPIC_REASONING_MODEL=mimo-v2.5-pro
+```
+
+After switching, run `docker compose up -d` to reload.
 
 ## Isolation
 

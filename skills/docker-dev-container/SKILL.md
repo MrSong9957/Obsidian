@@ -170,9 +170,14 @@ init_settings() {
 {
   "env": {
     "ANTHROPIC_BASE_URL": "https://open.bigmodel.cn/api/anthropic",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-5.1",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-5.1",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5.1",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-5-turbo",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-5-turbo",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5.2",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL_NAME": "glm-5.2",
+    "ANTHROPIC_MODEL": "glm-5.2",
+    "ANTHROPIC_REASONING_MODEL": "glm-5.2",
+    "CLAUDE_CODE_EFFORT_LEVEL": "max",
+    "DISABLE_AUTOUPDATER": "1",
     "API_TIMEOUT_MS": "3000000",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
   }
@@ -183,17 +188,27 @@ EOF
     fi
 }
 
+# 设置 Bun 环境
+setup_bun() {
+    if [ -d "/home/app/.bun" ]; then
+        export BUN_INSTALL="/home/app/.bun"
+        export PATH="/home/app/.bun/bin:$PATH"
+    fi
+}
+
 # 以 app 用户身份执行初始化
 if [ "$(id -u)" = "0" ]; then
     # root 用户：修复权限后初始化
     chown -R app:app /home/app/.claude /home/app/.config/opencode 2>/dev/null || true
     restore_config
     init_settings
+    setup_bun
     chown -R app:app /home/app/.claude /home/app/.config/opencode 2>/dev/null || true
 else
     # 非 root 用户：直接初始化
     restore_config
     init_settings
+    setup_bun
 fi
 
 echo "🚀 开发容器已就绪"
@@ -211,19 +226,20 @@ FROM docker.1ms.run/library/debian:bookworm-slim
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
 
-# Install system dependencies + Python 3
+# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    bash curl git ca-certificates sudo \
+    bash curl git ca-certificates sudo fonts-noto-cjk \
     python3 python3-pip python3-venv \
+    && ln -sf /usr/bin/python3 /usr/bin/python \
     && rm -rf /var/lib/apt/lists/*
 
-# Install gh CLI (GitHub CLI) — official channel, proxy auto-used if set
+# Install GitHub CLI
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
       | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
       | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
-    && apt-get update \
-    && apt-get install -y gh \
+    && apt-get update && apt-get install -y --no-install-recommends gh \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js 20.x
@@ -231,8 +247,10 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Claude Code and OpenCode (use npm mirror)
-# OpenCode 配置指南见 [[sources/opencode.md]]
+# Install Bun
+RUN curl -fsSL https://bun.sh/install | bash
+
+# Install Claude Code and OpenCode (use npm mirror + proxy if available)
 RUN npm config set registry https://registry.npmmirror.com \
     && npm install -g @anthropic-ai/claude-code opencode-ai
 
@@ -245,9 +263,10 @@ RUN groupadd -g 1000 app && \
 RUN mkdir -p /home/app/project /home/app/.claude/backups /home/app/.config/opencode && \
     chown -R app:app /home/app
 
-# Copy entrypoint script
+# Copy entrypoint script (fix Windows CRLF line endings)
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+RUN sed -i 's/\r$//' /usr/local/bin/entrypoint.sh \
+    && chmod +x /usr/local/bin/entrypoint.sh
 
 WORKDIR /home/app/project
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
@@ -273,20 +292,31 @@ services:
     # Initialize config (run entrypoint as root on first start)
     user: "0:0"
     environment:
-      # Zhipu AI config (from .env)
-      - ANTHROPIC_BASE_URL=https://open.bigmodel.cn/api/anthropic
+      # API config (from .env)
+      - ANTHROPIC_BASE_URL=${ANTHROPIC_BASE_URL}
       - ANTHROPIC_AUTH_TOKEN=${ANTHROPIC_API_KEY}
-      - ANTHROPIC_DEFAULT_HAIKU_MODEL=glm-5.1
-      - ANTHROPIC_DEFAULT_SONNET_MODEL=glm-5.1
-      - ANTHROPIC_DEFAULT_OPUS_MODEL=glm-5.1
+      # Model config (from .env)
+      - ANTHROPIC_DEFAULT_HAIKU_MODEL=${ANTHROPIC_DEFAULT_HAIKU_MODEL}
+      - ANTHROPIC_DEFAULT_SONNET_MODEL=${ANTHROPIC_DEFAULT_SONNET_MODEL}
+      - ANTHROPIC_DEFAULT_OPUS_MODEL=${ANTHROPIC_DEFAULT_OPUS_MODEL}
+      - ANTHROPIC_DEFAULT_OPUS_MODEL_NAME=${ANTHROPIC_DEFAULT_OPUS_MODEL_NAME}
+      - ANTHROPIC_MODEL=${ANTHROPIC_MODEL}
+      - ANTHROPIC_REASONING_MODEL=${ANTHROPIC_REASONING_MODEL}
+      # Tool config (from .env)
+      - GITHUB_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN:-}
+      - HTTP_PROXY=${HTTP_PROXY:-}
+      - HTTPS_PROXY=${HTTPS_PROXY:-}
+      - NO_PROXY=localhost,127.0.0.1
+      # Fixed config
+      - CLAUDE_CODE_EFFORT_LEVEL=max
+      - CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
+      - DISABLE_AUTOUPDATER=1
+      - ENABLE_TOOL_SEARCH=true
       - API_TIMEOUT_MS=3000000
       - CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
-      # GitHub Token (from .env)
-      - GITHUB_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN:-}
-      # Network proxy (via host Docker proxy)
-      - HTTP_PROXY=http://host.docker.internal:7890
-      - HTTPS_PROXY=http://host.docker.internal:7890
-      - NO_PROXY=localhost,127.0.0.1
+      # Bun config
+      - BUN_INSTALL=/home/app/.bun
+      - PATH=/home/app/.bun/bin:$PATH
     volumes:
       # Project directory (two-way sync)
       - ..:/home/app/project
@@ -307,21 +337,42 @@ volumes:
 # ============================================================
 # Docker Dev Container Configuration
 # ============================================================
-#
 # .env is NOT tracked by git - API keys are safe
-#
-# ============================================================
 
 # Project name
 PROJECT_NAME=dev-container
 
-# Zhipu AI API Key (get from https://open.bigmodel.cn)
-ANTHROPIC_API_KEY=your-api-key-here
+# ---- API 配置（切换时只需改这里） ----
 
-# GitHub Token (for git plugin, get from https://github.com/settings/tokens)
+# 智谱 AI（默认）
+ANTHROPIC_BASE_URL=https://open.bigmodel.cn/api/anthropic
+ANTHROPIC_API_KEY=your-zhipu-api-key
+
+# 小米 MiMo（切换时取消注释，注释掉上面的智谱配置）
+# ANTHROPIC_BASE_URL=https://token-plan-cn.xiaomimimo.com/anthropic
+# ANTHROPIC_API_KEY=your-xiaomi-api-key
+
+# ---- 模型配置（当前：智谱） ----
+
+ANTHROPIC_DEFAULT_HAIKU_MODEL=glm-5-turbo
+ANTHROPIC_DEFAULT_SONNET_MODEL=glm-5-turbo
+ANTHROPIC_DEFAULT_OPUS_MODEL=glm-5.2
+ANTHROPIC_DEFAULT_OPUS_MODEL_NAME=glm-5.2
+ANTHROPIC_MODEL=glm-5.2
+ANTHROPIC_REASONING_MODEL=glm-5.2
+
+# ---- 模型配置（小米 MiMo，切换时取消注释） ----
+
+# ANTHROPIC_DEFAULT_HAIKU_MODEL=mimo-v2.5
+# ANTHROPIC_DEFAULT_SONNET_MODEL=mimo-v2.5
+# ANTHROPIC_DEFAULT_OPUS_MODEL=mimo-v2.5-pro
+# ANTHROPIC_DEFAULT_OPUS_MODEL_NAME=mimo-v2.5-pro
+# ANTHROPIC_MODEL=mimo-v2.5-pro
+# ANTHROPIC_REASONING_MODEL=mimo-v2.5-pro
+
+# ---- 工具配置 ----
+
 GITHUB_PERSONAL_ACCESS_TOKEN=your-github-token-here
-
-# Network proxy — used by both build (apt/curl) and runtime
 HTTP_PROXY=http://host.docker.internal:7890
 HTTPS_PROXY=http://host.docker.internal:7890
 ```
@@ -335,9 +386,14 @@ HTTPS_PROXY=http://host.docker.internal:7890
   "env": {
     "ANTHROPIC_BASE_URL": "https://open.bigmodel.cn/api/anthropic",
     "ANTHROPIC_API_KEY": "YOUR_API_KEY_HERE",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-5.1",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-5.1",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5.1"
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-5-turbo",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-5-turbo",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5.2",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL_NAME": "glm-5.2",
+    "ANTHROPIC_MODEL": "glm-5.2",
+    "ANTHROPIC_REASONING_MODEL": "glm-5.2",
+    "CLAUDE_CODE_EFFORT_LEVEL": "max",
+    "DISABLE_AUTOUPDATER": "1"
   }
 }
 ```
@@ -476,7 +532,7 @@ claude -p "hello"
 - [ ] docker-compose.yml 配置正确
 - [ ] 项目目录双向同步
 - [ ] 配置目录与宿主机隔离
-- [ ] Claude Code 可正常使用 GLM-5.1
+- [ ] Claude Code 可正常使用 glm-5.2
 - [ ] Git 插件可正常访问 GitHub
 - [ ] Python 3 可用（`python3 --version`）
 - [ ] gh CLI 可用（`gh --version`）

@@ -120,10 +120,10 @@ source /home/app/project/scripts/switch-provider.sh zhipu   # 切到智谱
 
 | Claude 层级 | Zhipu 模型 | MiMo 模型 |
 |-------------|-----------|-----------|
-| Opus | `glm-5.1` | `mimo-v2.5-pro[1m]` |
-| Sonnet | `glm-5-turbo` | `mimo-v2.5-pro[1m]` |
-| Haiku | `glm-5-turbo` | `mimo-v2.5[1m]` |
-| Reasoning | `glm-5.1` | `mimo-v2.5-pro[1m]` |
+| Opus | `glm-5.2` | `mimo-v2.5-pro` (1M) |
+| Sonnet | `glm-5-turbo` | `mimo-v2.5` (1M) |
+| Haiku | `glm-5-turbo` | `mimo-v2.5` |
+| Reasoning | `glm-5.2` | `mimo-v2.5-pro` |
 
 **切换后必须重启 Claude Code 才生效。**
 
