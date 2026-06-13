@@ -2,7 +2,7 @@
 name: new-project-setup
 description: 新项目初始化统一入口——Docker 容器启动、镜像配置验证、CLAUDE.md/ECC/Superpowers 补充；整合智谱MCP、首次配置（SafetyNet/StatusLine）、CLAUDE.md 模板、ECC 补强的配置参考
 type: reference
-updated: 2026-05-17
+updated: 2026-06-14
 tags: docker, setup, claude-md, ecc, superpowers, zhipu-mcp, safety-net, configuration, "[[wiki/claude-md-base.md]]", "[[wiki/ecc-superpowers-supplement.md]]", "[[wiki/zhipu-mcp.md]]", "[[wiki/claude-code-p2.md]]"
 source: https://example.com
 ---
@@ -162,7 +162,12 @@ Docker 构建涉及多个网络层，每层解法不同：
 - ❌ 在 Docker Desktop → Settings → Proxies 填 `host.docker.internal:7890` — 会把 `docker.1ms.run` 也路由到代理，代理拒绝局域网连接，`FROM` 行直接失败
 - ❌ 在 Dockerfile 加 `ENV HTTP_PROXY=${HTTP_PROXY}` — 同上，影响镜像拉取
 - ❌ 试图开启 FlClash Allow LAN — 不应该为修复构建而改代理软件配置
-- ✅ 构建成功后确认：`docker images s7620605/claude-code-opencode`
+- ❌ `docker-compose.yml` 用 `HTTP_PROXY: ${HTTP_PROXY:-}` — 宿主机环境变量优先级高于 `.env` 空值，代理仍会泄漏。**必须硬编码 `HTTP_PROXY: ""`**
+- ❌ `PATH=/home/app/.bun/bin:$PATH` 写在 docker-compose.yml environment 中 — `$PATH` 在宿主机展开，Windows PATH 注入容器，覆盖 Linux PATH，导致 `bash: command not found`。**删除该行，依赖 Dockerfile 的 `ENV PATH`**
+- ❌ 忘记在 apt-get 依赖中加 `unzip` — Bun 安装脚本需要 unzip，`debian:bookworm-slim` 不预装
+- ❌ entrypoint.sh 以 `user: "0:0"` 运行时未设置 PATH — root 用户的 PATH 可能不完整。Dockerfile 加 `ENV PATH`，entrypoint.sh 加 `export PATH`
+- ❌ Windows 编辑的 `.sh` 文件带 CRLF — Linux bash 无法识别 `\r`。Dockerfile 中用 `sed -i 's/\r$//'` 修复
+- ✅ 构建成功后确认：`docker compose exec app bash` 能正常进入
 
 ### 常见运行时问题
 
