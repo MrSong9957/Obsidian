@@ -1,0 +1,84 @@
+{
+  "env": {
+    "CLAUDE_PLUGIN_ROOT": "C:/Users/<user>/.claude/plugins/cache/ecc/ecc/2.0.0-rc.1",
+    "SAFETY_NET_PLUGIN_ROOT": "C:/Users/<user>/.claude/plugins/cache/cc-marketplace/safety-net/1.0.1",
+    "CLAUDE_CODE_ATTRIBUTION_HEADER": "0",
+    "ENABLE_TOOL_SEARCH": "true",
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "CLAUDE_CODE_EFFORT_LEVEL": "max"
+  },
+  "theme": "dark",
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "defaultMode": "auto"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "description": "Safety Net - Block destructive git and filesystem commands",
+        "hooks": [
+          {
+            "command": "node \"${SAFETY_NET_PLUGIN_ROOT}/dist/bin/cc-safety-net.js\" --claude-code",
+            "timeout": 15,
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "command": "npx block-no-verify@1.1.2",
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      }
+    ]
+  },
+  "disableRemoteControl": true,
+  "statusLine": {
+    "type": "command",
+    "command": "py ~/.claude/scripts/statusline.py | CLAUDE_SETTINGS_PATH=$HOME/.claude/settings.json node \"${SAFETY_NET_PLUGIN_ROOT}/dist/bin/cc-safety-net.js\" --statusline"
+  },
+  "enabledPlugins": {
+    "context7@claude-plugins-official": true,
+    "ecc@ecc": true,
+    "frontend-design@claude-plugins-official": true,
+    "github@claude-plugins-official": true,
+    "learning-output-style@claude-plugins-official": true,
+    "safety-net@cc-marketplace": true,
+    "skill-creator@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "cc-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "kenryu42/cc-marketplace"
+      }
+    },
+    "everything-claude-code": {
+      "source": {
+        "source": "github",
+        "repo": "affaan-m/everything-claude-code"
+      }
+    }
+  },
+  "language": "chinese",
+  "spinnerTipsEnabled": true,
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "xhigh",
+  "showClearContextOnPlanAccept": true,
+  "autoMemoryEnabled": true,
+  "showThinkingSummaries": true,
+  "skipDangerousModePermissionPrompt": true,
+  "preferredNotifChannel": "auto",
+  "autoCompactEnabled": true,
+  "fileCheckpointingEnabled": true,
+  "showTurnDuration": true,
+  "showMessageTimestamps": true,
+  "terminalProgressBarEnabled": true,
+  "todoFeatureEnabled": true,
+  "skipAutoPermissionPrompt": true
+}

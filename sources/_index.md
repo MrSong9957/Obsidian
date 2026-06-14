@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-06-10
+updated: 2026-06-14
 ---
 
 # 原始资料索引
@@ -45,6 +45,8 @@ updated: 2026-06-10
 | [[sources/claude-code/opencode-auto-mode\|OpenCode 自动模式]] | OpenCode 自动模式配置 |
 | [[sources/claude-code/opencode-bridge-v2\|OpenCode 桥接 v2]] | OpenCode 桥接 v2 实现 |
 | [[sources/claude-code/settings-reference\|Settings 参考]] | settings.json 完整参考 |
+| [[sources/claude-code/statusline.py\|状态栏脚本 statusline.py]] | 综合版状态栏 Python 脚本（模型/目录/分支/进度条/任务/成本指标） |
+| [[sources/claude-code/cc-switch-template.json\|cc switch 配置模板]] | cc switch 切换 API KEY 时重写 settings.json 的完整 JSON 模板 |
 
 ## dev/
 

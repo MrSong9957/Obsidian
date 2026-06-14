@@ -2,7 +2,7 @@
 name: Claude Code 当前配置清单
 description: 本机 Claude Code 完整配置清单 + 自检清单（插件/Hooks/状态栏/MCP/技能/代理/规则/团队/经验教训）— 定期巡检、排查配置问题、新环境迁移时参考
 type: concept
-updated: 2026-06-10
+updated: 2026-06-14
 tags: claude-code, setup, plugins, hooks, mcp, skills, agents, config, checklist
 source: https://example.com
 ---
@@ -13,9 +13,11 @@ source: https://example.com
 
 本文档记录本机 Claude Code 的实际安装配置，作为排查和迁移的参考。配置变更时需同步更新本文档。
 
+> 可执行资产（状态栏脚本、cc switch 模板）已外移至 `sources/claude-code/`，本文档只留指针与约束，避免脚本更新导致文档过时。
+
 ## 全局设置概要
 
-配置文件路径：`~/.claude/settings.json`（335 行）
+配置文件路径：`~/.claude/settings.json`
 
 | 配置项 | 值 | 说明 |
 |--------|-----|------|
@@ -46,7 +48,43 @@ source: https://example.com
 | 自定义端点 | `https://token-plan-cn.xiaomimimo.com/anthropic` |
 | 模型映射 | `mimo-v2.5-pro`（Opus/Reasoning） / `mimo-v2.5`（Sonnet/Haiku） |
 | 认证方式 | `ANTHROPIC_AUTH_TOKEN`（非 `ANTHROPIC_API_KEY`） |
-| 缓存优化 | `CLAUDE_CODE_ATTRIBUTION_HEADER=0`（禁用归因头，提升缓存命中率） |
+| 缓存优化 | `CLAUDE_CODE_ATTRIBUTION_HEADER=0`（禁用归因头，提升缓存命中率，详见下方「缓存优化」） |
+
+---
+
+## `cc switch` 后的常见失效与修复
+
+> 状态栏 ❌、Hooks 报错、安全网失效等问题，绝大多数源于 `cc switch` 切换 API KEY 时的三类根因。本节合并原散落于「状态栏」「Hooks 系统」的重复诊断，后续章节不再重复。
+
+### 三大根因
+
+| 根因 | 症状 | 修复 |
+|------|------|------|
+| **`CLAUDE_SETTINGS_PATH` 指向无效文件** | `cc-safety-net --statusline` 的 `isPluginEnabled()` 读不到 `enabledPlugins`，状态栏显示 `🛡️ CC Safety Net ❌` | statusLine 命令中显式覆盖 `CLAUDE_SETTINGS_PATH=$HOME/.claude/settings.json` |
+| **`cc switch` 重置 settings.json** | 切换 API KEY 时用过时模板重写配置，`CLAUDE_PLUGIN_ROOT`/`SAFETY_NET_PLUGIN_ROOT` 回旧路径、ECC hooks 被重新注入、statusLine 回旧值 | 按 [[sources/claude-code/cc-switch-template.json]] 修复后，验证未被再次重置 |
+| **`SAFETY_NET_PLUGIN_ROOT` 版本过时** | 插件升级后 env 中版本号未同步，`dist/bin/cc-safety-net.js` 路径不存在 | `find ~/.claude/plugins/cache -name "cc-safety-net.js"` 找正确路径，更新 env 版本号（cc switch 模板也同步） |
+
+### 诊断流程（异常时按顺序检查）
+
+| 步骤 | 检查项 | 命令 | 正常结果 | 异常修复 |
+|------|--------|------|----------|----------|
+| 1 | `CLAUDE_SETTINGS_PATH` 指向有效文件 | `cat $CLAUDE_SETTINGS_PATH` | 含 `enabledPlugins["safety-net@cc-marketplace"]: true` | statusLine 命令加 `CLAUDE_SETTINGS_PATH=$HOME/.claude/settings.json` |
+| 2 | `SAFETY_NET_PLUGIN_ROOT` 路径存在 | `ls $SAFETY_NET_PLUGIN_ROOT/dist/bin/cc-safety-net.js` | 文件存在 | find 正确路径后更新 env（见根因 3） |
+| 3 | `CLAUDE_PLUGIN_ROOT` 路径存在且无多余前缀 | `ls $CLAUDE_PLUGIN_ROOT/hooks/hooks.json` | 文件存在 | 更新 env 路径，去掉多余的 `everything-claude-code/` 前缀 |
+| 4 | settings.json 不含 ECC hooks | `grep -c CLAUDE_PLUGIN_ROOT ~/.claude/settings.json` | 返回 `0` | 删除引用 `${CLAUDE_PLUGIN_ROOT}` 的 hooks，只保留 Safety Net + block-no-verify |
+| 5 | Python 命令可用 | `py --version`（Windows） | 返回 Python 3.x | Windows 必须用 `py`，不能用 `python`（exit code 49） |
+
+### 验证修复
+
+```bash
+# 测试状态栏完整管道（替换 SAFETY_NET_PLUGIN_ROOT 为实际路径）
+echo '{"model":{"display_name":"test"},"workspace":{"current_dir":"E:/Files/Projects/rust-my-project"},"context_window":{"remaining_percentage":80},"session_id":"test"}' | py ~/.claude/scripts/statusline.py | CLAUDE_SETTINGS_PATH=$HOME/.claude/settings.json node "${SAFETY_NET_PLUGIN_ROOT}/dist/bin/cc-safety-net.js" --statusline
+
+# 检查 ECC hooks 未被重新注入
+grep -c "CLAUDE_PLUGIN_ROOT" ~/.claude/settings.json  # 应为 0
+```
+
+期望状态栏输出包含所有分段，安全网显示 ✅。
 
 ---
 
@@ -74,40 +112,33 @@ source: https://example.com
 | skill-creator | claude-plugins-official | 9e150cfd48b8 | 2026-03-20 | 技能创建工具 |
 | learning-output-style | claude-plugins-official | 1.0.0 | 2026-03-20 | 交互式学习输出风格 |
 
-### 安装渠道说明
+### 安装渠道
 
-| 渠道 | 命令 | 说明 |
+| 渠道 | 命令 | 适用 |
 |------|------|------|
-| Claude Code 插件市场 | `/plugin` → 从 `claude-plugins-official` 安装 | 官方市场，Superpowers 等 6 个插件通过此渠道安装 |
-| GitHub 仓库 | `/plugin marketplace add <repo>` → `/plugin install` | ECC 通过此渠道安装，需先添加仓库为自定义市场 |
-| cc-marketplace | `/plugin marketplace add kenryu42/cc-marketplace` | Safety Net 专用市场 |
+| Claude Code 插件市场 | `/plugin` → 从 `claude-plugins-official` 安装 | Superpowers 等 6 个插件 |
+| GitHub 仓库 | `/plugin marketplace add <repo>` → `/plugin install` | ECC（需先添加仓库为自定义市场） |
+| cc-marketplace | `/plugin marketplace add kenryu42/cc-marketplace` | Safety Net 专用 |
 
-### 手动安装 ECC（命令行方式）
-
-如果 `/plugin` 命令失败，可手动安装：
+### 手动安装 ECC（`/plugin` 命令失败时）
 
 ```bash
-# 1. 添加市场
 claude plugin marketplace add https://github.com/affaan-m/everything-claude-code
-
-# 2. 查看可用插件
 claude plugin search ecc
-
-# 3. 安装
 claude plugin install ecc@ecc
 ```
 
-**注意**：手动安装后需重启 Claude Code，且 `~/.claude/plugins/cache/` 路径可能与自动安装不同。安装后验证 `CLAUDE_PLUGIN_ROOT` 指向正确路径。
-
+手动安装后需重启 Claude Code，且 `~/.claude/plugins/cache/` 路径可能与自动安装不同。验证 `CLAUDE_PLUGIN_ROOT` 指向正确路径。
 
 ### 经验教训
 
 - **安装前备份**：任何插件安装前必须 `cp -r ~/.claude/rules ~/.claude/rules.backup`，Rules 和 Hooks 都是追加合并，绝不能直接覆盖 ← [[wiki/claude-code-p2.md]]
 - **Safety Net Windows 配置**：Windows 需手动配 Hook 和 `SAFETY_NET_PLUGIN_ROOT` 环境变量，不会自动配置 ← [[wiki/claude-code-p2.md]]
-- **Safety Net 状态栏 ❌ 根因**：`isPluginEnabled()` 读取 `CLAUDE_SETTINGS_PATH`，该变量在 `cc switch` 后可能指向不存在的项目级文件。修复：statusLine 命令中显式覆盖 `CLAUDE_SETTINGS_PATH=$HOME/.claude/settings.json`。详见「状态栏 → 快速诊断」← [[wiki/claude-code-setup.md]]（2026-06-10 复盘）
 - **Skill 双目录部署**：项目目录（开发）和 `~/.claude/skills/`（运行）是两份独立副本，改代码后必须 `cp` 同步，否则 Skill 调用仍用旧版 ← [[wiki/claude-code-p1.md]]
 - **技能链调用**：Skill 内引用其他 Skill 时必须用 Skill 工具加载完整内容，不能跳过 ← [[wiki/claude-code-p1.md]]
 - **子代理无法调用 Skill**：子代理和团队成员都不能使用 Skill 工具，父代理必须预加载技能内容并用 `---SKILL_NAME START/END---` 标记注入 prompt ← [[wiki/claude-code-p2.md]]
+
+> Safety Net 状态栏 ❌ 的根因（`CLAUDE_SETTINGS_PATH` / `SAFETY_NET_PLUGIN_ROOT` 版本过时）见上文「`cc switch` 后的常见失效与修复」。
 
 ---
 
@@ -122,28 +153,7 @@ claude plugin install ecc@ecc
 }
 ```
 
-> **关键**：`CLAUDE_SETTINGS_PATH=$HOME/.claude/settings.json` 必须覆盖，否则 cc-safety-net 会读取项目级设置（可能不存在或缺少 `enabledPlugins`），导致始终显示 ❌。
-
-### 快速诊断（状态栏异常时按顺序检查）
-
-状态栏异常通常由 4 个原因导致，按排查优先级排序：
-
-| 步骤 | 检查项 | 命令 | 正常结果 | 异常修复 |
-|------|--------|------|----------|----------|
-| 1 | `CLAUDE_SETTINGS_PATH` 指向有效文件 | `cat $CLAUDE_SETTINGS_PATH` | 包含 `enabledPlugins["safety-net@cc-marketplace"]: true` | statusLine 命令中添加 `CLAUDE_SETTINGS_PATH=$HOME/.claude/settings.json` 覆盖 |
-| 2 | `SAFETY_NET_PLUGIN_ROOT` 路径存在 | `ls $SAFETY_NET_PLUGIN_ROOT/dist/bin/cc-safety-net.js` | 文件存在 | 更新 settings.json 的 env 中版本号，或 `find ~/.claude/plugins/cache -name "cc-safety-net.js"` 找正确路径 |
-| 3 | `CLAUDE_PLUGIN_ROOT` 路径存在且无多余前缀 | `ls $CLAUDE_PLUGIN_ROOT/hooks/hooks.json` | 文件存在 | 更新 env 路径，去掉多余的 `everything-claude-code/` 前缀 |
-| 4 | Python 命令可用 | `py --version` | 返回 Python 3.x | Windows 必须用 `py`，不能用 `python`（exit code 49） |
-
-**典型故障模式**：`cc switch` 切换 API KEY 后，`CLAUDE_SETTINGS_PATH` 可能指向不同的项目级路径，该路径不存在或不含 `enabledPlugins`，导致 `isPluginEnabled()` 返回 false，状态栏显示 `🛡️ CC Safety Net ❌`。
-
-**验证修复**：
-```bash
-# 测试完整管道（替换 SAFETY_NET_PLUGIN_ROOT 为实际路径）
-echo '{"model":{"display_name":"test"},"workspace":{"current_dir":"E:/Files/Projects/rust-my-project"},"context_window":{"remaining_percentage":80},"session_id":"test"}' | py ~/.claude/scripts/statusline.py | CLAUDE_SETTINGS_PATH=$HOME/.claude/settings.json node "${SAFETY_NET_PLUGIN_ROOT}/dist/bin/cc-safety-net.js" --statusline
-```
-
-期望输出包含所有分段，安全网显示 ✅。
+> `CLAUDE_SETTINGS_PATH` 覆盖是状态栏正常的关键，根因与诊断见上文「`cc switch` 后的常见失效与修复」。
 
 ### 显示效果
 
@@ -154,7 +164,7 @@ mimo-v2.5-pro | PycharmProjects/test | main | ████░░░░░░ 47%
 
 ### 管道结构
 
-`statusline.py`（综合版）→ `cc-safety-net --statusline`（附加安全网状态指示器）
+`statusline.py`（综合版）→ `cc-safety-net --statusline`（管道追加安全网状态指示器）
 
 ### 综合版特性
 
@@ -170,7 +180,7 @@ mimo-v2.5-pro | PycharmProjects/test | main | ████░░░░░░ 47%
 
 ### 依赖配置
 
-状态栏依赖以下 hook 写入数据（已在 settings.json 中配置）：
+状态栏依赖 PostToolUse hook 写入会话指标到 bridge 文件（已在 settings.json 中配置）：
 
 ```json
 // PostToolUse hook — 写入会话指标到 bridge 文件
@@ -187,11 +197,19 @@ mimo-v2.5-pro | PycharmProjects/test | main | ████░░░░░░ 47%
 
 Bridge 文件路径：`/tmp/ecc-metrics-{session_id}.json`（Node.js `os.tmpdir()`）
 
-### 脚本位置
+### 脚本位置与完整源码
 
 - **主脚本**：`~/.claude/scripts/statusline.py`（综合版，融合旧版目录/分支 + ECC 指标/任务）
+- **完整源码**：[[sources/claude-code/statusline.py]]（外移至此，文档不再嵌副本）
 - 备选脚本：`~/.claude/scripts/statusline.sh`（Bash 版，无 jq 依赖）
 - 调试脚本：`~/.claude/scripts/debug_path.py`
+
+**关键实现细节**（踩坑结晶）：
+- `read_bridge()` 用 `os.environ.get("TEMP")` 而非 `tempfile.gettempdir()`——Python 的 `tempfile` 在 Windows 上会追加 `\claude` 子目录，与 Node.js 的 `os.tmpdir()` 路径不一致
+- `build_context_bar()` 的 `used` 值通过 auto-compact buffer 公式计算，而非直接使用 stdin 的 `used_percentage`
+- `read_current_task()` 按 `session_id` 前缀匹配 todo 文件，取首个 `status == "in_progress"` 的 `activeForm`
+
+**回归测试**：`bash ~/.claude/scripts/test-statusline.sh`
 
 ### stdin JSON 关键字段
 
@@ -203,23 +221,19 @@ Bridge 文件路径：`/tmp/ecc-metrics-{session_id}.json`（Node.js `os.tmpdir(
 ### 已知问题
 
 1. **Windows `python` 命令**：解析为 Windows Store 存根，exit code 49，必须用 `py` 或 `py -3` 替代。
-2. **`CLAUDE_SETTINGS_PATH` 指向无效文件**：`cc switch` 切换 API KEY 后，该变量可能指向不存在的项目级设置文件，导致 `isPluginEnabled()` 返回 false。修复：statusLine 命令中添加 `CLAUDE_SETTINGS_PATH=$HOME/.claude/settings.json` 覆盖。
-3. **`SAFETY_NET_PLUGIN_ROOT` 版本过时**：插件升级后 env 中的版本号未同步，导致路径不存在。修复：`find ~/.claude/plugins/cache -name "cc-safety-net.js"` 找正确路径后更新 env。
-4. **`cc switch` 重置 settings.json**：切换 API KEY 时可能使用过时模板重写整个配置，导致 env 路径、statusLine、hooks 全部回到旧值。修复后需验证未被再次重置。详见「Hooks 系统 → 快速诊断」。
+2. **stdin 叶子字段 null 导致 `render error`**：Claude Code 在会话启动/上下文压缩等过渡态会发出 key 存在但值为 `null` 的字段（`context_window.remaining_percentage`、`model.id`、`cwd`）。`.get(key, default)` 对"存在但 null"返回 `None` 而非 default，导致 `_render()` 抛 `TypeError` → `main()` fallback 显示 `statusline render error`。症状**间歇性**——过渡态瞬时，过后自愈，极具迷惑性。修复：叶子字段做 null 防御（`model.get("id") or "unknown"`、`context_window.get("remaining_percentage")` + `is None` 检查、`data.get("cwd") or os.getcwd()`），让 null 与"缺失"行为一致。回归测试：`bash ~/.claude/scripts/test-statusline.sh`。← [[wiki/claude-code-setup.md]]（2026-06-14 复盘）
 
-### 经验教训
+> `CLAUDE_SETTINGS_PATH` / `SAFETY_NET_PLUGIN_ROOT` 版本过时 / `cc switch` 重置相关问题，见上文「`cc switch` 后的常见失效与修复」。
 
-- **`CLAUDE_SETTINGS_PATH` 是状态栏失败的首要原因**：`cc-safety-net --statusline` 的 `isPluginEnabled()` 读取此路径，文件不存在或不含 `enabledPlugins` 即返回 false。必须在 statusLine 命令中显式覆盖为 `$HOME/.claude/settings.json` ← [[wiki/claude-code-setup.md]]（2026-06-10 复盘）
-- **Windows `py` vs `python`**：`python` 命令返回 exit code 49（不存在），必须用 `py` 或 `py -3` ← [[wiki/claude-code-p2.md]]
+### 经验教训（状态栏专属）
+
 - **Worktree `.git` 是文件**：worktree 中 `.git` 是文件（指向主仓库），不是目录。`get_git_branch()` 原先用 `isdir` 会跳过 worktree 找到错误分支，修复为 `isdir(...) or isfile(...)` ← [[wiki/claude-code-p2.md]]
-- **`read_bridge()` 路径**：必须用 `os.environ.get("TEMP")` 而非 `tempfile.gettempdir()`，因为 Python 的 `tempfile` 在 Windows 上会追加 `\claude` 子目录，与 Node.js 的 `os.tmpdir()` 路径不一致 ← [[wiki/claude-code-setup.md]]
-- **插件升级后需同步 env 版本号**：`SAFETY_NET_PLUGIN_ROOT` 硬编码版本号，插件更新后必须手动同步 ← [[wiki/claude-code-setup.md]]（2026-06-10 复盘）
+- **`read_bridge()` 路径**：必须用 `os.environ.get("TEMP")` 而非 `tempfile.gettempdir()`（详见关键实现细节）← [[wiki/claude-code-setup.md]]
+- **stdin 叶子字段 null 是间歇崩溃根因**：`.get(key, default)` 对"存在但 null"返回 `None`，过渡态发出的 null 字段触发 `TypeError` → render error。容器级 `or {}` 不够，叶子字段也要防 null。详见已知问题 #2 ← [[wiki/claude-code-setup.md]]（2026-06-14 复盘）
 
----
+### 备选状态栏
 
-### 备选：简易版状态栏
-
-如不需要当前任务和会话指标，可使用简易版：
+如不需要当前任务和会话指标，用**简易版**（只显示模型名 | 目录路径 | Git 分支 | 进度条 | 安全网）：
 
 ```json
 "statusLine": {
@@ -228,24 +242,7 @@ Bridge 文件路径：`/tmp/ecc-metrics-{session_id}.json`（Node.js `os.tmpdir(
 }
 ```
 
-简易版只显示：模型名 | 目录路径 | Git 分支 | 进度条 | 安全网，无当前任务和成本指标。
-
----
-
-### 备选：ECC 原版状态栏
-
-ECC 插件自带的状态栏脚本：
-
-```json
-"statusLine": {
-  "type": "command",
-  "command": "node \"<ECC_ROOT>/scripts/hooks/ecc-statusline.js\""
-}
-```
-
-显示：模型名 | 当前任务 | $成本 工具数 文件数 时长 | 目录名 | 进度条
-
-特点：目录仅显示最后一级，无 Git 分支。
+或用 **ECC 原版**（目录仅显示最后一级，无 Git 分支）：`node \"<ECC_ROOT>/scripts/hooks/ecc-statusline.js\"`
 
 ---
 
@@ -272,29 +269,7 @@ ECC 插件自带的状态栏脚本：
 
 ## Hooks 系统
 
-> **架构说明**：settings.json 只保留 2 个用户级 hooks（Safety Net + block-no-verify）。其余 hooks 由 ECC 插件自带的 `hooks/hooks.json` 自动注入，无需手动维护。以下列表为完整生效的 hooks。
-
-### 快速诊断（Hooks 报错时按顺序检查）
-
-Hooks 异常通常由 2 个原因导致，按排查优先级排序：
-
-| 步骤 | 检查项 | 命令 | 正常结果 | 异常修复 |
-|------|--------|------|----------|----------|
-| 1 | `CLAUDE_PLUGIN_ROOT` 路径存在 | `ls $CLAUDE_PLUGIN_ROOT` | 目录存在 | 更新 settings.json 的 env 中路径：`find ~/.claude/plugins/cache -name "hooks.json"` 找正确版本 |
-| 2 | settings.json 不含 ECC hooks | `grep CLAUDE_PLUGIN_ROOT ~/.claude/settings.json` | 无匹配 | 删除 settings.json 中引用 `${CLAUDE_PLUGIN_ROOT}` 的 hooks，只保留 Safety Net + block-no-verify |
-
-**典型故障模式**：
-1. **`cc switch` 重置 settings.json**：切换 API KEY 时可能使用过时模板重写配置，导致 `CLAUDE_PLUGIN_ROOT` 回到旧路径、hooks 被重新注入。修复后需检查是否再次被重置。
-2. **ECC 插件升级**：`plugins/cache/` 路径变化，env 未同步更新。
-
-**验证修复**：
-```bash
-# 检查 ECC hooks.json 存在且可被插件系统发现
-ls $CLAUDE_PLUGIN_ROOT/hooks/hooks.json
-
-# 检查 settings.json 中无 ECC hooks
-grep -c "CLAUDE_PLUGIN_ROOT" ~/.claude/settings.json  # 应为 0
-```
+> **架构说明**：settings.json 只保留 2 个用户级 hooks（Safety Net + block-no-verify）。其余 hooks 由 ECC 插件自带的 `hooks/hooks.json` 自动注入，无需手动维护。诊断见上文「`cc switch` 后的常见失效与修复」。
 
 ### settings.json 中的 Hooks（2 个）
 
@@ -305,50 +280,9 @@ grep -c "CLAUDE_PLUGIN_ROOT" ~/.claude/settings.json  # 应为 0
 
 ### ECC 插件注入的 Hooks
 
-以下 hooks 由 ECC v2.0.0-rc.1 自动注册，不在 settings.json 中：
+ECC v2.0.0-rc.1 自动注册约 30 个 hooks，覆盖 PreToolUse / PostToolUse / PostToolUseFailure / PreCompact / SessionStart / SessionEnd / Stop 等事件，功能包括：危险命令拦截、tmux/git-push 提醒、文档写入警告、上下文压缩建议、自动格式化、类型检查、console.log 残留检查、代码质量门禁、治理日志、MCP 健康检查、会话指标桥接、持续学习观察器、成本追踪等。
 
-#### PreToolUse（9 个）
-
-| 匹配器 | 脚本 | 功能 | 超时 | 异步 |
-|--------|------|------|------|------|
-| `Bash` | `cc-safety-net.js --claude-code` | Safety Net 危险命令拦截 | 15s | - |
-| `Bash` | `npx block-no-verify@1.1.2` | 阻止未验证的 git 操作 | - | - |
-| `Bash` | `auto-tmux-dev.js` | 自动 tmux 开发环境 | - | - |
-| `Bash` | `pre-bash-tmux-reminder.js` | tmux 提醒（strict 模式） | - | - |
-| `Bash` | `pre-bash-git-push-reminder.js` | git push 提醒（strict 模式） | - | - |
-| `Write` | `doc-file-warning.js` | 写文档文件前警告 | - | - |
-| `Edit\|Write` | `suggest-compact.js` | 建议上下文压缩 | - | - |
-| `*` | `observe.sh` | 持续学习观察器 | - | async |
-| `Bash\|Write\|Edit\|MultiEdit` | `insaits-security-wrapper.js` | 安全检查 | 15s | - |
-| `Bash\|Write\|Edit\|MultiEdit` | `governance-capture.js` | 治理日志 | 10s | - |
-| `*` | `mcp-health-check.js` | MCP 服务器健康检查 | - | - |
-
-### PostToolUse（9 个）
-
-| 匹配器 | 脚本 | 功能 | 超时 | 异步 |
-|--------|------|------|------|------|
-| `Bash` | `post-bash-pr-created.js` | PR 创建检测 | - | - |
-| `Bash` | `post-bash-build-complete.js` | 构建完成检测 | 30s | async |
-| `Edit\|Write\|MultiEdit` | `quality-gate.js` | 代码质量检查 | 30s | async |
-| `Edit` | `post-edit-format.js` | 编辑后自动格式化 | - | - |
-| `Edit` | `post-edit-typecheck.js` | 编辑后类型检查 | - | - |
-| `Edit` | `post-edit-console-warn.js` | console.log 残留检查 | - | - |
-| `Bash\|Write\|Edit\|MultiEdit` | `governance-capture.js` | 治理日志 | - | - |
-| `*` | `observe.sh` | 持续学习观察器 | - | async |
-| `*` | `ecc-metrics-bridge.js` | 会话指标桥接（状态栏依赖） | 5s | async |
-
-### 其他事件
-
-| 事件 | 匹配器 | 脚本 | 功能 |
-|------|--------|------|------|
-| PostToolUseFailure | `*` | `mcp-health-check.js` | MCP 健康检查 |
-| PreCompact | `*` | `pre-compact.js` | 压缩前准备 |
-| SessionStart | `*` | ECC `session-start.js` | 会话启动初始化 |
-| SessionEnd | `*` | `session-end-marker.js` | 会话结束标记（async） |
-| Stop | `*` | `check-console-log.js` | console 日志检查 |
-| Stop | `*` | `session-end.js` | 会话清理（async） |
-| Stop | `*` | `evaluate-session.js` | 会话评估（async） |
-| Stop | `*` | `cost-tracker.js` | 成本追踪（async） |
+完整列表见 `$CLAUDE_PLUGIN_ROOT/hooks/hooks.json`，**无需在 settings.json 维护**（settings.json 中引用 `${CLAUDE_PLUGIN_ROOT}` 的 hooks 必须删除，否则升级后报 "not associated with a plugin"）。
 
 ### Hook 脚本来源
 
@@ -356,14 +290,56 @@ Hook 脚本通过环境变量引用插件目录：
 - `CLAUDE_PLUGIN_ROOT` → ECC 插件根目录（v2.0.0-rc.1）
 - `SAFETY_NET_PLUGIN_ROOT` → Safety Net 插件根目录（v1.0.1）
 
-### 经验教训
+### ECC Hooks 开关机制
 
-- **`cc switch` 重置 settings.json**：切换 API KEY 时可能使用过时模板重写配置，导致 `CLAUDE_PLUGIN_ROOT` 回到旧路径、`SAFETY_NET_PLUGIN_ROOT` 版本过时、ECC hooks 被重新注入。修复后需验证未被再次重置 ← [[wiki/claude-code-setup.md]]（2026-06-10 复盘）
+ECC 的 33 个 hooks 默认**零配置全开**（安装插件即生效）。通过 `~/.claude/settings.json` 的 `env` 块注入两个环境变量控制开关，判定逻辑见 `scripts/lib/hook-flags.js`：
+
+| 变量 | 作用 | 默认值 |
+|------|------|--------|
+| `ECC_HOOK_PROFILE` | 粗粒度档位：`minimal`（仅核心）/ `standard`（平衡）/ `strict`（最严） | `standard` |
+| `ECC_DISABLED_HOOKS` | 细粒度黑名单，逗号分隔 hook ID | 无 |
+
+**判定优先级**：黑名单 > 档位。每个 hook 在 `hooks/hooks.json` 声明所属档位（如 `standard,strict`），当前档位在允许列表内 → 启用。
+
+#### 当前配置（settings.json env）
+
+```json
+"ECC_HOOK_PROFILE": "standard",
+"ECC_DISABLED_HOOKS": "stop:desktop-notify,pre:edit-write:gateguard-fact-force,pre:observe:continuous-learning,post:observe:continuous-learning,stop:evaluate-session"
+```
+
+#### 禁用的 5 个 hooks 及理由
+
+| Hook ID | 原功能 | 禁用理由 |
+|---------|--------|----------|
+| `stop:desktop-notify` | 响应结束后弹桌面通知 | WSL/容器无桌面 daemon，通知无效 |
+| `pre:edit-write:gateguard-fact-force` | 首次编辑某文件硬阻断，强制先调查 | 每个新文件首次编辑都被拦，影响迭代速度。临时关用 `ECC_GATEGUARD=off` |
+| `pre:observe:continuous-learning` | PreToolUse 持续学习观察器 | 每次工具调用都跑，开销最重 |
+| `post:observe:continuous-learning` | PostToolUse 持续学习观察器 | 同上（Pre+Post 各跑一次） |
+| `stop:evaluate-session` | 响应结束自动评估并提取模式 | 配合观察器关闭；不依赖自动 `/learn` 时无意义 |
+
+#### 其他专项开关
+
+| 变量 | 作用 |
+|------|------|
+| `ECC_GATEGUARD=off` | 单独关 GateGuard（保留其他） |
+| `ECC_GOVERNANCE_CAPTURE=1` | **反向**：治理捕获默认关，需才开 |
+| `ECC_SESSION_START_CONTEXT=off` | 关 SessionStart 额外上下文注入 |
+| `ECC_CONTEXT_MONITOR_COST_WARNINGS=off` | 保留上下文/范围警告，只关成本估算 |
+
+#### 验证生效
+
+环境变量在进程启动时读取，**改完需重启 Claude Code 会话**。当前会话不受影响。
+
+### 经验教训（Hooks 专属）
+
 - **settings.json 只保留 2 个用户级 hooks**：Safety Net（`${SAFETY_NET_PLUGIN_ROOT}`）+ block-no-verify（`npx`）。所有引用 `${CLAUDE_PLUGIN_ROOT}` 的 hooks 必须删除，由 ECC 插件 `hooks/hooks.json` 自动注册 ← [[wiki/claude-code-setup.md]]（2026-06-10 复盘）
 - **Hook 类型选择**：prompt hook 返回 `{"ok": false, "reason": "..."}` 可让主 Claude 继续工作（拥有完整上下文和工具权限），command hook + `claude -p` 子进程需读 transcript 重建上下文，有冷启动和终端乱码风险 ← [[wiki/claude-code-p1.md]]
 - **Stop Hook 演进 V1→V4**：command+claude-p（V1）→ prompt hook ok:false（V2）→ prompt hook+后台 agent（V3，过度触发）→ 关键词触发+后台 agent（V4，当前方案）。教训：自动触发的 hook 评估器难以准确判断对话是否有复盘价值，用户主动触发更可靠 ← [[wiki/claude-code-p1.md]]
 - **ECC 升级后 Hooks 报错**：ECC 插件升级后 `plugins/cache/` 路径变化，settings.json 中旧 hooks 失效报 "not associated with a plugin"。ECC v2+ 自带 `hooks/hooks.json` 自解析路径，settings.json 只保留 Safety Net 和 block-no-verify ← [[wiki/claude-code-p2.md]]
 - **Hooks 范式**：PreToolUse 用于长命令提醒用 tmux、写 .md 阻止；PostToolUse 用于自动格式化/类型检查/console.log 检查；Stop 用于审计残留 ← [[wiki/claude-code-p3.md]]
+
+> `cc switch` 重置 settings.json 导致 env 路径/hooks 回旧值的问题，见上文「`cc switch` 后的常见失效与修复」。
 
 ---
 
@@ -503,12 +479,10 @@ OpenCode 是另一个 AI 编码工具，可通过桥接与 Claude Code 共享配
 | `~/.claude/daemon/` | IPC pipe key（daemon 模式） |
 | `~/.claude/file-history/` | 文件版本历史 |
 | `~/.claude/homunculus/` | 进化学习系统（3 个已跟踪项目，evolved 目录当前为空） |
-| `~/.claude/plans/` | 计划文件（含状态栏修复计划） |
+| `~/.claude/plans/` | 计划文件 |
 | `~/.claude/projects/` | 4 个已跟踪项目 |
 | `~/.claude/scripts/` | 状态栏脚本 |
-| `~/.claude/sessions/` | 会话记录 |
-| `~/.claude/tasks/` | 任务追踪 |
-| `~/.claude/teams/` | 代理团队 |
+| `~/.claude/sessions/` / `tasks/` / `teams/` | 会话记录 / 任务追踪 / 代理团队 |
 
 ---
 
@@ -566,234 +540,10 @@ ECC 插件的 rules 是软约束，可被项目级 CLAUDE.md 覆盖：
 
 - 安装/卸载插件 → 更新「已安装插件」
 - 修改 hooks → 更新「Hooks 系统」
-- 更换状态栏脚本 → 更新「状态栏」
+- 更换状态栏脚本 → 更新「状态栏」+ 同步 [[sources/claude-code/statusline.py]]
 - 增减 MCP 服务器 → 更新「MCP 服务器」
 - 增减技能/命令/规则/代理 → 更新对应章节
-
----
-
----
-
-## 附录：综合版 statusline.py 完整脚本
-
-> 路径：`~/.claude/scripts/statusline.py`，通过 `py -3 "C:/Users/<user>/.claude/scripts/statusline.py" | npx -y cc-safety-net --statusline` 调用。
-
-```python
-import sys
-import json
-import os
-import re
-import subprocess
-import tempfile
-from pathlib import Path
-
-# ============================================================
-# Context bar thresholds (ECC standard)
-# ============================================================
-AUTO_COMPACT_BUFFER = 16.5  # Reserve for auto-compact overhead
-
-# ============================================================
-# ANSI color helpers
-# ============================================================
-def _c(code: int, text: str) -> str:
-    return f"\033[{code}m{text}\033[0m"
-
-def green(t):  return _c(32, t)
-def yellow(t): return _c(33, t)
-def red(t):    return _c(31, t)
-def orange(t): return _c(38;5;208", t)
-def dim(t):    return _c(2, t)
-def bold(t):   return _c(1, t)
-
-# ============================================================
-# Git branch detection
-# ============================================================
-def get_git_branch() -> str:
-    try:
-        result = subprocess.run(
-            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
-            capture_output=True, text=True, timeout=3,
-            cwd=os.environ.get("CLAUDE_WORKING_DIR", "."),
-        )
-        if result.returncode == 0:
-            return result.stdout.strip()
-    except Exception:
-        pass
-    return ""
-
-# ============================================================
-# Path shortening
-# ============================================================
-def shorten_path(path: str, n: int = 2) -> str:
-    parts = Path(path).parts
-    if len(parts) <= n:
-        return path
-    return os.sep.join(parts[-n:])
-
-# ============================================================
-# Context bar (4-color: green < 50%, yellow < 65%, orange < 80%, red >= 80%)
-# ============================================================
-def build_context_bar(context_used_pct: float, width: int = 10) -> str:
-    if context_used_pct < 0:
-        return dim("N/A")
-    used = max(0, min(100, round(context_used_pct)))
-    filled = round(used / 100 * width)
-    empty = width - filled
-    bar = "█" * filled + "░" * empty
-
-    if used < 50:
-        colored_bar = green(bar)
-    elif used < 65:
-        colored_bar = yellow(bar)
-    elif used < 80:
-        colored_bar = orange(bar)
-    else:
-        colored_bar = red(bar)
-
-    return f"{colored_bar} {used}%"
-
-# ============================================================
-# Duration formatting
-# ============================================================
-def format_duration(seconds: float) -> str:
-    if seconds < 60:
-        return f"{int(seconds)}s"
-    minutes = int(seconds // 60)
-    if minutes < 60:
-        return f"{minutes}m"
-    hours = minutes // 60
-    mins = minutes % 60
-    return f"{hours}h{mins}m"
-
-# ============================================================
-# Current task from todo files
-# ============================================================
-def read_current_task(session_id: str) -> str:
-    """Read active task from todo files."""
-    if not session_id:
-        return ""
-    try:
-        todo_dir = Path.home() / ".claude" / "todos"
-        if not todo_dir.exists():
-            return ""
-        for f in todo_dir.glob(f"{session_id[:8]}*-agent-*.json"):
-            try:
-                data = json.loads(f.read_text(encoding="utf-8"))
-                if data.get("status") == "in_progress" and data.get("activeForm"):
-                    return data["activeForm"]
-            except Exception:
-                continue
-    except Exception:
-        pass
-    return ""
-
-# ============================================================
-# ECC metrics bridge reader
-# ============================================================
-def read_bridge(session_id: str) -> dict:
-    """Read ECC metrics bridge file from temp directory."""
-    if not session_id:
-        return {}
-    try:
-        safe_id = "".join(c for c in session_id if c.isalnum() or c in "-_")
-        tmpdir = os.environ.get("TEMP") or os.environ.get("TMP") or os.environ.get("TMPDIR") or "/tmp"
-        bridge_path = os.path.join(tmpdir, f"ecc-metrics-{safe_id}.json")
-        if os.path.exists(bridge_path):
-            with open(bridge_path, "r", encoding="utf-8") as f:
-                return json.load(f)
-    except Exception:
-        pass
-    return {}
-
-# ============================================================
-# Main: read stdin JSON from Claude Code
-# ============================================================
-def main():
-    try:
-        data = json.loads(sys.stdin.read())
-    except Exception:
-        print(dim("statusline: no input"))
-        return
-
-    # Extract fields from stdin
-    model = data.get("model", {})
-    model_name = model.get("display_name") or model.get("id", "unknown")
-    session_id = data.get("session_id", "")
-
-    # Context usage
-    context_window = data.get("context_window", {})
-    context_used_pct = context_window.get("used_percentage", -1)
-    context_remaining_pct = context_window.get("remaining_percentage", 100)
-
-    # Calculate real usage accounting for auto-compact buffer
-    # ECC logic: remaining_pct includes buffer, so subtract it to get usable
-    usable = max(0, ((context_remaining_pct - AUTO_COMPACT_BUFFER) / (100 - AUTO_COMPACT_BUFFER)) * 100)
-    used = max(0, min(100, round(100 - usable)))
-
-    # Working directory
-    cwd = data.get("cwd", os.getcwd())
-    short_cwd = shorten_path(cwd)
-
-    # Git branch
-    branch = get_git_branch()
-
-    # ECC bridge metrics
-    bridge = read_bridge(session_id)
-    tool_count = bridge.get("tool_count", 0)
-    files_modified = bridge.get("files_modified_count", 0)
-    cost = bridge.get("total_cost_usd", 0)
-
-    # Duration from bridge
-    first_ts = bridge.get("first_timestamp", 0)
-    elapsed = 0
-    if first_ts:
-        import time
-        elapsed = time.time() - first_ts / 1000  # bridge stores ms
-
-    # Current task
-    task = read_current_task(session_id)
-
-    # Build status line parts
-    parts = []
-
-    # Model
-    parts.append(bold(model_name))
-
-    # Directory
-    parts.append(dim(short_cwd))
-
-    # Git branch
-    if branch:
-        parts.append(dim(branch))
-
-    # Context bar
-    parts.append(build_context_bar(used))
-
-    # Current task (if any)
-    if task:
-        parts.append(yellow(task))
-
-    # Metrics: cost | tools | files | duration (always show 4 items)
-    metrics = []
-    metrics.append(f"${cost:.2f}" if cost > 0 else "$0.00")
-    metrics.append(f"{tool_count}t" if tool_count > 0 else "0t")
-    metrics.append(f"{files_modified}f" if files_modified > 0 else "0f")
-    metrics.append(format_duration(elapsed) if elapsed > 0 else "0s")
-    parts.append(dim(" ".join(metrics)))
-
-    # Output (cc-safety-net will append safety indicator via pipe)
-    print(" | ".join(parts))
-
-if __name__ == "__main__":
-    main()
-```
-
-**关键实现细节：**
-- `read_bridge()` 使用 `os.environ.get("TEMP")` 而非 `tempfile.gettempdir()`，因为 Python 的 `tempfile` 在 Windows 上会追加 `\claude` 子目录，与 Node.js 的 `os.tmpdir()` 路径不一致
-- `build_context_bar()` 的 `used` 值通过 auto-compact buffer 公式计算，而非直接使用 stdin 的 `used_percentage`
-- `read_current_task()` 按 session_id 前缀匹配 todo 文件，取第一个 `status == "in_progress"` 的任务
-
----
+- 更新 cc switch 模板 → 同步 [[sources/claude-code/cc-switch-template.json]]
 
 ---
 
@@ -859,94 +609,9 @@ CACHE_FIX_DEBUG=1  # 查看缓存命中情况
 
 `cc switch` 切换 API KEY 时使用此模板重写 settings.json。更新插件版本后需同步修改此模板。
 
-```json
-{
-  "env": {
-    "CLAUDE_PLUGIN_ROOT": "C:/Users/<user>/.claude/plugins/cache/ecc/ecc/2.0.0-rc.1",
-    "SAFETY_NET_PLUGIN_ROOT": "C:/Users/<user>/.claude/plugins/cache/cc-marketplace/safety-net/1.0.1",
-    "CLAUDE_CODE_ATTRIBUTION_HEADER": "0",
-    "ENABLE_TOOL_SEARCH": "true",
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
-    "CLAUDE_CODE_EFFORT_LEVEL": "max"
-  },
-  "theme": "dark",
-  "includeCoAuthoredBy": false,
-  "permissions": {
-    "defaultMode": "auto"
-  },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "description": "Safety Net - Block destructive git and filesystem commands",
-        "hooks": [
-          {
-            "command": "node \"${SAFETY_NET_PLUGIN_ROOT}/dist/bin/cc-safety-net.js\" --claude-code",
-            "timeout": 15,
-            "type": "command"
-          }
-        ],
-        "matcher": "Bash"
-      },
-      {
-        "hooks": [
-          {
-            "command": "npx block-no-verify@1.1.2",
-            "type": "command"
-          }
-        ],
-        "matcher": "Bash"
-      }
-    ]
-  },
-  "disableRemoteControl": true,
-  "statusLine": {
-    "type": "command",
-    "command": "py ~/.claude/scripts/statusline.py | CLAUDE_SETTINGS_PATH=$HOME/.claude/settings.json node \"${SAFETY_NET_PLUGIN_ROOT}/dist/bin/cc-safety-net.js\" --statusline"
-  },
-  "enabledPlugins": {
-    "context7@claude-plugins-official": true,
-    "ecc@ecc": true,
-    "frontend-design@claude-plugins-official": true,
-    "github@claude-plugins-official": true,
-    "learning-output-style@claude-plugins-official": true,
-    "safety-net@cc-marketplace": true,
-    "skill-creator@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": true
-  },
-  "extraKnownMarketplaces": {
-    "cc-marketplace": {
-      "source": {
-        "source": "github",
-        "repo": "kenryu42/cc-marketplace"
-      }
-    },
-    "everything-claude-code": {
-      "source": {
-        "source": "github",
-        "repo": "affaan-m/everything-claude-code"
-      }
-    }
-  },
-  "language": "chinese",
-  "spinnerTipsEnabled": true,
-  "alwaysThinkingEnabled": true,
-  "effortLevel": "xhigh",
-  "showClearContextOnPlanAccept": true,
-  "autoMemoryEnabled": true,
-  "showThinkingSummaries": true,
-  "skipDangerousModePermissionPrompt": true,
-  "preferredNotifChannel": "auto",
-  "autoCompactEnabled": true,
-  "fileCheckpointingEnabled": true,
-  "showTurnDuration": true,
-  "showMessageTimestamps": true,
-  "terminalProgressBarEnabled": true,
-  "todoFeatureEnabled": true,
-  "skipAutoPermissionPrompt": true
-}
-```
+**完整模板**：[[sources/claude-code/cc-switch-template.json]]
 
-### 模板说明
+### 模板说明（字段规则）
 
 | 字段 | 规则 |
 |------|------|
@@ -959,8 +624,6 @@ CACHE_FIX_DEBUG=1  # 查看缓存命中情况
 | 其他字段 | 保留用户偏好设置，不可删除 |
 
 ---
-
-> 来源：`~/.claude/settings.json`、`~/.claude/plugins/installed_plugins.json`、`~/.claude/skills/`、`~/.claude/rules/`、`~/.claude/agents/`、`~/.claude/teams/`、`E:/Files/Obsidian/.claude/`
 
 ## MiMoCode Obsidian 链接方法
 
@@ -1015,3 +678,7 @@ head -3 "$PROJECT_MEMORY_DIR/MEMORY.md"  # 验证内容可读
 - 创建链接前务必备份原有记忆目录（`mv dir dir.bak`）
 - 链接后 Obsidian 中的修改会实时反映到 MiMoCode
 - 每个项目需要单独创建链接
+
+---
+
+> 来源：`~/.claude/settings.json`、`~/.claude/plugins/installed_plugins.json`、`~/.claude/skills/`、`~/.claude/rules/`、`~/.claude/agents/`、`~/.claude/teams/`、`E:/Files/Obsidian/.claude/`
