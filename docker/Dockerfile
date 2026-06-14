@@ -5,8 +5,9 @@ ARG HTTP_PROXY
 ARG HTTPS_PROXY
 
 # Install system dependencies
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    bash curl git ca-certificates sudo fonts-noto-cjk \
+    bash curl git ca-certificates sudo fonts-noto-cjk unzip \
     python3 python3-pip python3-venv \
     && ln -sf /usr/bin/python3 /usr/bin/python \
     && rm -rf /var/lib/apt/lists/*
@@ -24,6 +25,9 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Bun
+RUN curl -fsSL https://bun.sh/install | bash
 
 # Install Claude Code and OpenCode (use npm mirror + proxy if available)
 RUN npm config set registry https://registry.npmmirror.com \
@@ -43,6 +47,7 @@ COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN sed -i 's/\r$//' /usr/local/bin/entrypoint.sh \
     && chmod +x /usr/local/bin/entrypoint.sh
 
+ENV PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/app/.bun/bin"
 WORKDIR /home/app/project
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["tail", "-f", "/dev/null"]
