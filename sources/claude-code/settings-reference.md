@@ -88,7 +88,7 @@ source: update-config skill Settings JSON Schema
 | `availableModels` | string[] | 允许的模型白名单 | - |
 | `modelOverrides` | object | 模型 ID 覆盖映射 | - |
 | `alwaysThinkingEnabled` | boolean | 启用扩展思考 | true |
-| `effortLevel` | string | 思考深度 | 可选：`low`、`medium`、`high`、`xhigh` |
+| `effortLevel` | string | 思考深度 | 可选：`low`、`medium`、`high`、`xhigh`、`max` |
 | `fastMode` | boolean | 快速模式 | false |
 | `fastModePerSessionOptIn` | boolean | 快速模式不跨会话持久化 | false |
 | `autoCompactEnabled` | boolean | 上下文满时自动压缩 | - |
@@ -384,7 +384,7 @@ source: update-config skill Settings JSON Schema
 {
   "fastMode": true,
   "alwaysThinkingEnabled": true,
-  "effortLevel": "xhigh"
+  "effortLevel": "max"
 }
 ```
 

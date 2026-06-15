@@ -97,7 +97,7 @@ grep -c "CLAUDE_PLUGIN_ROOT" ~/.claude/settings.json  # 应为 0
 | 插件 | 安装渠道 | 版本 | 安装日期 | 用途 |
 |------|----------|------|----------|------|
 | **superpowers** | Claude Code 插件市场（`claude-plugins-official`） | 5.1.0 | 2026-03-20 | 技能调度框架，所有任务的起点 |
-| **ecc**（Everything Claude Code） | GitHub 仓库（`affaan-m/everything-claude-code`） | 2.0.0-rc.1 | 2026-05-21 | 基础设施层：编码规范、上下文管理、安全审查、持续学习，补充 Superpowers 不覆盖的领域 |
+| **ecc**（Everything Claude Code） | GitHub 仓库（`affaan-m/everything-claude-code`） | 2.0.0 | 2026-05-21 | 基础设施层：编码规范、上下文管理、安全审查、持续学习，补充 Superpowers 不覆盖的领域 |
 
 > Superpowers 提供工作流骨架（七阶段开发流程），ECC 提供底层能力（rules、hooks、MCP、session memory）。两者互补，非替代关系。详见 [[wiki/ecc-superpowers-supplement.md|ECC 补强指南]]。
 
@@ -105,7 +105,7 @@ grep -c "CLAUDE_PLUGIN_ROOT" ~/.claude/settings.json  # 应为 0
 
 | 插件 | 安装渠道 | 版本 | 安装日期 | 用途 |
 |------|----------|------|----------|------|
-| safety-net | cc-marketplace（`kenryu42/cc-marketplace`） | 1.0.1 | 2026-05-21 | 安全网，拦截危险命令（rm -rf、git push --force 等） |
+| safety-net | cc-marketplace（`kenryu42/cc-marketplace`） | 1.0.6 | 2026-05-21 | 安全网，拦截危险命令（rm -rf、git push --force 等） |
 | github | claude-plugins-official | 9e150cfd48b8 | 2026-03-29 | GitHub 集成 |
 | context7 | claude-plugins-official | 9e150cfd48b8 | 2026-03-20 | 实时文档查询 |
 | frontend-design | claude-plugins-official | 9e150cfd48b8 | 2026-03-20 | 前端设计辅助 |
@@ -158,9 +158,22 @@ claude plugin install ecc@ecc
 ### 显示效果
 
 ```
-mimo-v2.5-pro | PycharmProjects/test | main | ████░░░░░░ 47% | 测试状态栏显示 | $10.44 288t 4f 2h23m | 🛡️ Safety Net ✅
-   模型名         目录路径(2级)       Git分支   进度条(4色)      当前任务(中文)     成本/工具/文件/时长   安全网插件cc-safety-net
+glm-5.2 | app/project | feat/improve-output-formatting | ██░░░░░░░░ 24% | $6.96 0t 0f 2h41m | 🛡️ CC Safety Net ✅
+ 模型名(白)  目录(蓝)     Git分支(品红)                     进度条(语义色)    计费(青)               安全网
 ```
+
+### 配色（4 主元素互异）
+
+| 元素 | 颜色 | ANSI |
+|------|------|------|
+| 模型名 | 亮白 | `\033[97m` |
+| 目录 | 亮蓝 | `\033[94m` |
+| Git 分支 | 亮品红 | `\033[95m` |
+| 计费/指标 | 亮青 | `\033[96m` |
+| 进度条 | 语义（绿<50%/黄<65%/橙<80%/红≥80%） | 32/33/38;5;208/31 |
+| 当前任务 | 黄 | `\033[33m` |
+
+> 换色改 `_c(code, t)` 的码即可。详见 [[sources/claude-code/claude-code-statusline-setup|安装指南]]「配色」。
 
 ### 管道结构
 
@@ -170,13 +183,16 @@ mimo-v2.5-pro | PycharmProjects/test | main | ████░░░░░░ 47%
 
 | 元素 | 来源 | 说明 |
 |------|------|------|
-| 模型名 | stdin `model.display_name` | 当前使用的模型 |
-| 目录路径 | stdin `workspace.current_dir` | 压缩为最后 2 级，~ 表示 home |
+| 模型名 | stdin `model.display_name` | 当前模型（自动剥离 ANSI 残片，如 `[1m]`） |
+| 目录路径 | stdin `cwd`（顶层，权威）/ `workspace.current_dir` | 压缩为最后 2 级 |
 | Git 分支 | `git rev-parse --abbrev-ref HEAD` | 自动向上搜索 .git 目录 |
-| 上下文进度条 | stdin `context_window.remaining_percentage` | ECC 4 色阈值：<50% 绿、<65% 黄、<80% 橙、≥80% 红 |
-| 当前任务 | `~/.claude/todos/*.json` | 读取 `in_progress` 状态的 `activeForm` 字段 |
-| 成本/工具/文件/时长 | `/tmp/ecc-metrics-{session}.json` | 由 `ecc-metrics-bridge.js` hook 写入 |
+| 上下文进度条 | stdin `context_window.remaining_percentage` | 4 色阈值：<50% 绿、<65% 黄、<80% 橙、≥80% 红 |
+| 当前任务 | `~/.claude/todos/*.json` | 读取 `in_progress` 的 `activeForm` |
+| 成本/时长 | **stdin `cost` 对象（权威）** | `total_cost_usd` / `total_duration_ms`，类型稳定 |
+| 工具/文件数 | `/tmp/ecc-metrics-{session}.json` | ECC bridge，best-effort（值可能为字符串，已强转） |
 | 安全网 | `cc-safety-net --statusline` | 管道追加，由 safety-net 插件提供 |
+
+> **健壮性**：每段独立 try/except（per-segment 隔离）+ null 防御 + 顶层兜底——单字段崩溃不会清空整行。详见 [[sources/claude-code/claude-code-statusline-setup|安装指南]]「健壮性与常见崩溃」。
 
 ### 依赖配置
 
@@ -223,6 +239,9 @@ Bridge 文件路径：`/tmp/ecc-metrics-{session_id}.json`（Node.js `os.tmpdir(
 1. **Windows `python` 命令**：解析为 Windows Store 存根，exit code 49，必须用 `py` 或 `py -3` 替代。
 2. **stdin 叶子字段 null 导致 `render error`**：Claude Code 在会话启动/上下文压缩等过渡态会发出 key 存在但值为 `null` 的字段（`context_window.remaining_percentage`、`model.id`、`cwd`）。`.get(key, default)` 对"存在但 null"返回 `None` 而非 default，导致 `_render()` 抛 `TypeError` → `main()` fallback 显示 `statusline render error`。症状**间歇性**——过渡态瞬时，过后自愈，极具迷惑性。修复：叶子字段做 null 防御（`model.get("id") or "unknown"`、`context_window.get("remaining_percentage")` + `is None` 检查、`data.get("cwd") or os.getcwd()`），让 null 与"缺失"行为一致。回归测试：`bash ~/.claude/scripts/test-statusline.sh`。← [[wiki/claude-code-setup.md]]（2026-06-14 复盘）
 
+3. **ECC bridge `first_timestamp` 为字符串致计费段崩溃**（2026-06-15 复盘）：`read_bridge()` 取到的 `first_timestamp` 可能是字符串，`first_ts / 1000` → `TypeError`，单 try/except 兜底清空整行（只剩模型名 + 🛡️）。修复：**计费/时长改取 stdin `cost.total_cost_usd` / `total_duration_ms`**（原生、类型稳定），bridge 值一律 `_num()` 强转，并改 per-segment 隔离。← [[wiki/claude-code-setup.md]]
+4. **（2026-06-15）源码已实装上述防御**：#2 的 null 防御此前**仅文档描述、源码未改（漂移）**，本轮补进 `sources/claude-code/statusline.py`。教训：文档须与源码同步，勿信"已修"描述。← [[wiki/claude-code-setup.md]]
+
 > `CLAUDE_SETTINGS_PATH` / `SAFETY_NET_PLUGIN_ROOT` 版本过时 / `cc switch` 重置相关问题，见上文「`cc switch` 后的常见失效与修复」。
 
 ### 经验教训（状态栏专属）
@@ -230,6 +249,11 @@ Bridge 文件路径：`/tmp/ecc-metrics-{session_id}.json`（Node.js `os.tmpdir(
 - **Worktree `.git` 是文件**：worktree 中 `.git` 是文件（指向主仓库），不是目录。`get_git_branch()` 原先用 `isdir` 会跳过 worktree 找到错误分支，修复为 `isdir(...) or isfile(...)` ← [[wiki/claude-code-p2.md]]
 - **`read_bridge()` 路径**：必须用 `os.environ.get("TEMP")` 而非 `tempfile.gettempdir()`（详见关键实现细节）← [[wiki/claude-code-setup.md]]
 - **stdin 叶子字段 null 是间歇崩溃根因**：`.get(key, default)` 对"存在但 null"返回 `None`，过渡态发出的 null 字段触发 `TypeError` → render error。容器级 `or {}` 不够，叶子字段也要防 null。详见已知问题 #2 ← [[wiki/claude-code-setup.md]]（2026-06-14 复盘）
+- **计费/时长取 stdin `cost`，勿依赖 ECC bridge**：bridge `first_timestamp` 为字符串 → `str/1000` `TypeError` 致计费段崩、单 try 兜底清空整行（只剩模型名 + 🛡️）。改取 stdin `cost.total_cost_usd` / `total_duration_ms`（原生、类型稳定） ← [[wiki/claude-code-setup.md]]（2026-06-15 复盘）
+- **per-segment 隔离**：单 try/except 兜底会让任一字段崩溃清空整行。每段独立 try/except，一段崩只丢一段 ← [[wiki/claude-code-setup.md]]（2026-06-15 复盘）
+- **真实 stdin schema**：顶层有 `cwd`（权威）与 `cost` 对象，`context_window` 有 `remaining_percentage`；会话 ID 是顶层 `session_id`（非 `session.id`）。完整字段见 [[sources/claude-code/claude-code-statusline-setup|安装指南]]「可用变量」 ← [[wiki/claude-code-setup.md]]
+- **状态栏只在 idle 刷新**：agent 执行期间不刷新。调试「改脚本→等→读日志」永远抓不到，须让用户发条消息触发 idle 再读 ← [[wiki/claude-code-setup.md]]（2026-06-15 复盘）
+- **文档须与源码同步**：#2 曾仅文档描述「已修 null」、源码未改（漂移），浪费一轮调试。源码是 source-of-truth，文档只描述 ← [[wiki/claude-code-setup.md]]（2026-06-15 复盘）
 
 ### 备选状态栏
 
@@ -248,7 +272,9 @@ Bridge 文件路径：`/tmp/ecc-metrics-{session_id}.json`（Node.js `os.tmpdir(
 
 ## MCP 服务器（6 个）
 
-来源：ECC 插件 `.mcp.json`
+来源：各插件自带 `.mcp.json`。
+
+> ⚠️ **注意（2026-06-15 核实）**：ECC 2.0.0 的 Claude Code `mcpServers`（`.claude-plugin/plugin.json`）为空 `{}`；其 `.mcp.json`（Codex 用）里只有 `chrome-devtools`。所以 plugin MCP 实际是 **`chrome-devtools`(ECC) + `context7`(context7 插件)**，勿误以为都来自 ECC。下表 6 个为手动添加的目标清单。用 `enabledMcpjsonServers` 批准、`disabledMcpjsonServers` 拒绝。
 
 | 服务器 | 传输方式 | 命令 | 用途 |
 |--------|----------|------|------|
@@ -280,15 +306,15 @@ Bridge 文件路径：`/tmp/ecc-metrics-{session_id}.json`（Node.js `os.tmpdir(
 
 ### ECC 插件注入的 Hooks
 
-ECC v2.0.0-rc.1 自动注册约 30 个 hooks，覆盖 PreToolUse / PostToolUse / PostToolUseFailure / PreCompact / SessionStart / SessionEnd / Stop 等事件，功能包括：危险命令拦截、tmux/git-push 提醒、文档写入警告、上下文压缩建议、自动格式化、类型检查、console.log 残留检查、代码质量门禁、治理日志、MCP 健康检查、会话指标桥接、持续学习观察器、成本追踪等。
+ECC v2.0.0 自动注册约 30 个 hooks，覆盖 PreToolUse / PostToolUse / PostToolUseFailure / PreCompact / SessionStart / SessionEnd / Stop 等事件，功能包括：危险命令拦截、tmux/git-push 提醒、文档写入警告、上下文压缩建议、自动格式化、类型检查、console.log 残留检查、代码质量门禁、治理日志、MCP 健康检查、会话指标桥接、持续学习观察器、成本追踪等。
 
 完整列表见 `$CLAUDE_PLUGIN_ROOT/hooks/hooks.json`，**无需在 settings.json 维护**（settings.json 中引用 `${CLAUDE_PLUGIN_ROOT}` 的 hooks 必须删除，否则升级后报 "not associated with a plugin"）。
 
 ### Hook 脚本来源
 
 Hook 脚本通过环境变量引用插件目录：
-- `CLAUDE_PLUGIN_ROOT` → ECC 插件根目录（v2.0.0-rc.1）
-- `SAFETY_NET_PLUGIN_ROOT` → Safety Net 插件根目录（v1.0.1）
+- `CLAUDE_PLUGIN_ROOT` → ECC 插件根目录（v2.0.0）
+- `SAFETY_NET_PLUGIN_ROOT` → Safety Net 插件根目录（v1.0.6）
 
 ### ECC Hooks 开关机制
 
@@ -374,21 +400,102 @@ ECC 的 33 个 hooks 默认**零配置全开**（安装插件即生效）。通�
 
 ---
 
-## 规则（Rules，9 个）
+## Rules — 语言编码规范
 
-路径：`~/.claude/rules/`
+### 目录结构
 
-| 文件 | 内容 |
-|------|------|
-| `agents.md` | 代理编排指南（10 个代理列表、并行执行、多视角分析） |
-| `coding-style.md` | 编码风格（不可变性、文件组织、错误处理、输入验证） |
-| `development-workflow.md` | 开发工作流（研究→计划→TDD→代码审查→提交） |
-| `git-workflow.md` | Git 工作流（conventional commits、PR 流程） |
-| `hooks.md` | Hook 类型说明和最佳实践 |
-| `patterns.md` | 设计模式（仓库模式、API 响应格式） |
-| `performance.md` | 性能优化（模型选择、上下文管理、扩展思考） |
-| `security.md` | 安全检查清单（密钥管理、注入防护、CSRF） |
-| `testing.md` | 测试要求（80% 覆盖率、TDD 工作流） |
+整套规范分为**通用层**与**各编程语言专属目录**两层架构：
+```
+rules/
+├── common/          # 与编程语言无关的通用准则（必须安装）
+│   ├── coding-style.md    # 代码风格规范
+│   ├── git-workflow.md    # Git 工作流规范
+│   ├── testing.md         # 测试规范
+│   ├── performance.md     # 性能规范
+│   ├── patterns.md        # 通用设计模式
+│   ├── hooks.md           # 钩子配置规范
+│   ├── agents.md          # AI 代理交互规范
+│   └── security.md        # 安全开发规范
+├── typescript/      # TypeScript / JavaScript 专属规范
+├── angular/         # Angular 框架专属规范
+├── python/          # Python 专属规范
+├── golang/          # Go 语言专属规范
+├── web/             # 网页/前端通用专属规范
+├── swift/           # Swift 专属规范
+├── php/             # PHP 专属规范
+├── ruby/            # Ruby / Rails 框架专属规范
+└── arkts/           # 鸿蒙系统 ArkTS 语言专属规范
+```
+- **common/ 通用目录**
+：存放全语言通用准则，不含特定编程语言代码示例。
+- **各语言专属目录**
+：在通用规范基础上，补充对应框架专属实践、配套工具与代码示例；每个文件都会关联引用通用目录里对应的基础规范文档。
+
+### 安装方式
+#### 方案一：一键安装脚本（推荐）
+```bash
+# 安装通用规范 + 一套或多套编程语言专属规范
+./install.sh typescript
+./install.sh angular
+./install.sh python
+./install.sh golang
+./install.sh web
+./install.sh swift
+./install.sh php
+./install.sh ruby
+./install.sh arkts
+
+# 一次性安装多套语言规范
+./install.sh typescript python
+```
+
+#### 方案二：手动安装
+> **重要提醒**：必须完整复制整个目录，禁止使用 `/*`扁平化复制。
+> 通用目录与各语言专属目录内存在同名文件，若扁平化合并到同一个文件夹，
+> 语言专属文件会直接覆盖通用规范，同时语言文件中相对路径 `../common/`的引用会全部失效。
+> 用户级 Claude 配置请统一使用下方 ECC 专属命名空间；平铺式包目录会和其他第三方规范包产生路径冲突，也与主 README 文档规范不符。
+
+```bash
+# 首次执行时创建 ECC 规范专属目录
+mkdir
+ -p ~/.claude/rules/ecc
+
+# 安装通用规范（所有项目均必须依赖）
+cp -r rules/common ~/.claude/rules/ecc/
+
+# 根据项目技术栈安装对应语言专属规范
+cp -r rules/typescript ~/.claude/rules/ecc/
+cp -r rules/angular ~/.claude/rules/ecc/
+cp -r rules/python ~/.claude/rules/ecc/
+cp -r rules/golang ~/.claude/rules/ecc/
+cp -r rules/web ~/.claude/rules/ecc/
+cp -r rules/swift ~/.claude/rules/ecc/
+cp -r rules/php ~/.claude/rules/ecc/
+cp -r rules/ruby ~/.claude/rules/ecc/
+cp -r rules/arkts ~/.claude/rules/ecc/
+
+# 注意！！！请根据你的项目实际需求按需配置，以上仅为示例参考。全局安装通用规范，项目级根据技术栈安装对应语言专属规范。
+```
+
+若需要项目本地生效的规范，在项目根目录下使用相同目录结构：
+```bash
+mkdir -p .claude/rules/ecc
+cp -r rules/common .claude/rules/ecc/
+cp -r rules/typescript .claude/rules/ecc/
+```
+
+加载机制确认：ECC SessionStart hook 不碰 rules、plugin.json 不声明 rules 目录 → rules 纯靠 Claude Code 原生读 ~/.claude/rules/。复制即加载，无双重注入风险。带 paths frontmatter 的做 scoped、不带的做无条件——与文档 L40 的分层吻合。
+
+ECC 源目录提供 18 个规则集：common + angular, arkts, cpp, csharp, dart, fsharp, golang, java, kotlin, perl, php, python, ruby, rust, swift, typescript, web。每种语言含 5 个维度：
+- `coding-style` — 编码风格（不可变性、文件组织、大小限制）
+- `security` — 安全检查（禁止硬编码密钥、验证输入）
+- `testing` — 测试规范（覆盖率、测试模式）
+- `patterns` — 语言特定模式
+- `hooks` — Hook 文档
+
+← [[sources/claude-code/2026-05-13-safety-net-hook-fix.md#ECC 规则安装|ECC 规则安装实践]]
+
+← [[sources/claude-code/ecc.md|ECC 完整参考]] §入门-4
 
 ---
 
@@ -413,7 +520,7 @@ ECC 的 33 个 hooks 默认**零配置全开**（安装插件即生效）。通�
 
 ### ECC 插件提供的代理（52 个）
 
-ECC v2.0.0-rc.1 自动安装了大量领域专用代理，包括但不限于：`a11y-architect`、`code-explorer`、`cpp-reviewer`、`dart-build-resolver`、`django-reviewer`、`fastapi-reviewer`、`flutter-reviewer`、`go-reviewer`、`java-reviewer`、`kotlin-reviewer`、`network-architect`、`python-reviewer`、`react-reviewer`、`rust-build-resolver`、`swift-reviewer`、`typescript-reviewer` 等。完整列表见 `~/.claude/agents/` 目录。
+ECC v2.0.0 自动安装了大量领域专用代理，包括但不限于：`a11y-architect`、`code-explorer`、`cpp-reviewer`、`dart-build-resolver`、`django-reviewer`、`fastapi-reviewer`、`flutter-reviewer`、`go-reviewer`、`java-reviewer`、`kotlin-reviewer`、`network-architect`、`python-reviewer`、`react-reviewer`、`rust-build-resolver`、`swift-reviewer`、`typescript-reviewer` 等。完整列表见 `~/.claude/agents/` 目录。
 
 ### 经验教训
 
@@ -452,6 +559,40 @@ OpenCode 是另一个 AI 编码工具，可通过桥接与 Claude Code 共享配
 - OpenCode 的 hooks 配置格式与 Claude Code 不同，需单独维护
 - 桥接脚本位于 `~/.claude/scripts/opencode-bridge.js`
 - 详见 [[wiki/opencode-bridge.md|OpenCode 桥接文档]]
+
+---
+
+## 容器 / WSL 一步到位配置
+
+目标：在 Linux 容器/WSL 里复刻本配置，三步跑通，无需反复调试。
+
+```bash
+# 1. 状态栏脚本（canonical 源：4 色 + per-segment 隔离 + null 防御 + 计费取 stdin cost）
+cp sources/claude-code/statusline.py ~/.claude/scripts/statusline.py && chmod +x ~/.claude/scripts/statusline.py
+
+# 2. settings.json（ECC 2.0.0 / safety-net 1.0.6 路径 + ECC 档位 + 2 hooks + python3 statusLine + effortLevel:max + enabledMcpjsonServers）
+#    classifier 禁止 agent 直写 ~/.claude/settings.json → stage + 用户 !cp
+cp sources/claude-code/container-settings.json /tmp/cc-target-settings.json
+!cp /tmp/cc-target-settings.json ~/.claude/settings.json   # 用户执行（! 前缀在本会话跑）
+
+# 3. 重载
+/reload-plugins
+```
+
+关键差异（相对 Windows 宿主）：
+
+| 项 | 宿主 (Windows) | 容器 (Linux) |
+|----|------|------|
+| Python | `py` / `py -3` | **`python3`**（无 `py`） |
+| statusLine 命令 | `py ~/.claude/scripts/statusline.py \| ...` | `python3 "$HOME/.claude/scripts/statusline.py" \| ...` |
+| ECC 版本/路径 | `.../ecc/ecc/2.0.0-rc.1` | `.../ecc/ecc/2.0.0` |
+| safety-net 版本/路径 | `.../safety-net/1.0.1` | `.../safety-net/1.0.6` |
+| settings.json 写入 | 直写 / cc switch | **classifier 禁 agent 直写** → stage `/tmp` + 用户 `!cp` |
+| plugin MCP | （见 MCP 节） | `enabledMcpjsonServers: [chrome-devtools, context7]` |
+
+> - 版本随插件升级变动，落地前 `find ~/.claude/plugins/cache -name cc-safety-net.js` 核实实际路径，回填 `container-settings.json` 的 `env`。
+> - `container-settings.json` 不含 API base URL/token（由 `cc switch` 或环境另行注入），套用不扰动现有提供商。
+> - 状态栏只在 idle 刷新：配置后发条消息触发刷新即可见整行。
 
 ---
 

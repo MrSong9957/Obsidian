@@ -68,7 +68,7 @@
   "language": "chinese",
   "spinnerTipsEnabled": true,
   "alwaysThinkingEnabled": true,
-  "effortLevel": "xhigh",
+  "effortLevel": "max",
   "showClearContextOnPlanAccept": true,
   "autoMemoryEnabled": true,
   "showThinkingSummaries": true,

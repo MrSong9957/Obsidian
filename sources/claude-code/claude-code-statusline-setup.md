@@ -32,6 +32,12 @@ mimo-v2.5-pro | ~/Projects/test | ~ | ███░░░░░░░ 30% | 🛡�
 
 ### 步骤 1：创建脚本文件
 
+> 🟢 **推荐直接用 canonical 源** [`statusline.py`](./statusline.py)（含 4 色配色、per-segment 隔离、null 防御、计费取 stdin `cost`、ANSI 残片剥离）：
+> ```bash
+> cp sources/claude-code/statusline.py ~/.claude/scripts/statusline.py && chmod +x ~/.claude/scripts/statusline.py
+> ```
+> 下方内联脚本仅为**最小参考、不再维护**，勿用于生产（避免与 canonical 源漂移）。
+
 保存到 `~/.claude/scripts/statusline.py`：
 
 ```python
@@ -195,18 +201,48 @@ Safety-net 状态指示器：
 
 ## 可用变量
 
-通过 stdin 传入 JSON，支持以下变量：
+通过 stdin 传入 JSON（**Claude Code 2.1.x 实测字段**），支持以下变量：
 
 | 变量 | 说明 |
 |------|------|
 | `model.display_name` | 模型显示名称 |
-| `model.name` | 模型内部名称 |
-| `workspace.current_dir` | 当前工作目录 |
-| `context_window.used_tokens` | 已用 token 数 |
-| `context_window.limit_tokens` | token 限制 |
+| `model.id` | 模型内部名称 |
+| `cwd` | 当前工作目录（**顶层字段，权威**；综合版脚本优先读它） |
+| `workspace.current_dir` | 当前工作目录（同义，备选） |
+| `context_window.remaining_percentage` | 上下文剩余百分比（综合版进度条用此） |
 | `context_window.used_percentage` | 上下文使用百分比 |
-| `session.id` | 会话 ID |
-| `session.start_time` | 会话开始时间戳 |
+| `context_window.context_window_size` | 上下文窗口大小 |
+| `context_window.current_usage.*` | 当前 input/output/cache token 数 |
+| `cost.total_cost_usd` | 累计成本（**计费权威源**） |
+| `cost.total_duration_ms` | 累计时长毫秒（**计费权威源**） |
+| `cost.total_lines_added` / `total_lines_removed` | 增 / 删行数 |
+| `session_id` | 会话 ID（**顶层 `session_id`**，非 `session.id`） |
+| `version` / `output_style.name` / `effort.level` / `thinking.enabled` | 其它元信息 |
+
+> ⚠️ **计费/时长优先用 `cost.*`**（Claude Code 原生、类型稳定）。ECC metrics bridge（`/tmp/ecc-metrics-<session>.json`）的值可能为字符串（如 `first_timestamp`），直接做算术会 `TypeError` 崩溃——这是综合版脚本改用 stdin `cost` 的原因。
+
+## 配色（综合版）
+
+| 元素 | 颜色 | ANSI |
+|------|------|------|
+| 模型名 | 亮白 | `\033[97m` |
+| 目录路径 | 亮蓝 | `\033[94m` |
+| Git 分支 | 亮品红 | `\033[95m` |
+| 计费/指标 | 亮青 | `\033[96m` |
+| 上下文进度条 | 语义色（绿<50% / 黄<65% / 橙<80% / 红≥80%） | `\033[32m` / `\033[33m` / `\033[38;5;208m` / `\033[31m` |
+| 当前任务 | 黄 | `\033[33m` |
+
+> 4 个主元素用亮色（9X）互异，刻意避开进度条的语义绿/黄/橙/红，避免混淆。换色改 `_c(code, t)` 的码即可（如普通蓝 `_c(34, t)`）。
+
+## 健壮性与常见崩溃
+
+canonical 源已做以下防御，**自写脚本务必复刻**，否则状态栏会间歇性只剩「模型名 + 🛡️」：
+
+1. **null 容器/叶子字段**：Claude Code 在会话启动 / 上下文压缩等过渡态会发 key 存在但值为 `null` 的字段。`data.get(k, default)` 对「存在但 null」返回 `None`（**不是 default**），后续 `.get()` / 算术即崩。→ 用 `data.get(k) or {}` / `or default`，叶子值用 `isinstance` 校验。
+2. **bridge 值类型不可靠**：ECC metrics bridge 的 `first_timestamp` 等可能为字符串，`str / 1000` → `TypeError`，会让计费段崩溃、单 try/except 兜底清空整行。→ **计费/时长改取 stdin `cost`**（权威、类型稳定）；读 bridge 的值一律强转（`_num()`）。
+3. **per-segment 隔离**：每段（目录/Git/进度条/任务/计费）独立 try/except，一段崩只丢该段，不全行清空。
+4. **状态栏只在 idle 刷新**：agent 执行期间不刷新。调试「改脚本→等→读日志」抓不到，须让用户发条消息触发 idle 再读。
+5. **顶层 try/except 兜底**：无论如何输出非空行（至少模型名），避免 Python 段零输出导致 safety-net 只剩 🛡️。
 
 ## 配置类型说明
 

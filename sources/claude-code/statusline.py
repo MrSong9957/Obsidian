@@ -23,6 +23,10 @@ def red(t):    return _c(31, t)
 def orange(t): return _c("38;5;208", t)
 def dim(t):    return _c(2, t)
 def bold(t):   return _c(1, t)
+def white(t):   return _c(97, t)    # bright white  — model name
+def blue(t):    return _c(94, t)    # bright blue   — directory
+def magenta(t): return _c(95, t)    # bright magenta — git branch
+def cyan(t):    return _c(96, t)    # bright cyan   — billing/metrics
 
 # ============================================================
 # Git branch detection
@@ -134,74 +138,88 @@ def main():
         print(dim("statusline: no input"))
         return
 
-    # Extract fields from stdin
-    model = data.get("model", {})
-    model_name = model.get("display_name") or model.get("id", "unknown")
-    session_id = data.get("session_id", "")
+    def _num(v, default=0.0):
+        """Coerce stdin/bridge values safely — they can arrive as strings."""
+        try:
+            return float(v)
+        except (TypeError, ValueError):
+            return default
 
-    # Context usage
-    context_window = data.get("context_window", {})
-    context_used_pct = context_window.get("used_percentage", -1)
-    context_remaining_pct = context_window.get("remaining_percentage", 100)
+    def seg(fn):
+        """Run one segment builder; skip on failure so a single bad stdin
+        field can't blank the whole line or starve the safety-net pipe."""
+        try:
+            v = fn()
+            if v:
+                parts.append(v)
+        except Exception:
+            pass
 
-    # Calculate real usage accounting for auto-compact buffer
-    # ECC logic: remaining_pct includes buffer, so subtract it to get usable
-    usable = max(0, ((context_remaining_pct - AUTO_COMPACT_BUFFER) / (100 - AUTO_COMPACT_BUFFER)) * 100)
-    used = max(0, min(100, round(100 - usable)))
+    try:
+        # Extract fields from stdin (null-defended: Claude Code emits null
+        # container/leaf fields during startup & compaction transitions).
+        model = data.get("model") or {}
+        workspace = data.get("workspace") or {}
+        context_window = data.get("context_window") or {}
+        cost_data = data.get("cost") or {}
+        session_id = data.get("session_id") or ""
+        cwd = data.get("cwd") or workspace.get("current_dir") or os.getcwd()
+        # display_name may carry a stray ANSI artifact (e.g. "glm-5.2[1m]");
+        # strip real escapes and their literal bracket form.
+        model_name = re.sub(r"(\x1b)?\[[0-9;]*m\]?", "",
+                            model.get("display_name") or model.get("id") or "unknown") or "unknown"
 
-    # Working directory
-    cwd = data.get("cwd", os.getcwd())
-    short_cwd = shorten_path(cwd)
+        parts = [white(model_name)]
 
-    # Git branch
-    branch = get_git_branch()
+        # Directory (blue)
+        seg(lambda: blue(shorten_path(cwd)))
 
-    # ECC bridge metrics
-    bridge = read_bridge(session_id)
-    tool_count = bridge.get("tool_count", 0)
-    files_modified = bridge.get("files_modified_count", 0)
-    cost = bridge.get("total_cost_usd", 0)
+        # Git branch (magenta)
+        def _git():
+            b = get_git_branch()
+            return magenta(b) if b else None
+        seg(_git)
 
-    # Duration from bridge
-    first_ts = bridge.get("first_timestamp", 0)
-    elapsed = 0
-    if first_ts:
-        import time
-        elapsed = time.time() - first_ts / 1000  # bridge stores ms
+        # Context bar (semantic 4-color: green/yellow/orange/red)
+        def _bar():
+            rpct = context_window.get("remaining_percentage")
+            if not isinstance(rpct, (int, float)):
+                rpct = 100
+            usable = max(0, ((rpct - AUTO_COMPACT_BUFFER) / (100 - AUTO_COMPACT_BUFFER)) * 100)
+            used = max(0, min(100, round(100 - usable)))
+            return build_context_bar(used)
+        seg(_bar)
 
-    # Current task
-    task = read_current_task(session_id)
+        # Current task (yellow, only if present)
+        def _task():
+            t = read_current_task(session_id)
+            return yellow(t) if t else None
+        seg(_task)
 
-    # Build status line parts
-    parts = []
+        # Metrics (cyan): cost + duration from Claude Code's own `cost` object
+        # (authoritative); tool/file counts from the ECC bridge, best-effort.
+        def _metrics():
+            cost = _num(cost_data.get("total_cost_usd"))
+            elapsed = _num(cost_data.get("total_duration_ms")) / 1000
+            bridge = read_bridge(session_id)
+            tool_count = int(_num(bridge.get("tool_count")))
+            files_modified = int(_num(bridge.get("files_modified_count")))
+            m = []
+            m.append(f"${cost:.2f}" if cost > 0 else "$0.00")
+            m.append(f"{tool_count}t" if tool_count > 0 else "0t")
+            m.append(f"{files_modified}f" if files_modified > 0 else "0f")
+            m.append(format_duration(elapsed) if elapsed > 0 else "0s")
+            return cyan(" ".join(m))
+        seg(_metrics)
 
-    # Model
-    parts.append(bold(model_name))
-
-    # Directory
-    parts.append(dim(short_cwd))
-
-    # Git branch
-    if branch:
-        parts.append(dim(branch))
-
-    # Context bar
-    parts.append(build_context_bar(used))
-
-    # Current task (if any)
-    if task:
-        parts.append(yellow(task))
-
-    # Metrics: cost | tools | files | duration (always show 4 items)
-    metrics = []
-    metrics.append(f"${cost:.2f}" if cost > 0 else "$0.00")
-    metrics.append(f"{tool_count}t" if tool_count > 0 else "0t")
-    metrics.append(f"{files_modified}f" if files_modified > 0 else "0f")
-    metrics.append(format_duration(elapsed) if elapsed > 0 else "0s")
-    parts.append(dim(" ".join(metrics)))
-
-    # Output (cc-safety-net will append safety indicator via pipe)
-    print(" | ".join(parts))
+        # Output (cc-safety-net will append safety indicator via pipe)
+        print(" | ".join(parts))
+    except Exception:
+        # Ultimate fallback: never emit zero stdout.
+        try:
+            print(white(model_name))
+        except Exception:
+            print(white("statusline"))
 
 if __name__ == "__main__":
     main()
