@@ -144,6 +144,26 @@ source: https://example.com
 #### 7. 完成分支（Finishing Branch）`finishing-a-development-branch` / `verification-before-completion`
 验证测试通过，呈现选项（merge/PR/保留/丢弃），清理 worktree。
 
+### 全部技能简述
+
+| 技能 | 触发场景 | 简述 |
+|------|----------|------|
+| `using-superpowers` | 每次对话开始 | 建立"先调用技能"规则，任何响应（含澄清提问）前先加载相关技能 |
+| `brainstorming` | 任何创造性工作前 | 写代码前通过提问细化需求、探索替代方案、分段展示设计供验证 |
+| `using-git-worktrees` | 需要隔离工作空间 | 确保隔离工作空间存在（原生工具或 git worktree 兜底） |
+| `writing-plans` | 有规格/需求、动代码前 | 把多步任务拆成可执行的小任务计划 |
+| `writing-skills` | 创建/编辑/验证技能时 | 用 TDD 思路写技能文档（压力场景→基线→写技能→验证→重构） |
+| `executing-plans` | 跨会话执行计划时 | 在独立会话执行写好的实现计划，带审查检查点 |
+| `subagent-driven-development` | 当前会话执行独立任务 | 把实现计划中的独立任务分派子代理执行 |
+| `dispatching-parallel-agents` | 有 2+ 个无依赖独立任务 | 并行分派互不依赖的独立任务 |
+| `test-driven-development` | 实现任何功能或修复前 | 严格 RED-GREEN-REFACTOR，先写失败测试再写最小实现 |
+| `systematic-debugging` | 遇到 bug/测试失败/异常行为 | 提出修复前必须先找根因，禁止症状式打补丁 |
+| `requesting-code-review` | 完成任务/重大功能/合并前 | 审查工作是否满足需求 |
+| `receiving-code-review` | 收到代码审查反馈时 | 实施建议前需技术严谨核实，拒绝表演式同意或盲目照做 |
+| `verification-before-completion` | 即将声称完成/修复/通过前 | 必须运行验证命令并确认输出，先有证据再下结论 |
+| `finishing-a-development-branch` | 实现完成且测试全通过 | 呈现结构化选项（merge/PR/保留/丢弃），清理 worktree |
+
+
 ---
 
 ### 设计原则
@@ -156,18 +176,6 @@ source: https://example.com
 1. **TDD 铁律**：没有失败测试，不写生产代码
 2. **调试铁律**：没有根因调查，不实施修复
 3. **验证铁律**：没有运行证据，不声称完成
-
-## 测试策略
-
-| 类型 | 时机 | 覆盖率目标 |
-|------|------|------------|
-| 单元测试 | TDD 循环（先写测试） | 80%+ |
-| 集成测试 | API 边界、数据库 | 关键路径 100% |
-| E2E 测试 | 仅核心用户流程 | 核心流程 100% |
-
-- **单元测试**：业务逻辑、工具函数（TDD 核心）
-- **集成测试**：API 端点、数据库操作
-- **E2E 测试**：仅登录、核心功能、支付流程
 
 ### 子代理派发规则
 
@@ -196,16 +204,6 @@ source: https://example.com
 
 [项目描述]
 ```
-
----
-
-# 关键设计决策
-
-| 决策 | 原因 |
-|------|------|
-| 项目层用 superpowers 工作流 | 七阶段方法论替代零散指令，确保从设计到交付的完整流程 |
-| 项目级 CLAUDE.md 两级分区（Superpowers + 项目信息） | 符合 KV 缓存规则：稳定前缀高命中率，动态后缀不影响前缀缓存 |
-| ECC 补强作为可选模块独立存放 | 不是所有项目都使用 ECC 插件，保持模板精简，按需添加 |
 
 ---
 
