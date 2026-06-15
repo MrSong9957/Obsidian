@@ -59,25 +59,97 @@ ECC 是独立于 Superpowers 的插件，提供**基础设施层**，补充 Supe
 
 ## 2. Rules — 语言编码规范
 
-### 配置（手动安装）
+### 目录结构
 
-插件机制无法自动分发 rules 文件，必须手动复制。
+整套规范分为**通用层**与**各编程语言专属目录**两层架构：
+```
+rules/
+├── common/          # 与编程语言无关的通用准则（必须安装）
+│   ├── coding-style.md    # 代码风格规范
+│   ├── git-workflow.md    # Git 工作流规范
+│   ├── testing.md         # 测试规范
+│   ├── performance.md     # 性能规范
+│   ├── patterns.md        # 通用设计模式
+│   ├── hooks.md           # 钩子配置规范
+│   ├── agents.md          # AI 代理交互规范
+│   └── security.md        # 安全开发规范
+├── typescript/      # TypeScript / JavaScript 专属规范
+├── angular/         # Angular 框架专属规范
+├── python/          # Python 专属规范
+├── golang/          # Go 语言专属规范
+├── web/             # 网页/前端通用专属规范
+├── swift/           # Swift 专属规范
+├── php/             # PHP 专属规范
+├── ruby/            # Ruby / Rails 框架专属规范
+└── arkts/           # 鸿蒙系统 ArkTS 语言专属规范
+```
+- **common/ 通用目录**
+：存放全语言通用准则，不含特定编程语言代码示例。
+- **各语言专属目录**
+：在通用规范基础上，补充对应框架专属实践、配套工具与代码示例；每个文件都会关联引用通用目录里对应的基础规范文档。
 
-### 安装策略
+### 安装方式
+#### 方案一：一键安装脚本（推荐）
+```bash
+# 安装通用规范 + 一套或多套编程语言专属规范
+./install.sh typescript
+./install.sh angular
+./install.sh python
+./install.sh golang
+./install.sh web
+./install.sh swift
+./install.sh php
+./install.sh ruby
+./install.sh arkts
 
-**全局（~/.claude/rules/ecc/）**：只安装 `common` 规则集。Claude Code 会加载 `~/.claude/rules/` 下所有 `.md` 到每个会话 context，无按项目过滤，因此全局只保留通用规范。
+# 一次性安装多套语言规范
+./install.sh typescript python
+```
 
-**项目级（project/.claude/rules/ecc/）**：只安装项目实际技术栈。例如 Python 项目安装 common + python。
+#### 方案二：手动安装
+> **重要提醒**：必须完整复制整个目录，禁止使用 `/*`扁平化复制。
+> 通用目录与各语言专属目录内存在同名文件，若扁平化合并到同一个文件夹，
+> 语言专属文件会直接覆盖通用规范，同时语言文件中相对路径 `../common/`的引用会全部失效。
+> 用户级 Claude 配置请统一使用下方 ECC 专属命名空间；平铺式包目录会和其他第三方规范包产生路径冲突，也与主 README 文档规范不符。
 
 ```bash
-# 全局只装 common
-cp -r ~/.claude/plugins/marketplaces/ecc/rules/common ~/.claude/rules/ecc/
+# 首次执行时创建 ECC 规范专属目录
+mkdir
+ -p ~/.claude/rules/ecc
 
-# 项目级只装必要的
-mkdir -p project/.claude/rules/ecc
-cp -r ~/.claude/plugins/marketplaces/ecc/rules/common project/.claude/rules/ecc/
-cp -r ~/.claude/plugins/marketplaces/ecc/rules/python project/.claude/rules/ecc/
+# 安装通用规范（所有项目均必须依赖）
+cp -r rules/common ~/.claude/rules/ecc/
+
+# 根据项目技术栈安装对应语言专属规范
+cp -r rules/typescript ~/.claude/rules/ecc/
+cp -r rules/angular ~/.claude/rules/ecc/
+cp -r rules/python ~/.claude/rules/ecc/
+cp -r rules/golang ~/.claude/rules/ecc/
+cp -r rules/web ~/.claude/rules/ecc/
+cp -r rules/swift ~/.claude/rules/ecc/
+cp -r rules/php ~/.claude/rules/ecc/
+cp -r rules/ruby ~/.claude/rules/ecc/
+cp -r rules/arkts ~/.claude/rules/ecc/
+
+# 注意！！！请根据你的项目实际需求按需配置，以上仅为示例参考
 ```
+
+若需要项目本地生效的规范，在项目根目录下使用相同目录结构：
+```bash
+mkdir -p .claude/rules/ecc
+cp -r rules/common .claude/rules/ecc/
+cp -r rules/typescript .claude/rules/ecc/
+```
+
+加载机制确认：ECC SessionStart hook 不碰 rules、plugin.json 不声明 rules 目录 → rules 纯靠 Claude Code 原生读 ~/.claude/rules/。复制即加载，无双重注入风险。带 paths frontmatter 的做 scoped、不带的做无条件——与文档 L40 的分层吻合。
+
+## 规范（Rules）与实操手册（Skills）的区别
+- **规范 Rules**：定义通用开发标准、编码约定与检查清单，适用范围广（例如：测试覆盖率不低于80%、禁止硬编码密钥）。
+- **实操手册 Skills**（存放于 `skills/` 目录）：针对特定开发任务提供详尽、可直接落地的参考资料（例如：`python-patterns` Python 编码范式、`golang-testing`
+ Go 测试实操）。
+
+各语言专属规范文件会按需引用对应的实操手册。
+规范告诉你**要做什么**；实操手册告诉你**具体怎么做**。
 
 ECC 源目录提供 18 个规则集：common + angular, arkts, cpp, csharp, dart, fsharp, golang, java, kotlin, perl, php, python, ruby, rust, swift, typescript, web。每种语言含 5 个维度：
 - `coding-style` — 编码风格（不可变性、文件组织、大小限制）
