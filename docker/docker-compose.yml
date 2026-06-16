@@ -1,0 +1,51 @@
+services:
+  app:
+    env_file:
+      - .env
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        HTTP_PROXY: ""
+        HTTPS_PROXY: ""
+    container_name: ${PROJECT_NAME:-mimocode-dev}
+    # 允许容器访问宿主机（代理需要）
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # Initialize config (run entrypoint as root on first start)
+    user: "0:0"
+    environment:
+      # API config (from .env)
+      - ANTHROPIC_BASE_URL=${ANTHROPIC_BASE_URL}
+      - ANTHROPIC_AUTH_TOKEN=${ANTHROPIC_API_KEY}
+      # Model config (from .env)
+      - ANTHROPIC_DEFAULT_HAIKU_MODEL=${ANTHROPIC_DEFAULT_HAIKU_MODEL}
+      - ANTHROPIC_DEFAULT_SONNET_MODEL=${ANTHROPIC_DEFAULT_SONNET_MODEL}
+      - ANTHROPIC_DEFAULT_OPUS_MODEL=${ANTHROPIC_DEFAULT_OPUS_MODEL}
+      - ANTHROPIC_DEFAULT_OPUS_MODEL_NAME=${ANTHROPIC_DEFAULT_OPUS_MODEL_NAME}
+      - ANTHROPIC_MODEL=${ANTHROPIC_MODEL}
+      - ANTHROPIC_REASONING_MODEL=${ANTHROPIC_REASONING_MODEL}
+      # Tool config (from .env)
+      - GITHUB_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN:-}
+      # 代理配置（通过 host.docker.internal 访问宿主机代理）
+      - HTTP_PROXY=http://host.docker.internal:7890
+      - HTTPS_PROXY=http://host.docker.internal:7890
+      - NO_PROXY=localhost,127.0.0.1,host.docker.internal
+      # Fixed config
+      - CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
+      - DISABLE_AUTOUPDATER=1
+      - ENABLE_TOOL_SEARCH=true
+      - API_TIMEOUT_MS=3000000
+      - CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+      # Bun config
+      - BUN_INSTALL=/home/app/.bun
+    volumes:
+      # Project directory (two-way sync)
+      - ..:/home/app/project
+      # Obsidian vault (two-way sync)
+      - ${OBSIDIAN_PATH:-../../Obsidian}:/home/app/obsidian
+      # AI CLI 配置目录（所有 CLI 配置 + bun 持久化）
+      - ai-home:/root
+
+volumes:
+  ai-home:
