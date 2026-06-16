@@ -7,8 +7,7 @@
 
 # 环境与密钥
 .env
-docker/.env
-docker/docker-compose.override.yml
+docker/
 
 # Python
 __pycache__/
