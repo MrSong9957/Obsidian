@@ -2,7 +2,7 @@
 name: Claude Code 当前配置清单
 description: 本机 Claude Code 完整配置清单 + 自检清单（插件/Hooks/状态栏/MCP/技能/代理/规则/团队/经验教训）— 定期巡检、排查配置问题、新环境迁移时参考
 type: concept
-updated: 2026-06-14
+updated: 2026-06-16
 tags: claude-code, setup, plugins, hooks, mcp, skills, agents, config, checklist
 source: https://example.com
 ---
@@ -23,7 +23,7 @@ source: https://example.com
 |--------|-----|------|
 | `defaultMode` | `"auto"` | 自动批准所有工具调用 |
 | `alwaysThinkingEnabled` | `true` | 始终启用扩展思考 |
-| `effortLevel` | `"max"` | 最高推理强度（env: `CLAUDE_CODE_EFFORT_LEVEL="max"`） |
+| `effortLevel` | `"xhigh"` | 推理强度（可手动调整，如 `/effort`） |
 | `skipDangerousModePermissionPrompt` | `true` | 跳过危险模式确认 |
 | `skipAutoPermissionPrompt` | `true` | 跳过自动权限确认 |
 | `includeCoAuthoredBy` | `false` | 禁用 co-authored-by 署名 |
@@ -306,7 +306,7 @@ Bridge 文件路径：`/tmp/ecc-metrics-{session_id}.json`（Node.js `os.tmpdir(
 
 ### ECC 插件注入的 Hooks
 
-ECC v2.0.0 自动注册约 30 个 hooks，覆盖 PreToolUse / PostToolUse / PostToolUseFailure / PreCompact / SessionStart / SessionEnd / Stop 等事件，功能包括：危险命令拦截、tmux/git-push 提醒、文档写入警告、上下文压缩建议、自动格式化、类型检查、console.log 残留检查、代码质量门禁、治理日志、MCP 健康检查、会话指标桥接、持续学习观察器、成本追踪等。
+ECC v2.0.0 自动注册 28 个 hooks，覆盖 PreToolUse(8) / PostToolUse(10) / PostToolUseFailure(1) / PreCompact(1) / SessionStart(1) / SessionEnd(1) / Stop(6) 等事件，功能包括：危险命令拦截、tmux/git-push 提醒、文档写入警告、上下文压缩建议、自动格式化、类型检查、console.log 残留检查、代码质量门禁、治理日志、MCP 健康检查、会话指标桥接、持续学习观察器、成本追踪等。
 
 完整列表见 `$CLAUDE_PLUGIN_ROOT/hooks/hooks.json`，**无需在 settings.json 维护**（settings.json 中引用 `${CLAUDE_PLUGIN_ROOT}` 的 hooks 必须删除，否则升级后报 "not associated with a plugin"）。
 
@@ -318,7 +318,7 @@ Hook 脚本通过环境变量引用插件目录：
 
 ### ECC Hooks 开关机制
 
-ECC 的 33 个 hooks 默认**零配置全开**（安装插件即生效）。通过 `~/.claude/settings.json` 的 `env` 块注入两个环境变量控制开关，判定逻辑见 `scripts/lib/hook-flags.js`：
+ECC 的 28 个 hooks 默认**零配置全开**（安装插件即生效）。通过 `~/.claude/settings.json` 的 `env` 块注入两个环境变量控制开关，判定逻辑见 `scripts/lib/hook-flags.js`：
 
 | 变量 | 作用 | 默认值 |
 |------|------|--------|
@@ -499,7 +499,7 @@ ECC 源目录提供 18 个规则集：common + angular, arkts, cpp, csharp, dart
 
 ---
 
-## 自定义代理（Agents，10 + 52 个）
+## 自定义代理（Agents，10 + 67 个）
 
 路径：`~/.claude/agents/`
 
@@ -518,9 +518,9 @@ ECC 源目录提供 18 个规则集：common + angular, arkts, cpp, csharp, dart
 | doc-updater | 文档更新 |
 | rust-reviewer | Rust 代码审查 |
 
-### ECC 插件提供的代理（52 个）
+### ECC 插件提供的代理（67 个）
 
-ECC v2.0.0 自动安装了大量领域专用代理，包括但不限于：`a11y-architect`、`code-explorer`、`cpp-reviewer`、`dart-build-resolver`、`django-reviewer`、`fastapi-reviewer`、`flutter-reviewer`、`go-reviewer`、`java-reviewer`、`kotlin-reviewer`、`network-architect`、`python-reviewer`、`react-reviewer`、`rust-build-resolver`、`swift-reviewer`、`typescript-reviewer` 等。完整列表见 `~/.claude/agents/` 目录。
+ECC v2.0.0 自动安装了大量领域专用代理，包括但不限于：`a11y-architect`、`code-explorer`、`cpp-reviewer`、`dart-build-resolver`、`django-reviewer`、`fastapi-reviewer`、`flutter-reviewer`、`gan-planner`、`go-reviewer`、`homelab-architect`、`java-reviewer`、`kotlin-reviewer`、`network-troubleshooter`、`python-reviewer`、`react-reviewer`、`rust-build-resolver`、`spec-miner`、`swift-reviewer`、`type-design-analyzer`、`typescript-reviewer` 等。完整列表见 `~/.claude/agents/` 目录。
 
 ### 经验教训
 
