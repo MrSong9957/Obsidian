@@ -49,6 +49,7 @@ updated: 2026-06-14
 | [[sources/claude-code/settings-reference\|Settings 参考]] | settings.json 完整参考 |
 | [[sources/claude-code/statusline.py\|状态栏脚本 statusline.py]] | 综合版状态栏 Python 脚本（模型/目录/分支/进度条/任务/成本指标） |
 | [[sources/claude-code/cc-switch-template.json\|cc switch 配置模板]] | cc switch 切换 API KEY 时重写 settings.json 的完整 JSON 模板 |
+| [[sources/claude-code/ecc-references\|ECC Hooks 完整参考]] | 所有 Hook 作用、ECC_HOOK_PROFILE 档位对照 |
 
 ## dev/
 

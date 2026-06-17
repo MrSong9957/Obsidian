@@ -4,7 +4,7 @@ description: 核心学习方法论 — 学霸七法、认知学习编程法、�
 type: concept
 updated: 2026-06-02
 tags: learning, methodology, cognition, ai-skills, study-skills
-source: [[sources/learning/learning.md]]
+source: [[sources/learning/learning-references.md]]
 aliases: [学习, learning]
 ---
 
@@ -12,7 +12,7 @@ aliases: [学习, learning]
 
 ## 核心学习方法：学霸七法（熊子骁）
 
-> 14岁考入西交少年班、19岁直博清华。七条核心策略 ← [[sources/learning/learning.md]] L433-490
+> 14岁考入西交少年班、19岁直博清华。七条核心策略 ← [[sources/learning/learning-references.md]] L433-490
 
 1. **框架学习法**：先搭建学科整体框架，再填充知识点——先有地图再走迷宫
 2. **反向解题法**：从"考什么"出发定位考点，而非从条件硬推——以终为始
@@ -105,4 +105,4 @@ aliases: [学习, learning]
 ## 相关文档
 
 - [[learning-references]] — 四层认知分离法详解、编程第一性原理、AI 时代语言学习哲学
-- [[sources/learning/learning.md]] — 完整资料、详细示例、论证过程
+- [[sources/learning/learning-references.md]] — 完整资料、详细示例、论证过程

@@ -55,6 +55,8 @@ WARNING: 重要提示： Claude Code 插件无法自动分发 rules。
 
 # HOOKS 配置
 
+> **详细文档**：[[sources/claude-code/ecc-references|ECC Hooks 完整参考]] — 所有 Hook 作用、ECC_HOOK_PROFILE 档位对照
+
 通过 `ECC_HOOK_PROFILE` 配置控制的 Hooks 三个粗粒度配置档位如下：
 
 * **`minimal`**：仅启用最基础配置，不包含全局运行时挂钩，适用于低上下文或本地模型。
