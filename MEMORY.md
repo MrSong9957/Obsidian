@@ -3,10 +3,7 @@
 ## 管理规则
 - 此文件超过 200 行会被截断，每条保持单行，不超过 150 字符。
 - 只保存常用的、跨会话的用户个人习惯和偏好。
-- wiki/ 里的文档必须有 yaml 元数据：type/name/description/updated/tags，双链统一带 `.md` 扩展名。
-- 知识库三层架构：sources/（只读）→ wiki/（可读写）→ CLAUDE.md（行为规则），详见 [LLM-WIKI-ARCHITECTURE](../../LLM-WIKI-ARCHITECTURE.md)。
-- 个人习惯和经验教训条目格式：`- {场景}：{摘要} → [[wiki/xxx.md|详情]](...)`。
-- wiki 按问题领域组织，同一领域写进同一个文档，超 600 行拆分。
+- 条目格式：`- {场景}：{摘要} → [[wiki/xxx.md|详情]](...)`。
 - 记忆查找流程（必须遵循）：① MEMORY.md 中查找 → ② 未命中则必须读 README.md 按领域导航查找 → ③ README.md 命中后读对应 wiki/ 文件。禁止跳过 README.md 直接 grep/find。
 
 ## 个人习惯
