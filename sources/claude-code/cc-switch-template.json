@@ -69,7 +69,6 @@
   "language": "chinese",
   "spinnerTipsEnabled": true,
   "alwaysThinkingEnabled": true,
-  "effortLevel": "max",
   "showClearContextOnPlanAccept": true,
   "autoMemoryEnabled": true,
   "showThinkingSummaries": true,
@@ -81,5 +80,6 @@
   "showMessageTimestamps": true,
   "terminalProgressBarEnabled": true,
   "todoFeatureEnabled": true,
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "skipWorkflowUsageWarning": true
 }

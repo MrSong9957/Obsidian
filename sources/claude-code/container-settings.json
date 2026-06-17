@@ -5,7 +5,6 @@
     "CLAUDE_CODE_ATTRIBUTION_HEADER": "0",
     "ENABLE_TOOL_SEARCH": "true",
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
-    "CLAUDE_CODE_EFFORT_LEVEL": "max",
     "ECC_HOOK_PROFILE": "standard",
     "ECC_DISABLED_HOOKS": "stop:desktop-notify,pre:edit-write:gateguard-fact-force,pre:observe:continuous-learning,post:observe:continuous-learning,stop:evaluate-session"
   },
@@ -49,7 +48,6 @@
   "language": "chinese",
   "spinnerTipsEnabled": true,
   "alwaysThinkingEnabled": true,
-  "effortLevel": "max",
   "showClearContextOnPlanAccept": true,
   "autoMemoryEnabled": true,
   "showThinkingSummaries": true,

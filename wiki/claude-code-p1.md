@@ -41,7 +41,7 @@ source: https://example.com
 |------|------|--------|
 | `model` | 默认模型 | - |
 | `alwaysThinkingEnabled` | 启用扩展思考 | `true` |
-| `effortLevel` | 思考深度 | `xhigh` |
+| `effortLevel` | 思考深度（可选，未设用默认） | — |
 | `fastMode` | 快速模式 | `false` |
 | `autoCompactEnabled` | 上下文满时自动压缩 | `true` |
 
@@ -116,6 +116,9 @@ source: https://example.com
 ```
 
 ### 场景 4：开启快速模式和扩展思考
+
+> 注：当前 canonical（cc-switch-template.json）未设置 `effortLevel`（用系统默认），此处仅演示字段用法。
+
 ```json
 {
   "fastMode": true,

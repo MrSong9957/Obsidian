@@ -406,8 +406,7 @@ source: update-config skill Settings JSON Schema
   "autoCompactEnabled": true,
   "todoFeatureEnabled": true,
   "showClearContextOnPlanAccept": true,
-  "alwaysThinkingEnabled": true,
-  "effortLevel": "xhigh"
+  "alwaysThinkingEnabled": true
 }
 ```
 
@@ -418,4 +417,3 @@ source: update-config skill Settings JSON Schema
 - `todoFeatureEnabled` — 启用任务追踪面板，多步骤任务更清晰
 - `showClearContextOnPlanAccept` — 计划审批时显示"清除上下文"选项
 - `alwaysThinkingEnabled` — 启用扩展思考
-- `effortLevel` — 思考深度设为最高

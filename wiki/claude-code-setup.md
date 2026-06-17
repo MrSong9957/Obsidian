@@ -23,7 +23,6 @@ source: https://example.com
 |--------|-----|------|
 | `defaultMode` | `"auto"` | 自动批准所有工具调用 |
 | `alwaysThinkingEnabled` | `true` | 始终启用扩展思考 |
-| `effortLevel` | `"xhigh"` | 推理强度（可手动调整，如 `/effort`） |
 | `skipDangerousModePermissionPrompt` | `true` | 跳过危险模式确认 |
 | `skipAutoPermissionPrompt` | `true` | 跳过自动权限确认 |
 | `includeCoAuthoredBy` | `false` | 禁用 co-authored-by 署名 |
@@ -31,9 +30,11 @@ source: https://example.com
 | `todoFeatureEnabled` | `true` | Todo 任务追踪 |
 | `language` | `"chinese"` | 中文输出 |
 | `disableRemoteControl` | `true` | 禁用远程控制 |
-| 自动更新 | 已禁用 | `DISABLE_AUTOUPDATER=1` |
+| 自动更新 | 已开启 | —（未设 `DISABLE_AUTOUPDATER`） |
 | Tool Search | 已启用 | `ENABLE_TOOL_SEARCH=true` |
 | Agent Teams | 已启用 | `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` |
+
+> 完整权威配置以 [[sources/claude-code/cc-switch-template.json]] 为准（SSOT），本表仅作解读与排查速查。
 
 ### 经验教训
 
@@ -145,6 +146,8 @@ claude plugin install ecc@ecc
 ## 状态栏（StatusLine）
 
 ### 配置（综合版，当前使用）
+
+> 字段值以 [[sources/claude-code/cc-switch-template.json]] 为准；此处保留用于解读 statusLine 管道结构。
 
 ```json
 "statusLine": {
@@ -328,6 +331,8 @@ ECC 的 28 个 hooks 默认**零配置全开**（安装插件即生效）。通�
 **判定优先级**：黑名单 > 档位。每个 hook 在 `hooks/hooks.json` 声明所属档位（如 `standard,strict`），当前档位在允许列表内 → 启用。
 
 #### 当前配置（settings.json env）
+
+> 字段值以 [[sources/claude-code/cc-switch-template.json]] 的 `env` 为准。
 
 ```json
 "ECC_HOOK_PROFILE": "standard",
@@ -570,7 +575,7 @@ OpenCode 是另一个 AI 编码工具，可通过桥接与 Claude Code 共享配
 # 1. 状态栏脚本（canonical 源：4 色 + per-segment 隔离 + null 防御 + 计费取 stdin cost）
 cp sources/claude-code/statusline.py ~/.claude/scripts/statusline.py && chmod +x ~/.claude/scripts/statusline.py
 
-# 2. settings.json（ECC 2.0.0 / safety-net 1.0.6 路径 + ECC 档位 + 2 hooks + python3 statusLine + effortLevel:max + enabledMcpjsonServers）
+# 2. settings.json（ECC 2.0.0 / safety-net 1.0.6 路径 + ECC 档位 + 2 hooks + python3 statusLine + enabledMcpjsonServers）
 #    classifier 禁止 agent 直写 ~/.claude/settings.json → stage + 用户 !cp
 cp sources/claude-code/container-settings.json /tmp/cc-target-settings.json
 !cp /tmp/cc-target-settings.json ~/.claude/settings.json   # 用户执行（! 前缀在本会话跑）
@@ -585,8 +590,8 @@ cp sources/claude-code/container-settings.json /tmp/cc-target-settings.json
 |----|------|------|
 | Python | `py` / `py -3` | **`python3`**（无 `py`） |
 | statusLine 命令 | `py ~/.claude/scripts/statusline.py \| ...` | `python3 "$HOME/.claude/scripts/statusline.py" \| ...` |
-| ECC 版本/路径 | `.../ecc/ecc/2.0.0-rc.1` | `.../ecc/ecc/2.0.0` |
-| safety-net 版本/路径 | `.../safety-net/1.0.1` | `.../safety-net/1.0.6` |
+| ECC 版本/路径 | `.../ecc/ecc/2.0.0` | `.../ecc/ecc/2.0.0` |
+| safety-net 版本/路径 | `.../safety-net/1.0.6` | `.../safety-net/1.0.6` |
 | settings.json 写入 | 直写 / cc switch | **classifier 禁 agent 直写** → stage `/tmp` + 用户 `!cp` |
 | plugin MCP | （见 MCP 节） | `enabledMcpjsonServers: [chrome-devtools, context7]` |
 
