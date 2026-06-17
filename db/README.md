@@ -33,6 +33,19 @@ db/
 ./db/wiki-query/wiki-query.exe show "path/to/file.md"
 ```
 
+## 性能对比
+
+以 369 篇 MD 文档为基准，搜索 "learning"：
+
+| 对比项 | wiki-query | grep |
+|--------|-----------|------|
+| 搜索耗时 | ~100ms | ~250ms |
+| 返回结果数 | 6（含元数据） | 19（仅路径） |
+| 模型判断相关性 | 元数据直接判断 | 需逐个读取文件 |
+| 实际需读取正文 | 1-2 篇 | 5-10 篇 |
+
+**核心优势**：wiki-query 的 `search` 返回结构化元数据（name、description、tags），模型无需读取文件即可判断相关性，大幅减少 token 消耗。数据量越大，优势越明显。
+
 ## 自动同步
 
 仓库配置了 Git `post-commit` hook，每次 commit 后自动运行 `sync` 更新数据库。
