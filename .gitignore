@@ -37,3 +37,6 @@ CLI/Python/skills/
 
 # 上下文落盘目录（运行时生成）
 CLI/Python/.transcripts/
+
+# Rust 编译缓存
+db/wiki-query/target/
