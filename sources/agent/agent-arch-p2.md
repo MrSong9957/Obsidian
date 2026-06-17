@@ -8,7 +8,7 @@ source: https://example.com
 ---
 # Agent 架构（下）- 详细资料
 
-> 本文件是从 wiki/agent-arch-p2.md 分离出来的完整详细内容。
+> 入口文档：[[wiki/agent-arch.md|Agent 架构核心]] | 索引：[[sources/agent/agent-arch-references.md|Agent 架构详细参考]]
 
 ---
 

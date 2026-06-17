@@ -31,8 +31,7 @@ obsidian/
 
 | 文档 | 说明 |
 |------|------|
-| [[wiki/claude-code-p1.md\|配置]] | settings.json、CLAUDE.md、rules、记忆系统 |
-| [[wiki/claude-code-p2.md\|工具]] | Superpowers、SafetyNet、Statusline |
+| [[wiki/claude-code.md\|配置与工作流]] | settings.json、CLAUDE.md、rules、记忆系统、插件、Hooks、子代理、MCP |
 | [[wiki/claude-code-setup.md\|当前配置清单]] | 本机完整配置 + 自检清单 + 缓存优化 + cc switch 模板 |
 | [[wiki/claude-md-base.md\|CLAUDE.md 模板]] | 双层架构模板（全局 + 项目级） |
 
@@ -42,16 +41,15 @@ obsidian/
 |------|------|
 | [[wiki/dev-practice.md\|开发实践]] | TDD、代码质量、调试、提示词技巧、KV 缓存 |
 | [[wiki/frontend.md\|前端与 UI]] | UI 设计、终端 UI 测试、Playwright、技术栈策略 |
-| [[wiki/git-security.md\|Git 安全]] | 认证安全、token 管理、credential 配置 |
+| [[wiki/dev-practice.md\|Git 安全]] | 认证安全、token 管理、credential 配置 |
 
 ### 架构与学习
 
 | 文档 | 说明 |
 |------|------|
-| [[wiki/agent-arch-p1.md\|Agent 架构（上）]] | Agent 循环、多智能体、系统提示词 |
-| [[wiki/agent-arch-p2.md\|Agent 架构（下）]] | Harness 工程方法论、人话编程规范 |
+| [[wiki/agent-arch.md\|Agent 架构]] | Agent 循环、多智能体、Harness 工程方法论 |
 | [[wiki/learn-shareai.md\|Learn ShareAI]] | s01-s19 从零构建 Agent 学习笔记 |
-| [[wiki/learning-habits.md\|学习习惯]] | AI 时代技能、学习方法论、认知提升、语言学习哲学 |
+| [[wiki/learning.md\|学习方法]] | AI 时代技能、学习方法论、认知提升、语言学习哲学 |
 | [[wiki/mental-models.md\|思维模型]] | 跨学科思维模型（芒格 100 模型） |
 
 ### 工具指南

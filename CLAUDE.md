@@ -5,7 +5,7 @@
 你是本 Obsidian 仓库的知识管理员。
 仓库是一个三层结构的知识库：
 
-- `sources/` = 原始资料（可读写，禁止删除）
+- `sources/` = 详细文档（可读写，禁止删除）
 - `wiki/` = 结构化知识（你可以读写）
 - `templates/` = 页面模板（创建新页面时遵循）
 
@@ -50,30 +50,29 @@
 - 移动文件后检查 wiki 层的 `[[wikilink]]` 是否仍有效（Obsidian 通常自动跟踪重命名）
 - `_index.md` 始终留在 `sources/` 根目录
 
+### 文档组织
+
+每个模块两层文档：
+
+- **wiki/** — 入口文档：全面、精简、实用，足以独立完成任务（如配置文档虽精简但覆盖所有配置项）
+- **sources/** — 详细文档：完整过程、代码示例、调试记录、踩坑经验等详细内容
+
+命名约定：详细文档以入口文档名为前缀，加 `-references` 后缀（如 `ecc.md` → `ecc-references.md`）。
+
 ## 创建新页面规则
 
-1. 概念页使用 `templates/concept.md` 模板
-2. 摘要页使用 `templates/summary.md` 模板
-3. 矛盾页使用 `templates/contradiction.md` 模板
+1. Wiki 页面使用 `templates/wiki.md` 模板（通过 `type` 字段区分概念页/矛盾页）
+2. 详细文档使用 `templates/sources-reference.md` 模板（遵循 `-references` 命名约定）
+3. 原始资料直接复制到 `sources/`；若为 md 文件，在开头添加 frontmatter 元数据
 4. 每个页面的 frontmatter 必须完整填写
 5. 每个 `[[wikilink]]` 必须指向已存在的页面，如果目标页面不存在，先创建再链接
-6. `sources` 字段必须溯源到 `sources/` 中的文件
+6. `source` 字段必须溯源到 `sources/` 中的文件
 
-## 更新规则
-
-当新资料加入 sources/ 时，执行以下判断：
-
-1. **ADD**：发现新概念 → 创建新的概念页
-2. **UPDATE**：补充已有概念 → 编辑已有的 wiki 页面
-3. **CONTRADICT**：发现矛盾 → 创建矛盾页
-4. **NOOP**：无新信息 → 不做任何操作
 
 ## 质量规则
 
 - 每条 Wiki 内容必须标注来源（`sources` 字段 + 正文脚注 `[^n]`）
 - 每个脚注必须在"引用索引"区块中定义，格式为 `[[文件名]] L起始行-结束行 — 简要说明`
-- `confidence < 0.7` 的内容必须在页面中标注 `⚠️ 需要人工确认`
-- `severity: high` 的矛盾页必须提示人工裁决
 - 禁止捏造不存在的 `[[wikilink]]`
 
 ## 行号索引规则

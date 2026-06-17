@@ -137,8 +137,6 @@ Copy-Item C:\Users\<user>\.config\opencode\plugins\claude-code-hooks.ts.bak-2026
 
 ## ECC Agent 格式兼容性
 
-> 详细调试过程：[[sources/claude-code/ecc-opencode-install.md|ECC-OpenCode 集成踩坑]]
-
 ECC agent `.md` 文件的 frontmatter 格式与 OpenCode 不兼容。安装 ECC 到 OpenCode 时必须处理以下差异：
 
 ### frontmatter 字段对照
@@ -239,10 +237,9 @@ sync.data.agent.filter((x) => x.mode !== "subagent" && !x.hidden)
 
 - `[[sources/claude-code/opencode-bridge-v2.md]]` — v2 升级完整过程
 - `[[sources/claude-code/opencode-auto-mode.md]]` — Auto Mode 实现过程
-- `[[sources/claude-code/ecc.md]]` — ECC 完整文档（包含 hooks JSON schema 参考）
-- `[[sources/claude-code/ecc-opencode-install.md]]` — ECC-OpenCode 集成踩坑完整过程
+- `[[wiki/ecc.md]]` — ECC 快速指南（安装与故障排除）
 - `[[sources/claude-code/settings-reference.md]]` — settings.json 字段参考
-- `[[wiki/claude-code-p3.md]]` — Claude Code 进阶工作流（含 Hooks 配置范式）
+- `[[wiki/claude-code.md]]` — Claude Code 配置与工作流
 - `[[wiki/dev-practice.md]]` — TDD/调试/代码质量基础
 
 ---

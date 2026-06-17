@@ -80,4 +80,4 @@ Skill 是 Claude Code 运行时内置工具（在 250MB 编译二进制中注册
 
 ## 结论
 
-→ 详见 [[wiki/claude-code-p2.md]] 和 memory/feedback-subagent-skill-injection.md
+→ 详见 [[wiki/claude-code.md]] 和 memory/feedback-subagent-skill-injection.md
