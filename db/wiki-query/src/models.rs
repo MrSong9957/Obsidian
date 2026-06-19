@@ -22,6 +22,9 @@ pub struct SearchResult {
     pub doc_type: String,
     pub updated: String,
     pub tags: String,
+    /// bm25 分数(FTS5 约定:越小越相关,负值)。供 write 决策排序。
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub score: Option<f64>,
 }
 
 /// write 四态决策的结果状态(学 Mem0 ADD/UPDATE/NOOP/CONFLICT)。

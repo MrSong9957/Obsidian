@@ -20,9 +20,12 @@ pub fn read(vault_root: &str, path: &str) -> Result<String, WikiError> {
     Ok(std::fs::read_to_string(abs)?)
 }
 
-/// FTS5 检索:返回元数据 + bm25 分数(供 write 决策排序)。
-/// 与 db::search 的区别:返回 Vec 而非打印,且带 score。
-pub fn search(query: &str) -> Result<Vec<SearchResult>, WikiError> {
+/// FTS5 检索的核心实现,返回带 bm25 score 的结果。
+/// core::search、core::write(决策用)、db::search(CLI)共用此函数,
+/// 避免 SQL/tokenize 逻辑重复(review Important-3)。
+///
+/// score 为 bm25 原始值(越小越相关,负值),写入 SearchResult.score。
+pub(crate) fn search_with_scores(query: &str) -> Result<Vec<SearchResult>, WikiError> {
     use crate::fts::tokenize_for_fts;
     let tokenized = tokenize_for_fts(query);
     let tokens: Vec<&str> = tokenized
@@ -40,11 +43,12 @@ pub fn search(query: &str) -> Result<Vec<SearchResult>, WikiError> {
 
     let conn = db::init()?;
     let mut stmt = conn.prepare(
-        "SELECT d.path, d.name, d.description, d.type, d.updated, d.tags
+        "SELECT d.path, d.name, d.description, d.type, d.updated, d.tags,
+                bm25(documents_fts) AS score
          FROM documents_fts f
          JOIN documents d ON d.path = f.path
          WHERE documents_fts MATCH ?1
-         ORDER BY bm25(documents_fts)
+         ORDER BY score
          LIMIT 20",
     )?;
     let results = stmt
@@ -56,11 +60,17 @@ pub fn search(query: &str) -> Result<Vec<SearchResult>, WikiError> {
                 doc_type: row.get(3)?,
                 updated: row.get(4)?,
                 tags: row.get(5)?,
+                score: Some(row.get(6)?),
             })
         })?
         .filter_map(|r| r.ok())
         .collect();
     Ok(results)
+}
+
+/// 对外检索:返回元数据列表(score 字段填充)。
+pub fn search(query: &str) -> Result<Vec<SearchResult>, WikiError> {
+    search_with_scores(query)
 }
 
 /// 写入:四态决策 + frontmatter 校验 + policy 校验 + 落盘 + 即时索引。
@@ -80,14 +90,15 @@ pub fn write(
     let abs = Path::new(vault_root).join(path);
     let path_exists = abs.exists();
 
-    // 3. 查 FTS5 看有无相似文档(用 name 做查询)
-    let matches = search(&new_fm.name).unwrap_or_default();
+    // 3. 查 FTS5 看有无相似文档(用 name 做查询)。
+    //    错误必须传播:若 FTS5 损坏/锁失败,静默判 ADD 会写重复内容(review Important-2)。
+    let matches = search_with_scores(&new_fm.name)?;
     let existing_docs: Vec<ExistingDoc> = matches
         .iter()
         .map(|r| ExistingDoc {
             path: r.path.clone(),
             name: r.name.clone(),
-            score: 0.0, // MVP:bm25 未透传,decide 内部会按此排序(恒 0 等价稳定序)
+            score: r.score.unwrap_or(0.0), // 透传真 bm25,decide 内部按此排序
         })
         .collect();
 
