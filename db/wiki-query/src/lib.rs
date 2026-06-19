@@ -16,3 +16,4 @@ pub mod frontmatter;
 pub mod models;
 pub mod policy;
 pub mod sync;
+pub mod write_decision;
