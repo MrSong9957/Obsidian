@@ -1,6 +1,7 @@
 use std::env;
 
 mod db;
+mod fts;
 mod models;
 mod sync;
 
