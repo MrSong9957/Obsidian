@@ -4,23 +4,27 @@
 //! 注意:同一文件的测试默认串行执行,env 竞争可控。
 
 use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::Mutex;
 use wiki_query::core;
 use wiki_query::frontmatter::Frontmatter;
 use wiki_query::models::WriteStatus;
 
 static SEQ: AtomicU64 = AtomicU64::new(0);
 
-/// 每个测试用唯一 db 路径(避免并发 env 竞争)。
-/// 返回 (tempdir, vault_root, db_path 已设入 env)。
-fn setup() -> (tempfile::TempDir, String) {
+/// 全局锁:WIKI_DB_PATH 是进程级环境变量,测试若并发会互相覆盖。
+/// 用此锁强制 core_write_test 内的测试串行,保证每个测试的 env 隔离。
+static DB_LOCK: Mutex<()> = Mutex::new(());
+
+/// 每个测试用唯一 db 路径。调用方须持有 DB_LOCK。
+fn setup_locked() -> (std::sync::MutexGuard<'static, ()>, tempfile::TempDir, String) {
+    let guard = DB_LOCK.lock().unwrap();
     let dir = tempfile::tempdir().unwrap();
     let vault_root = dir.path().to_str().unwrap().to_string();
     let n = SEQ.fetch_add(1, Ordering::SeqCst);
     let db_path = dir.path().join(format!("test_{}.db", n));
     std::env::set_var("WIKI_DB_PATH", db_path.to_str().unwrap());
-    // 初始化 DB 表结构(core::write 会调 db::init,首次自动建表)
     wiki_query::db::init().unwrap();
-    (dir, vault_root)
+    (guard, dir, vault_root)
 }
 
 fn fm(name: &str) -> Frontmatter {
@@ -36,7 +40,7 @@ fn fm(name: &str) -> Frontmatter {
 
 #[test]
 fn write_add_creates_file_and_indexes() {
-    let (_dir, vault) = setup();
+    let (_guard, _dir, vault) = setup_locked();
     let path = "wiki/test-add.md";
     let result = core::write(&vault, path, &fm("全新测试文档"), "# 正文内容").unwrap();
     assert_eq!(result.status, WriteStatus::Add);
@@ -51,7 +55,7 @@ fn write_add_creates_file_and_indexes() {
 
 #[test]
 fn write_update_when_path_exists() {
-    let (_dir, vault) = setup();
+    let (_guard, _dir, vault) = setup_locked();
     let path = "wiki/upd.md";
     // 第一次写
     core::write(&vault, path, &fm("原文档"), "原正文").unwrap();
@@ -63,7 +67,7 @@ fn write_update_when_path_exists() {
 
 #[test]
 fn write_noop_when_same_name_different_path() {
-    let (_dir, vault) = setup();
+    let (_guard, _dir, vault) = setup_locked();
     // 先建 agent.md
     core::write(&vault, "wiki/agent.md", &fm("Agent"), "正文").unwrap();
     // 跨 path 写同名 → NOOP
@@ -76,7 +80,7 @@ fn write_noop_when_same_name_different_path() {
 
 #[test]
 fn write_conflict_returns_candidates_no_write() {
-    let (_dir, vault) = setup();
+    let (_guard, _dir, vault) = setup_locked();
     // 先建 agent.md
     core::write(&vault, "wiki/agent.md", &fm("Agent"), "正文").unwrap();
     // 相似但不同 name → CONFLICT
@@ -91,21 +95,21 @@ fn write_conflict_returns_candidates_no_write() {
 
 #[test]
 fn write_rejects_templates_path() {
-    let (_dir, vault) = setup();
+    let (_guard, _dir, vault) = setup_locked();
     let result = core::write(&vault, "templates/x.md", &fm("T"), "正文");
     assert!(result.is_err(), "templates 只读,应被 policy 拒绝");
 }
 
 #[test]
 fn write_rejects_path_traversal() {
-    let (_dir, vault) = setup();
+    let (_guard, _dir, vault) = setup_locked();
     let result = core::write(&vault, "wiki/../../etc.md", &fm("T"), "正文");
     assert!(result.is_err(), "路径穿越应被拒绝");
 }
 
 #[test]
 fn write_rejects_invalid_frontmatter() {
-    let (_dir, vault) = setup();
+    let (_guard, _dir, vault) = setup_locked();
     let bad_fm = Frontmatter {
         name: "".into(), // 空 name
         description: "d".into(),
@@ -118,7 +122,7 @@ fn write_rejects_invalid_frontmatter() {
 
 #[test]
 fn write_creates_parent_dirs() {
-    let (_dir, vault) = setup();
+    let (_guard, _dir, vault) = setup_locked();
     // 深层路径,父目录不存在
     let path = "wiki/sub/deep/nested.md";
     let result = core::write(&vault, path, &fm("深层文档"), "正文").unwrap();
