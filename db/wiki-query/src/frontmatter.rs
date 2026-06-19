@@ -6,8 +6,13 @@
 //! "未找到闭合符",找不到则回退为原文 + 空 frontmatter。
 
 use crate::error::WikiError;
+use std::collections::BTreeMap;
 
 /// frontmatter 字段集合。对应 .md 文件 `---` 之间的 YAML 块。
+///
+/// 标准 5 字段(name/description/type/updated/tags)单独存取;
+/// `extras` 透传其他字段(如 source/aliases/confidence/status),
+/// 保证 serialize 往返不丢数据。
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct Frontmatter {
     pub name: String,
@@ -15,10 +20,31 @@ pub struct Frontmatter {
     pub doc_type: String,
     pub updated: String,
     pub tags: String,
+    /// 非标准字段,按出现顺序保留(用 BTreeMap 保证 serialize 输出稳定)。
+    pub extras: BTreeMap<String, String>,
 }
 
 /// 合法 type 白名单。write 时校验,防止写入非法分类。
-pub const VALID_TYPES: &[&str] = &["concept", "reference", "contradiction"];
+///
+/// 来源:对实际 vault 扫描 + 模板(sources-reference.md)对齐。
+/// 扫描结果:concept(304)/reference(17)/summary(4)/feedback(3)/
+/// guide(2)/index(2)/process(2)/article(1)/debugging-story(1)/
+/// project(1)/contradiction。空 type 文件(CLAUDE.md 等)非标准页,
+/// validate 拒绝它们是预期行为。
+pub const VALID_TYPES: &[&str] = &[
+    "concept",
+    "reference",
+    "summary",
+    "contradiction",
+    "feedback",
+    "guide",
+    "index",
+    "process",
+    "article",
+    "debugging-story",
+    "project",
+    "paper",
+];
 
 /// 解析 frontmatter + 正文。返回 (Frontmatter, body)。
 ///
@@ -47,7 +73,9 @@ pub fn parse(content: &str) -> (Frontmatter, String) {
         None => return (fm, content.to_string()), // 未闭合,回退
     };
 
-    // 解析 frontmatter 区间 (1..close) 的 key: value 行
+    // 解析 frontmatter 区间 (1..close) 的 key: value 行。
+    // 标准 5 字段单独存;其余键(source/aliases/confidence/status 等)
+    // 收集到 extras,保证 serialize 往返不丢字段。
     for line in &lines[1..close] {
         if let Some(colon_pos) = line.find(':') {
             let key = line[..colon_pos].trim();
@@ -58,6 +86,10 @@ pub fn parse(content: &str) -> (Frontmatter, String) {
                 "type" => fm.doc_type = value.to_string(),
                 "updated" => fm.updated = value.to_string(),
                 "tags" => fm.tags = value.to_string(),
+                // 跳过空 key(缩进行如子映射)和注释
+                _ if !key.is_empty() && !key.starts_with('#') => {
+                    fm.extras.insert(key.to_string(), value.to_string());
+                }
                 _ => {}
             }
         }
@@ -97,16 +129,23 @@ pub fn validate(fm: &Frontmatter) -> Result<(), WikiError> {
 /// 把 Frontmatter + body 重组为完整 Markdown(frontmatter + 正文)。
 ///
 /// updated 为空时自动填今天(chrono)。
+/// extras 字段原样写回,保证读-改-写往返不丢数据。
 pub fn serialize(fm: &Frontmatter, body: &str) -> String {
     let updated = if fm.updated.trim().is_empty() {
         chrono::Local::now().format("%Y-%m-%d").to_string()
     } else {
         fm.updated.clone()
     };
-    format!(
-        "---\nname: {}\ndescription: {}\ntype: {}\nupdated: {}\ntags: {}\n---\n\n{}",
-        fm.name, fm.description, fm.doc_type, updated, fm.tags, body
-    )
+    let mut out = format!(
+        "---\nname: {}\ndescription: {}\ntype: {}\nupdated: {}\ntags: {}",
+        fm.name, fm.description, fm.doc_type, updated, fm.tags
+    );
+    // extras 按 BTreeMap 键序写回(输出稳定)
+    for (k, v) in &fm.extras {
+        out.push_str(&format!("\n{}: {}", k, v));
+    }
+    out.push_str(&format!("\n---\n\n{}", body));
+    out
 }
 
 #[cfg(test)]
@@ -140,13 +179,21 @@ mod tests {
     }
 
     #[test]
+    fn parse_collects_extras() {
+        // source/aliases 等非标准字段应进 extras,不丢
+        let content = "---\nname: 测试\ndescription: d\ntype: concept\nupdated: 2026-06-20\ntags: t\nsource: [[doc.md]]\naliases: 别名\n---\n\n正文";
+        let (fm, _) = parse(content);
+        assert_eq!(fm.extras.get("source").unwrap(), "[[doc.md]]");
+        assert_eq!(fm.extras.get("aliases").unwrap(), "别名");
+    }
+
+    #[test]
     fn validate_rejects_empty_name() {
         let fm = Frontmatter {
             name: "".into(),
             description: "d".into(),
             doc_type: "concept".into(),
-            updated: "2026-06-20".into(),
-            tags: "t".into(),
+            ..Default::default()
         };
         assert!(validate(&fm).is_err());
     }
@@ -157,22 +204,25 @@ mod tests {
             name: "n".into(),
             description: "d".into(),
             doc_type: "invalid".into(),
-            updated: "2026-06-20".into(),
-            tags: "t".into(),
+            ..Default::default()
         };
         assert!(validate(&fm).is_err());
     }
 
     #[test]
-    fn validate_accepts_valid() {
-        let fm = Frontmatter {
-            name: "n".into(),
-            description: "d".into(),
-            doc_type: "reference".into(),
-            updated: "2026-06-20".into(),
-            tags: "t".into(),
-        };
-        assert!(validate(&fm).is_ok());
+    fn validate_accepts_all_whitelisted_types() {
+        // 回应 review Critical:确认白名单覆盖 vault 实际所有合法 type
+        for t in VALID_TYPES {
+            let fm = Frontmatter {
+                name: "n".into(),
+                description: "d".into(),
+                doc_type: (*t).into(),
+                updated: "2026-06-20".into(),
+                tags: "t".into(),
+                ..Default::default()
+            };
+            assert!(validate(&fm).is_ok(), "type={} 应被接受", t);
+        }
     }
 
     #[test]
@@ -181,14 +231,12 @@ mod tests {
             name: "测试".into(),
             description: "d".into(),
             doc_type: "reference".into(),
-            updated: "".into(),
-            tags: "t".into(),
+            ..Default::default()
         };
         let md = serialize(&fm, "正文");
         assert!(md.starts_with("---\n"));
         assert!(md.contains("name: 测试"));
         assert!(md.contains("正文"));
-        // updated 应被填为今天(格式 YYYY-MM-DD)
         assert!(md.contains("updated: 2026-"));
     }
 
@@ -199,9 +247,32 @@ mod tests {
             description: "d".into(),
             doc_type: "concept".into(),
             updated: "2025-01-01".into(),
-            tags: "t".into(),
+            ..Default::default()
         };
         let md = serialize(&fm, "正文");
         assert!(md.contains("updated: 2025-01-01"));
+    }
+
+    #[test]
+    fn serialize_roundtrips_extras() {
+        // 回应 review Important:source 等 extras 必须在 serialize 后保留
+        let mut extras = std::collections::BTreeMap::new();
+        extras.insert("source".into(), "[[doc.md]]".into());
+        extras.insert("aliases".into(), "别名".into());
+        let fm = Frontmatter {
+            name: "测试".into(),
+            description: "d".into(),
+            doc_type: "concept".into(),
+            updated: "2026-06-20".into(),
+            tags: "t".into(),
+            extras,
+        };
+        let md = serialize(&fm, "正文");
+        assert!(md.contains("source: [[doc.md]]"), "source 必须保留");
+        assert!(md.contains("aliases: 别名"), "aliases 必须保留");
+        // 重新解析确认往返
+        let (fm2, _) = parse(&md);
+        assert_eq!(fm2.extras.get("source").unwrap(), "[[doc.md]]");
+        assert_eq!(fm2.extras.get("aliases").unwrap(), "别名");
     }
 }
