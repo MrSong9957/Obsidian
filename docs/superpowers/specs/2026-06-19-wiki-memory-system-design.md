@@ -1,175 +1,283 @@
-# Obsidian 记忆系统中枢设计(wiki-query 演进)
+# Obsidian 记忆系统中枢设计(wiki-query 演进 v2)
 
 ## 概述
 
-把现有 `wiki-query.exe` 从"查询工具"升级为"个人知识库的跨工具记忆系统中枢",让 Claude Code / MiMo-Code / IDE 类 agent / ZCode 四类工具像调用内置工具一样读写本 Obsidian 仓库。
+把现有 `wiki-query.exe` 从"查询工具"升级为"个人知识库的跨工具记忆系统中枢",让 Claude Code / MiMo-Code / Cursor / Cline / ZCode 等 AI agent 像调用内置工具一样读写本 Obsidian 仓库。
 
-**基线**:本设计是 [`2026-06-18-wiki-query-design.md`](./2026-06-18-wiki-query-design.md) 的增量演进,不推翻已有实现。
+**本设计基于成熟方案调研**(见末尾"参考实现"),非闭门造车。核心架构与 Claude Code auto-memory、Letta Filesystem、Cline Memory Bank 同属"Markdown 权威 + 派生索引"第一梯队朴素派。
 
-## 已确认决策(brainstorming 阶段冻结)
+**基线**:本设计是 [`2026-06-18-wiki-query-design.md`](./2026-06-18-wiki-query-design.md)(已实现:sync/search/show)的增量演进。
 
-| 决策点 | 选择 | 影响 |
+**v1 → v2 变更**:经调研,采纳 CLI+MCP 双前端(取代"双胶水")、Mem0 四态写入决策、FTS5+CJK 检索。
+
+## 已确认决策
+
+| 决策点 | 选择 | 依据 |
 |--------|------|------|
-| 读写语义 | 受控回写 | 需要校验逻辑,纯只读方案否决 |
-| 目标工具 | 四类全要(CC/MiMo/IDE/ZCode) | 锁定通用接口,否决单工具私有方案 |
-| 接入机制 | 本地 SQLite + 薄胶水 | 否决 MCP server,否决常驻进程 |
-| 权威源 | **Markdown** | 否决 SQLite 权威方案,无双向同步 |
-| 统一入口 | 复用并扩展 `wiki-query.exe` | 校验逻辑只写一次,所有工具共享 |
-| 检索引擎 | 复用 wiki-query(MVP 用 LIKE) | FTS5 列为可选升级,不阻塞 MVP |
-| 写入校验 | 只校 frontmatter | wikilink/脚注完整性留给 git 审阅 |
+| 读写语义 | 受控回写 | 用户需求 |
+| 目标工具 | CC/MiMo/Cursor/Cline/ZCode 全要 | 用户需求 |
+| 权威源 | **Markdown**(SQLite 派生索引) | Letta benchmark 背书,避免双向同步复杂度 |
+| 接入协议 | **CLI + MCP 双前端**(共用 Rust 核心) | cyanheads/obsidian-mcp 3.5k 星为标杆;MCP 是 agent 接入外部知识的既成标准 |
+| MiMo-Code 接入 | 可走 MCP 或原生 tool(二选一,见下) | MiMo 是主力 |
+| 写入逻辑 | **四态决策**(ADD/UPDATE/NOOP/CONTRADICT) | Mem0 50k 星标准答案,解决重复写入污染 |
+| 检索引擎 | **FTS5 + CJK tokenizer**(取代 LIKE) | 两份调研一致推荐;解决中文检索 |
+| 一致性路线 | Markdown 权威,接受读时陈旧 | 主力是 MiMo 但 post-commit hook 兜底 |
+| frontmatter 校验 | write 时校验 5 字段非空 | 极简原则 |
+| 向量检索 | **不做**(YAGNI) | Letta 证明文件方案够强;几千篇 FTS5 足够 |
+| 知识图谱 | **不做** | git + sources 禁删已留历史 |
 
 ## 架构
 
 ```
-   Claude Code / MiMo-Code / IDE / ZCode / 人工
-                    │
-                    │  各自薄胶水,调用同一二进制
-                    ▼
-          wiki-query.exe  (Rust,统一 CLI,唯一校验入口)
-          ├── search       查元数据(已有,LIKE)
-          ├── show         读正文(已有)
-          ├── write        受控写 Markdown + frontmatter 校验(新增)
-          └── sync         Markdown→SQLite 索引(已有,单向)
-                    │
-                    ▼
-   Markdown (sources/wiki/,权威源,git 兜底)
-                    │
-                    ▼  sync
-   SQLite (db/wiki.db,可重建派生索引)
+   所有 agent (CC/MiMo/Cursor/Cline/ZCode) + 人工
+            │
+   ┌────────┴─────────┐
+   │                  │
+   ▼                  ▼
+ CLI 前端          MCP 前端(stdio)
+ (wiki-query.exe)  (同一二进制的 serve 模式,
+   search/show       或独立 server)
+   write/sync              │
+   serve(mcp)              │
+            │              │
+            └──────┬───────┘
+                   ▼
+         wiki-query 核心 (Rust 库)
+         ├── search(FTS5)
+         ├── show
+         ├── write(四态决策 + frontmatter 校验)
+         ├── delete(保留,受 policy 限制)
+         └── sync(Markdown→SQLite)
+                   │
+                   ▼
+   Markdown (sources/wiki/templates/, 权威源, git)
+                   │
+                   ▼  sync
+   SQLite (db/wiki.db, FTS5 派生索引,可重建)
 ```
 
-### 两个根本性简化
+### 两个根本性简化(保持极简)
 
-1. **无双向同步**:Markdown 永远权威,SQLite 是 `sync` 可重建的派生索引。人工编辑 Markdown → 跑 sync 更新索引;AI 写也是写 Markdown → 再 sync。方向单一,零冲突。
-2. **无常驻进程**:wiki-query.exe 就是统一入口。每个工具的"接入"仅是一行 shell 调用,不存在 MCP server 或独立服务。
+1. **无双向同步**:Markdown 永远权威,SQLite 是 `sync` 可重建的派生索引。人工编辑 → commit → post-commit hook sync;AI 写也是写 Markdown → write 内部 sync 该文件。方向单一,零冲突。
+2. **核心单一,Rust 库共享**:CLI 和 MCP 是同一 Rust 核心的两个前端,不是两套实现。校验逻辑、检索、四态决策全在核心里,单一真相源。
+
+### 与 cyanheads/obsidian-mcp 的关键区别
+
+cyanheads 依赖 Obsidian Local REST API 插件 + 常驻进程,**我们不改文件 I/O 方式**——核心仍是 Rust 直读直写 Markdown + SQLite 索引 + 单二进制。我们只借鉴它的**工具面设计**(工具分组、section patch、path policy、delete 确认),不引入 REST API 那套。
 
 ## 组件设计
 
-### 1. write 命令(新增,唯一校验归宿)
+### 1. 核心库(Rust,lib)
 
-**职责**:AI/人工向知识库写入新文档或更新已有文档,落盘前校验 frontmatter。
+把现有 `db.rs`/`sync.rs`/`models.rs` 的逻辑抽成可被 CLI 和 MCP 共用的库函数。核心函数:
+
+| 函数 | 职责 |
+|------|------|
+| `search(query, filters)` | FTS5 检索,返回元数据 + snippet |
+| `show(path)` | 读单个文档元数据 + 正文 |
+| `write(input)` | 四态决策 + frontmatter 校验 + 落盘 + 即时 sync 该文件 |
+| `delete(path)` | 受 path policy 限制(sources 禁删) |
+| `sync()` | 全量增量同步 Markdown→SQLite |
+
+### 2. write 命令(四态决策,学 Mem0)
 
 **CLI 接口**:
+```
+wiki-query write --path <相对路径> --name <标题> --body -(stdin)
+                 [--description] [--type] [--tags]
+                 [--mode auto|add|update]   # 默认 auto(四态自动决策)
+```
+
+**四态决策逻辑**(`--mode auto` 时):
 
 ```
-wiki-query write --path <相对路径> --name <标题> [--description <..>] [--type <..>] [--tags <..>] [--body <..>]
+write(input) {
+  先用 name/tags 做 FTS5 search,看是否已有相关文档:
+  
+  ├─ 无命中且 path 不存在     → ADD(新建)
+  ├─ path 已存在且主题一致     → UPDATE(覆盖 frontmatter+body)
+  ├─ 已有等价记录(NOOP)       → 跳过,返回"已存在,未写入"
+  └─ 检测到与现有文档冲突      → MVP:返回 status=conflict + 候选文档列表,
+                                    不自动处理,交给调用方/人工决策
+}
 ```
 
-- `--path`:必填,目标 `.md` 相对路径(如 `wiki/xxx.md`、`sources/agent/yyy.md`)
-- `--name`:必填,frontmatter name 字段
-- `--description`/`--type`/`--tags`:frontmatter 其余字段
-- `--body`:正文(第二个 `---` 之后的内容)。从 stdin 读取以支持长文本。
+> **MVP 范围说明**:本期只实现 ADD / UPDATE / NOOP 三态的自动处理。CONTRADICT(矛盾页 + deprecate 旧文档)作为第四态**仅返回 conflict 信号和候选列表,不自动落盘**——因为"何时算矛盾"的判定主观,自动 deprecate 风险高。完整的矛盾页工作流列入演进路径。
 
-**校验规则(MVP,只校 frontmatter)**:
+**frontmatter 校验**(通过后才进入四态决策):
 
-| 规则 | 失败行为 |
-|------|----------|
-| `name` 非空 | 拒绝,返回错误 |
-| `description` 非空 | 拒绝 |
-| `type` ∈ {concept, reference, ...}(白名单) | 拒绝 |
-| `updated` 自动填今天日期 | 自动补全 |
-| `tags` 非空 | 拒绝 |
+| 字段 | 规则 |
+|------|------|
+| name | 非空 |
+| description | 非空 |
+| type | ∈ 白名单(concept/reference/contradiction/...) |
+| updated | 自动填今天 |
+| tags | 非空 |
 
-**不做**的校验(留给 git 审阅流程):
-- `[[wikilink]]` 目标是否存在
-- `[^n]` 脚注是否完整
-- 正文是否符合模板
+**不做**的校验(留给 git 审阅):wikilink 目标存在、脚注完整、正文符合模板。
 
-**幂等性**:`write` 对已存在路径执行更新(覆盖 frontmatter + body),对不存在路径执行创建。从不删除(sources/ 禁删规则)。
+**path policy**(借鉴 cyanheads):
 
-**输出**:JSON,`{"status": "created"\|"updated", "path": "...", "synced": true}`。
+| 目录 | 读 | 写 | 删 |
+|------|----|----|-----|
+| sources/ | ✅ | ✅(append 优先) | ❌ |
+| wiki/ | ✅ | ✅ | 仅 deprecated 标记 |
+| templates/ | ✅ | ❌ | ❌ |
 
-**索引一致性**:write 落盘后,直接对单文件执行 sync 逻辑(复用 `sync.rs` 的 `sync_file`,而非全量 `scan_directory`),保证该文档在 SQLite 中即时更新,无需等待 post-commit。`sync_file` 当前是 `sync.rs` 内部函数,write 命令直接调用即可,无需新增命令。
+**输出**:JSON,`{"status": "add\|update\|noop\|contradict", "path": "...", "synced": true, "reason": "..."}`。
 
-### 2. search / show(已有,不改)
+### 3. MCP 前端(stdio)
 
-现状即满足需求,本期不动。FTS5 升级列为可选(见"演进路径")。
+二进制增加 `serve` 子命令,启动 stdio MCP server,工具面镜像 cyanheads 的成熟设计:
 
-### 3. 薄胶水(每工具一段,不重复校验)
+| 工具 | 对应核心函数 | 说明 |
+|------|------------|------|
+| `wiki_search` | search | FTS5 检索 |
+| `wiki_read` | show | 读单文档 |
+| `wiki_write` | write | 四态决策写入 |
+| `wiki_list` | (新) | 按 tag/type/dir 列出文档 |
+| `wiki_patch` | (新) | section 级编辑(借鉴 cyanheads) |
+| `wiki_delete` | delete | 受 policy,需确认 |
 
-胶水的唯一职责:**调用 wiki-query + 决定注入时机**。校验全在二进制里。
+工具名加 `wiki_` 前缀避免与 agent 内置工具冲突。MCP 工具直接调核心库函数,与 CLI 完全等价。
 
-| 工具 | 胶水形态 | 注入时机 |
-|------|---------|---------|
-| Claude Code | `SessionStart` hook 跑 `wiki-query search "<会话主题>"`;自定义 slash 命令 `/wiki` 调 write | 会话开始自动注入 |
-| MiMo-Code | `AGENTS.md` 指示 agent 用 wiki-query 查询;plugin 在 `tool.execute.before` 注入(可选) | prompt 级 + 可选自动 |
-| IDE agent(Cursor/Cline 等) | 快捷指令 / 任务模板调 `wiki-query search\|show` | 手动触发 |
-| ZCode | `AGENTS.md` 指示 + 可选 Skill 封装 | prompt 级 |
+### 4. CLI 前端(现有 + 新增)
 
-胶水本身**不含任何业务逻辑**,只是"在合适时机 spawn 二进制"。这样升级二进制即全工具受益。
+```
+wiki-query search <query>     # 已有,改用 FTS5
+wiki-query show <path>        # 已有
+wiki-query sync               # 已有
+wiki-query write ...          # 新增
+wiki-query serve [--transport stdio|http]  # 新增,MCP 模式
+```
+
+### 5. MiMo-Code 接入
+
+MiMo 是主力。**本期推荐 MCP 方式**(与全工具接入一致):
+
+- **本期:MCP**——在 `mimocode.jsonc` 配 `mcp.wiki`(指向 `wiki-query serve`)。与 Claude Code/Cursor/Cline 接入方式统一。
+- **可选演进:原生 tool**——`~/.config/mimocode/tool/wiki.ts` 包装核心调用(`registry.ts:180-193` 扫描 `tool/*.ts` 自动注册)。和 memory 工具平起平坐,读路径可直读 SQLite(接受陈旧索引)。本期不实现,列为演进项。
+
+### 6. 其余工具接入
+
+| 工具 | 接入 |
+|------|------|
+| Claude Code | MCP(配 `.mcp.json`)+ SessionStart hook 自动注入 search 结果 |
+| Cursor | MCP(Cursor 原生支持 MCP)|
+| Cline | MCP 或快捷指令调 CLI |
+| ZCode | MCP 或 AGENTS.md 指示 + Skill |
 
 ## 数据流
 
-### 读流程(AI 查询知识)
-
+### 读(AI 查询)
 ```
-AI 决定查询 → 胶水 spawn → wiki-query search "关键词"
-  → SQLite LIKE 查询 → 返回元数据 JSON
-  → (按需) wiki-query show <path> → 返回正文 JSON
+AI → MCP wiki_search / CLI search → 核心 search(FTS5) → 返回元数据+snippet
+   → (按需) wiki_read / show → 返回正文
 ```
 
-### 写流程(AI 受控回写)
-
+### 写(AI 受控回写)
 ```
-AI 决定记录 → 胶水 spawn → wiki-query write --path ... --name ... --body ...(stdin)
-  → frontmatter 校验
-  │  失败 → 返回错误,不落盘
-  │  通过 → 写 Markdown 文件 + sync 该文件入索引
-  → 返回 {"status": "created\|updated", "path": "...", "synced": true}
+AI → MCP wiki_write / CLI write --body - → 核心 write:
+   frontmatter 校验 → 四态决策 → 落盘 Markdown → sync 该文件入 FTS5
+   → 返回 {"status": "add|update|noop|contradict", ...}
 ```
 
-### 同步流程(人工编辑后)
-
+### 同步(人工编辑后)
 ```
-人工在 Obsidian 编辑 Markdown → git commit
-  → post-commit hook → wiki-query sync → 全量增量扫描入 SQLite
+人工编辑 Markdown → git commit → post-commit hook → wiki-query sync → 全量增量入 FTS5
 ```
 
-(已有,不改动)
+## FTS5 设计(取代 LIKE)
+
+**虚拟表**:
+```sql
+CREATE VIRTUAL TABLE documents_fts USING fts5(
+  path, name, description, type, tags, content,
+  content='documents', content_rowid='rowid',
+  tokenize='<CJK tokenizer>'   -- 如 wangfenjin/simple
+);
+```
+
+- 复用 `documents` 表(contentless external content table),不重复存正文
+- sync 时同步更新 FTS5 索引
+- search 用 `MATCH` + `bm25()` 排序 + `snippet()` 返回片段
+- CJK tokenizer 解决中文分词(参考 wangfenjin/simple,~1k 星,Rust)
 
 ## 错误处理
 
 | 场景 | 处理 |
 |------|------|
-| write 的 frontmatter 校验失败 | 退出码 1,stderr 打印缺哪个字段,**不落盘** |
-| write 目标目录不存在 | 自动创建(`std::fs::create_dir_all`) |
-| write 的 `--body` 从空 stdin 读取 | 用空字符串,允许创建只有 frontmatter 的骨架 |
-| write 路径含 `..` 路径穿越 | 拒绝(sources 禁删规则的延伸防御) |
-| sync 时单个文件 frontmatter 缺失 | 已有行为:警告 + 跳过(不中断) |
+| frontmatter 校验失败 | 退出码 1,stderr 指出缺哪个字段,不落盘 |
+| 四态决策为 NOOP | 退出码 0,返回"已存在,未写入",不落盘 |
+| 四态决策检测到 conflict(MVP) | 退出码 0,返回 status=conflict + 候选文档列表,不落盘 |
+| write path 含 `..` | 拒绝(路径穿越防御) |
+| write 目标目录不存在 | 自动创建 |
+| MCP 传输错误 | 返回标准 MCP error response |
+| sync 单文件 frontmatter 缺失 | 警告 + 跳过(不中断) |
 
 ## 测试策略
 
-- write 的 frontmatter 校验:表驱动测试(合法/非法各 N 组 case)
-- write 的幂等性:同 path 两次 write,第二次为 updated
-- write 后索引一致性:write 后立即 `show` 该 path 能取回最新内容
-- 路径穿越防御:`--path ../etc/passwd` 应被拒
-- 各工具胶水:每个工具单独验证"能调通 + 返回正确"(集成测试,非单测)
+- **核心库**:纯函数测试,CLI/MCP 都受益
+  - write 四态决策:表驱动(命中各态的 case)
+  - frontmatter 校验:合法/非法 case
+  - FTS5 检索:中文/英文/混合查询
+  - path policy:各目录读写删权限
+- **CLI 前端**:集成测试(spawn 二进制,验证 JSON 输出)
+- **MCP 前端**:用 MCP inspector 或简单 stdio client 验证每个工具
+- **跨前端等价性**:同一操作经 CLI 和 MCP 结果必须一致
 
-## 演进路径(非本期范围)
+## 演进路径(非本期)
 
-| 升级 | 触发条件 | 工作 |
-|------|---------|------|
-| FTS5 全文检索 | 文档破万 或 LIKE 召回不满足 | 加 `documents_fts` 虚拟表,search 切 FTS5 |
-| wikilink 完整性校验 | AI 写入开始出现断链 | write 前查 SQLite 验证 `[[xxx]]` 目标 |
-| 脚注完整性校验 | `[^n]` 溯源开始失准 | write 前正则配对脚注与引用索引 |
-| MiMo-Code 自动注入 | 确认 plugin 价值 | 写 `tool.execute.before` plugin,注入 search 结果 |
-
-本期只做 write 命令 + 四工具最小胶水。
+| 升级 | 触发条件 |
+|------|---------|
+| sqlite-vec 混合检索 | FTS5 召回不满足,出现"关键词对不上"痛点 |
+| wikilink 完整性校验 | AI 写入出现断链 |
+| 脚注完整性校验 | `[^n]` 溯源失准 |
+| wikilink 当 PageRank 排序图(学 Aider) | 检索排序质量需提升 |
+| 轻量偏好通道(学 Claude auto-memory) | 需要记一句话偏好,write 太重 |
+| 会话级短期记忆层(学 Cline activeContext) | 需要记"当前在干嘛" |
 
 ## 复杂度评估
 
 | 工作 | 估计 |
 |------|------|
-| write 命令(frontmatter 解析重组 + 校验 + 落盘 + 即时 sync) | 3h |
-| Claude Code SessionStart hook + slash 命令 | 1h |
-| MiMo-Code / IDE / ZCode 胶水(主要是 prompt + 脚本) | 1.5h |
-| write 测试 | 1.5h |
-| **总计** | **7h** |
+| 核心逻辑抽成库 + write 四态决策 + frontmatter 校验 | 5h |
+| FTS5 迁移 + CJK tokenizer | 3h |
+| MCP serve 前端(6 工具) | 4h |
+| CLI write/serve 子命令 | 1h |
+| MiMo/CC/Cursor 接入配置 | 2h |
+| 测试(核心 + 跨前端等价) | 4h |
+| **总计** | **~19h** |
+
+(v1 估 7h;v2 因吸收 MCP + 四态 + FTS5,增至 ~19h)
 
 ## 风险
 
 | 风险 | 可能性 | 缓解 |
 |------|--------|------|
-| AI 重复/低质写入污染知识库 | 中 | write 不校验内容质量,依赖 git 审阅 + 定期 `git revert` |
-| frontmatter 白名单 type 漏更新 | 低 | type 白名单从现有文档 frontmatter 自动收集 |
-| 各工具胶水漂移(版本/路径不一) | 中 | 文档统一约定二进制绝对路径 + git 跟踪胶水脚本 |
+| 四态决策的"冲突"判定主观(何时算 CONTRADICT) | 中 | MVP 先只实现 ADD/UPDATE/NOOP,CONTRADICT 留给人工或简单关键词冲突检测 |
+| CJK tokenizer 集成到 rusqlite | 中 | 先验证 wangfenjin/simple 能否作为 FTS5 tokenizer 加载;备选 jieba-rs |
+| MCP serve 增加二进制复杂度 | 低 | serve 是可选模式,不影响 CLI 主体 |
+| MiMo 直读 SQLite 陈旧 | 低 | post-commit hook 兜底;或 MiMo 走 MCP(每次经核心,可加 sync) |
+| AI 低质写入 | 中 | 四态 NOOP 兜底 + git 审阅 + git revert |
+
+## 参考实现(调研依据)
+
+**接入协议**:
+- [cyanheads/obsidian-mcp-server](https://github.com/cyanheads/obsidian-mcp-server)(3.5k 星)— 工具面设计标杆(read/write/search/list/patch/delete + section patch + path policy)。我们借鉴工具面,不引入其 REST API 依赖。
+
+**写入逻辑**:
+- [Mem0](https://github.com/mem0ai/mem0)(50k 星)— ADD/UPDATE/DELETE/NOOP 四态决策引擎。
+
+**检索**:
+- [wangfenjin/simple](https://github.com/wangfenjin/simple)(1k 星)— CJK FTS5 tokenizer(Rust)。
+- [pvliesdonk/markdown-vault-mcp](https://github.com/pvliesdonk/markdown-vault-mcp)— FTS5 Markdown schema 参考。
+- [sqlite-vec](https://github.com/asg017/sqlite-vec)(4k 星)— 未来向量检索升级路径。
+
+**架构哲学背书**:
+- [Letta: Is a Filesystem All You Need?](https://www.letta.com/blog/benchmarking-ai-agent-memory/) — benchmark 证明"文件方案"打赢多数向量/图谱系统,背书 Markdown 权威选择。
+- Claude Code auto-memory(Markdown 权威 + grep 派生检索,我们的超集)。
+- Cline Memory Bank(Markdown 权威 + AI 读写同哲学)。
+
+**MiMo-Code 原生 tool 机制**:
+- `packages/opencode/src/tool/registry.ts:180-193` — 扫描配置目录 `tool/*.ts` 自动注册为工具,与 builtin 平起平坐。
