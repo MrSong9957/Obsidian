@@ -67,12 +67,54 @@ pub fn run() {
     let mut count = 0;
     let mut updated = 0;
 
-    scan_directory(root, &conn, &mut count, &mut updated);
+    // 先收集磁盘上实际存在的路径,扫描完用于孤儿清理
+    let mut on_disk: std::collections::HashSet<String> = std::collections::HashSet::new();
+    scan_directory(root, &conn, &mut count, &mut updated, &mut on_disk);
 
-    println!("Scan complete: {} files found, {} updated", count, updated);
+    // 孤儿清理:删除 documents 和 documents_fts 中磁盘上已不存在的记录。
+    // 修复 Explore review 发现的 bug —— 文件删除/重命名后旧记录会永久残留。
+    let pruned = prune_orphans(&conn, &on_disk);
+
+    println!(
+        "Scan complete: {} files found, {} updated, {} pruned",
+        count, updated, pruned
+    );
 }
 
-fn scan_directory(dir: &Path, conn: &Connection, count: &mut i32, updated: &mut i32) {
+/// 删除数据库里存在但磁盘上不存在的记录,返回删除条数。
+/// 同时清理 documents 和 documents_fts(保持两表一致)。
+fn prune_orphans(conn: &Connection, on_disk: &std::collections::HashSet<String>) -> usize {
+    let db_paths: Vec<String> = {
+        let mut stmt = match conn.prepare("SELECT path FROM documents") {
+            Ok(s) => s,
+            Err(_) => return 0,
+        };
+        let rows: Vec<String> = stmt
+            .query_map([], |row| row.get::<_, String>(0))
+            .ok()
+            .map(|iter| iter.filter_map(|r| r.ok()).collect())
+            .unwrap_or_default();
+        rows
+    };
+
+    let mut pruned = 0;
+    for path in &db_paths {
+        if !on_disk.contains(path) {
+            let _ = conn.execute("DELETE FROM documents WHERE path = ?1", params![path]);
+            let _ = conn.execute("DELETE FROM documents_fts WHERE path = ?1", params![path]);
+            pruned += 1;
+        }
+    }
+    pruned
+}
+
+fn scan_directory(
+    dir: &Path,
+    conn: &Connection,
+    count: &mut i32,
+    updated: &mut i32,
+    on_disk: &mut std::collections::HashSet<String>,
+) {
     let entries = match std::fs::read_dir(dir) {
         Ok(e) => e,
         Err(_) => return,
@@ -91,7 +133,7 @@ fn scan_directory(dir: &Path, conn: &Connection, count: &mut i32, updated: &mut 
         }
 
         if path.is_dir() {
-            scan_directory(&path, conn, count, updated);
+            scan_directory(&path, conn, count, updated, on_disk);
             continue;
         }
 
@@ -104,6 +146,7 @@ fn scan_directory(dir: &Path, conn: &Connection, count: &mut i32, updated: &mut 
 
         let relative_path = path.strip_prefix("./").unwrap_or(&path);
         let path_str = relative_path.to_string_lossy().to_string();
+        on_disk.insert(path_str.clone());
 
         // 检查是否需要更新
         if needs_update(conn, &path_str, &path) {
@@ -132,7 +175,20 @@ fn needs_update(conn: &Connection, path_str: &str, file_path: &Path) -> bool {
         )
         .unwrap_or_default();
 
-    stored != modified_str
+    if stored != modified_str {
+        return true;
+    }
+
+    // documents 表虽未变,但 FTS5 可能缺失该行(如 FTS5 表新建后首次回填)。
+    // 任一表缺失都判定需更新,保证两表最终一致。
+    let in_fts: i64 = conn
+        .query_row(
+            "SELECT count(*) FROM documents_fts WHERE path = ?1",
+            params![path_str],
+            |row| row.get(0),
+        )
+        .unwrap_or(0);
+    in_fts == 0
 }
 
 fn sync_file(conn: &Connection, path_str: &str, file_path: &Path) -> Result<(), Box<dyn std::error::Error>> {
@@ -168,6 +224,26 @@ fn sync_file(conn: &Connection, path_str: &str, file_path: &Path) -> Result<(), 
             body,
             word_count,
             modified_str
+        ],
+    )?;
+
+    // 同步 FTS5 索引:对文本字段做 jieba 预分词。
+    // FTS5 无 ON CONFLICT UPDATE,用 delete-then-insert 模式更新。
+    use crate::fts::tokenize_for_fts;
+    conn.execute(
+        "DELETE FROM documents_fts WHERE path = ?1",
+        params![path_str],
+    )?;
+    conn.execute(
+        "INSERT INTO documents_fts (path, name, description, type, tags, content)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+        params![
+            path_str,
+            tokenize_for_fts(&meta.name),
+            tokenize_for_fts(&meta.description),
+            meta.doc_type,
+            tokenize_for_fts(&meta.tags),
+            tokenize_for_fts(&body),
         ],
     )?;
 
