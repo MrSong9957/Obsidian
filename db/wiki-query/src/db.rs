@@ -44,7 +44,13 @@ pub fn search(query: &str) {
     // OR 连接(任一 token 命中即召回,bm25 排序保证多词命中靠前)。
     use crate::fts::tokenize_for_fts;
     let tokenized = tokenize_for_fts(query);
-    let tokens: Vec<&str> = tokenized.split_whitespace().collect();
+    // FTS5 phrase 语法是 "..."，双引号在 phrase 内无法转义(FTS5 限制)。
+    // 过滤掉含 " 的 token,避免构造出未闭合的 phrase 导致语法错误。
+    // 同时过滤纯标点 token(jieba 偶尔切出独立标点)。
+    let tokens: Vec<&str> = tokenized
+        .split_whitespace()
+        .filter(|t| !t.contains('"') && t.chars().any(|c| c.is_alphanumeric()))
+        .collect();
     if tokens.is_empty() {
         println!("[]");
         return;
@@ -57,16 +63,23 @@ pub fn search(query: &str) {
 
     // FTS5 表无 updated 列,JOIN documents 取 updated。
     // bm25 分数越小越相关(FTS5 约定),ASC 排序即最相关在前。
-    let mut stmt = conn
-        .prepare(
-            "SELECT d.path, d.name, d.description, d.type, d.updated, d.tags
-             FROM documents_fts f
-             JOIN documents d ON d.path = f.path
-             WHERE documents_fts MATCH ?1
-             ORDER BY bm25(documents_fts)
-             LIMIT 20",
-        )
-        .expect("Failed to prepare statement");
+    let stmt_result = conn.prepare(
+        "SELECT d.path, d.name, d.description, d.type, d.updated, d.tags
+         FROM documents_fts f
+         JOIN documents d ON d.path = f.path
+         WHERE documents_fts MATCH ?1
+         ORDER BY bm25(documents_fts)
+         LIMIT 20",
+    );
+
+    let mut stmt = match stmt_result {
+        Ok(s) => s,
+        Err(e) => {
+            eprintln!("search: prepare 失败: {}", e);
+            println!("[]");
+            return;
+        }
+    };
 
     let results: Vec<SearchResult> = stmt
         .query_map(rusqlite::params![fts_query], |row| {
@@ -79,9 +92,8 @@ pub fn search(query: &str) {
                 tags: row.get(5)?,
             })
         })
-        .expect("Query failed")
-        .filter_map(|r| r.ok())
-        .collect();
+        .map(|iter| iter.filter_map(|r| r.ok()).collect())
+        .unwrap_or_default();
 
     let json = serde_json::to_string_pretty(&results).unwrap();
     println!("{}", json);
