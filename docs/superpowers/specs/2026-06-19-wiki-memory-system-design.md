@@ -17,7 +17,7 @@
 | 读写语义 | 受控回写 | 用户需求 |
 | 目标工具 | CC/MiMo/Cursor/Cline/ZCode 全要 | 用户需求 |
 | 权威源 | **Markdown**(SQLite 派生索引) | Letta benchmark 背书,避免双向同步复杂度 |
-| 接入协议 | **CLI + MCP 双前端**(共用 Rust 核心) | cyanheads/obsidian-mcp 3.5k 星为标杆;MCP 是 agent 接入外部知识的既成标准 |
+| 接入协议 | **CLI + MCP 双前端**(共用 Rust 核心,MCP 走本地 stdio) | MCP 是 agent 接入外部知识的既成标准;**stdio 是纯本地子进程,无云无服务器**(MCP 官方规范:Clients SHOULD support stdio whenever possible) |
 | MiMo-Code 接入 | 可走 MCP 或原生 tool(二选一,见下) | MiMo 是主力 |
 | 写入逻辑 | **四态决策**(ADD/UPDATE/NOOP/CONTRADICT) | Mem0 50k 星标准答案,解决重复写入污染 |
 | 检索引擎 | **FTS5 + CJK tokenizer**(取代 LIKE) | 两份调研一致推荐;解决中文检索 |
@@ -126,9 +126,13 @@ write(input) {
 
 **输出**:JSON,`{"status": "add\|update\|noop\|contradict", "path": "...", "synced": true, "reason": "..."}`。
 
-### 3. MCP 前端(stdio)
+### 3. MCP 前端(本地 stdio,无云无服务器)
 
-二进制增加 `serve` 子命令,启动 stdio MCP server,工具面镜像 cyanheads 的成熟设计:
+> **澄清常见误解**:MCP 默认走 stdio 传输——agent 把 `wiki-query serve` 当**本地子进程**拉起,通过 stdin/stdout 管道传 JSON。整个过程在单机完成:无云、无服务器、无端口、无认证配置。HTTP/SSE 传输只用于"远程团队共享知识库"场景,本期不做。
+>
+> 与 CLI 的区别仅在通信方式:CLI 是一次性命令,MCP-stdio 是常驻子进程持续对话。两者都本地、都调同一 Rust 核心。
+
+二进制增加 `serve` 子命令,启动 stdio MCP server,工具面借鉴 cyanheads 的成熟设计(只借工具面,不引入其 REST API 依赖):
 
 | 工具 | 对应核心函数 | 说明 |
 |------|------------|------|
@@ -148,7 +152,7 @@ wiki-query search <query>     # 已有,改用 FTS5
 wiki-query show <path>        # 已有
 wiki-query sync               # 已有
 wiki-query write ...          # 新增
-wiki-query serve [--transport stdio|http]  # 新增,MCP 模式
+wiki-query serve              # 新增,启动本地 stdio MCP server(无云无服务器)
 ```
 
 ### 5. MiMo-Code 接入
@@ -265,6 +269,8 @@ CREATE VIRTUAL TABLE documents_fts USING fts5(
 
 **接入协议**:
 - [cyanheads/obsidian-mcp-server](https://github.com/cyanheads/obsidian-mcp-server)(3.5k 星)— 工具面设计标杆(read/write/search/list/patch/delete + section patch + path policy)。我们借鉴工具面,不引入其 REST API 依赖。
+- [sweir1/obsidian-brain](https://mcpservers.org/servers/sweir1/obsidian-brain)— 另一现成方案,**不依赖 Obsidian 开着**(直接读文件系统),有语义搜索+RRF 混合检索。评估过但未采用:行号溯源、三层权限矩阵、矛盾页工作流等核心需求它不建模,仍需自建领域语义层。
+- [MCP Transports 规范](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports)— stdio 是本地子进程传输,无云无服务器,客户端应首选。
 
 **写入逻辑**:
 - [Mem0](https://github.com/mem0ai/mem0)(50k 星)— ADD/UPDATE/DELETE/NOOP 四态决策引擎。
