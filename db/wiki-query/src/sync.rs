@@ -2,62 +2,7 @@ use std::path::Path;
 use chrono::Local;
 use rusqlite::{Connection, params};
 use crate::db::init;
-
-#[derive(Debug)]
-pub struct Metadata {
-    pub name: String,
-    pub description: String,
-    pub doc_type: String,
-    pub updated: String,
-    pub tags: String,
-}
-
-pub fn parse_frontmatter(content: &str) -> (Metadata, String) {
-    let mut meta = Metadata {
-        name: String::new(),
-        description: String::new(),
-        doc_type: String::new(),
-        updated: String::new(),
-        tags: String::new(),
-    };
-
-    let lines: Vec<&str> = content.lines().collect();
-
-    // 检查是否以 --- 开头
-    if lines.is_empty() || lines[0].trim() != "---" {
-        return (meta, content.to_string());
-    }
-
-    let mut end_idx = 0;
-    for (i, line) in lines.iter().enumerate().skip(1) {
-        if line.trim() == "---" {
-            end_idx = i;
-            break;
-        }
-        // 解析 key: value
-        if let Some(colon_pos) = line.find(':') {
-            let key = line[..colon_pos].trim();
-            let value = line[colon_pos + 1..].trim();
-
-            match key {
-                "name" => meta.name = value.to_string(),
-                "description" => meta.description = value.to_string(),
-                "type" => meta.doc_type = value.to_string(),
-                "updated" => meta.updated = value.to_string(),
-                "tags" => meta.tags = value.to_string(),
-                _ => {}
-            }
-        }
-    }
-
-    let body = if end_idx > 0 {
-        lines[(end_idx + 1)..].join("\n")
-    } else {
-        content.to_string()
-    };
-
-    (meta, body)
-}
+use crate::frontmatter;
 
 pub fn run() {
     let conn = init().expect("Failed to init database");
@@ -212,7 +157,7 @@ fn needs_update(conn: &Connection, path_str: &str, file_path: &Path) -> bool {
 
 fn sync_file(conn: &Connection, path_str: &str, file_path: &Path) -> Result<(), Box<dyn std::error::Error>> {
     let content = std::fs::read_to_string(file_path)?;
-    let (meta, body) = parse_frontmatter(&content);
+    let (meta, body) = frontmatter::parse(&content);
 
     let metadata = std::fs::metadata(file_path)?;
     let modified = metadata.modified().unwrap();

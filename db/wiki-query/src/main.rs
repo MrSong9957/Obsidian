@@ -1,9 +1,5 @@
 use std::env;
-
-mod db;
-mod fts;
-mod models;
-mod sync;
+use wiki_query::{db, sync};
 
 fn main() {
     let args: Vec<String> = env::args().collect();

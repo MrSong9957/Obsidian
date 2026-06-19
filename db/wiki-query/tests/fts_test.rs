@@ -1,13 +1,18 @@
 //! Task 1.2 集成测试:FTS5 表 + 索引同步。
 //!
-//! 这些测试用一个临时 vault + 临时 DB,避免污染真实仓库。
-//! 通过 WIKI_DB_PATH 环境变量隔离数据库(Task 3.3 会正式做,
-//! 这里临时用 unique 路径规避)。
+//! 用真 lib API(wiki_query::frontmatter::parse, wiki_query::fts::tokenize_for_fts)
+//! 替换之前的复制品 —— 解决 Task 1.2 review 提出的"测试测复制品而非被测代码"问题。
+//!
+//! 注:DB 建表仍是测试本地 SQL,因为 db::init 硬编码路径(待 Task 3.3 WIKI_DB_PATH 解决)。
+//! 但分词/解析逻辑现在直接用 lib 真代码,不再漂移。
 
 use rusqlite::Connection;
 use std::fs;
+use wiki_query::frontmatter;
+use wiki_query::fts;
 
-/// 辅助:在临时目录建一个迷你 vault,跑 sync,返回 db 连接。
+/// 在临时目录建迷你 vault,模拟 sync 把 docs 写入临时 DB。
+/// 用真 lib 的 frontmatter::parse + fts::tokenize_for_fts(不再重复实现)。
 fn setup_vault_with_docs(docs: &[(&str, &str)]) -> (tempfile::TempDir, String) {
     let dir = tempfile::tempdir().unwrap();
     let vault = dir.path();
@@ -20,12 +25,9 @@ fn setup_vault_with_docs(docs: &[(&str, &str)]) -> (tempfile::TempDir, String) {
         fs::write(full, content).unwrap();
     }
 
-    // 临时 db 路径(每个测试唯一,避免并发污染)
     let db_path = vault.join("test.db");
     let db_path_str = db_path.to_str().unwrap().to_string();
 
-    // 直接用 init + sync_file,绕过 WIKI_DB_PATH(尚未实现)。
-    // 用 raw 连接模拟 sync 行为。
     {
         let conn = Connection::open(&db_path_str).unwrap();
         conn.execute_batch(
@@ -41,8 +43,8 @@ fn setup_vault_with_docs(docs: &[(&str, &str)]) -> (tempfile::TempDir, String) {
         .unwrap();
 
         for (rel, content) in docs {
-            // 用 wiki_query 的 frontmatter 解析 + fts 分词
-            let (fm, body) = wiki_query_test_support::parse_frontmatter(content);
+            // 真代码:用 lib 的 frontmatter::parse
+            let (fm, body) = frontmatter::parse(content);
             let path_str = rel.replace('\\', "/");
             conn.execute(
                 "INSERT INTO documents (path,name,description,type,updated,tags,content,word_count,modified_at)
@@ -55,18 +57,18 @@ fn setup_vault_with_docs(docs: &[(&str, &str)]) -> (tempfile::TempDir, String) {
                     body, body.split_whitespace().count() as i64, "2026-06-20 00:00:00"
                 ],
             ).unwrap();
-            // FTS5 同步(模拟 sync_file 的 delete-then-insert)
+            // FTS5 同步:真代码用 lib 的 fts::tokenize_for_fts 预分词
             conn.execute("DELETE FROM documents_fts WHERE path=?1", rusqlite::params![path_str]).unwrap();
             conn.execute(
                 "INSERT INTO documents_fts (path,name,description,type,tags,content)
                  VALUES (?1,?2,?3,?4,?5,?6)",
                 rusqlite::params![
                     path_str,
-                    wiki_query_test_support::tokenize(&fm.name),
-                    wiki_query_test_support::tokenize(&fm.description),
+                    fts::tokenize_for_fts(&fm.name),
+                    fts::tokenize_for_fts(&fm.description),
                     fm.doc_type,
-                    wiki_query_test_support::tokenize(&fm.tags),
-                    wiki_query_test_support::tokenize(&body),
+                    fts::tokenize_for_fts(&fm.tags),
+                    fts::tokenize_for_fts(&body),
                 ],
             ).unwrap();
         }
@@ -89,7 +91,7 @@ fn fts_table_populated_after_sync() {
 
 #[test]
 fn fts_chinese_match_finds_subword() {
-    // "记忆系统" 入库后,搜 "记忆"(子串)应命中
+    // "记忆系统" 入库后,搜 "记忆"(子串)应命中 —— cut_for_search 细分策略
     let docs = [
         ("wiki/mem.md", "---\nname: 记忆系统\ndescription: 记忆\ntype: concept\nupdated: 2026-06-20\ntags: memory\n---\n\n记忆系统设计"),
     ];
@@ -102,7 +104,6 @@ fn fts_chinese_match_finds_subword() {
 
 #[test]
 fn fts_and_documents_stay_consistent() {
-    // 两表行数应一致(孤儿清理的契约)
     let docs = [
         ("wiki/a.md", "---\nname: a\ndescription: d\ntype: concept\nupdated: 2026-06-20\ntags: t\n---\n\nbody"),
     ];
@@ -113,50 +114,12 @@ fn fts_and_documents_stay_consistent() {
     assert_eq!(d, f, "documents 与 documents_fts 行数应一致");
 }
 
-/// 测试支持模块:暴露 frontmatter 解析 + fts 分词给集成测试。
-/// (正式的 pub API 在 Task 2.1 抽取后由 lib.rs 提供)
-pub mod wiki_query_test_support {
-    pub struct Frontmatter {
-        pub name: String,
-        pub description: String,
-        pub doc_type: String,
-        pub updated: String,
-        pub tags: String,
-    }
-
-    pub fn parse_frontmatter(content: &str) -> (Frontmatter, String) {
-        let mut fm = Frontmatter {
-            name: String::new(), description: String::new(), doc_type: String::new(),
-            updated: String::new(), tags: String::new(),
-        };
-        let lines: Vec<&str> = content.lines().collect();
-        if lines.is_empty() || lines[0].trim() != "---" {
-            return (fm, content.to_string());
-        }
-        let mut end = 0;
-        for (i, line) in lines.iter().enumerate().skip(1) {
-            if line.trim() == "---" { end = i; break; }
-            if let Some(c) = line.find(':') {
-                let (k, v) = (line[..c].trim(), line[c+1..].trim());
-                match k {
-                    "name" => fm.name = v.into(),
-                    "description" => fm.description = v.into(),
-                    "type" => fm.doc_type = v.into(),
-                    "updated" => fm.updated = v.into(),
-                    "tags" => fm.tags = v.into(),
-                    _ => {}
-                }
-            }
-        }
-        let body = if end > 0 { lines[end+1..].join("\n") } else { content.to_string() };
-        (fm, body)
-    }
-
-    pub fn tokenize(text: &str) -> String {
-        // 直接调 jieba(避免依赖未抽取的 fts 模块路径)
-        let j = jieba_rs::Jieba::new();
-        j.cut_for_search(text, true).join(" ")
-    }
+/// frontmatter::parse 真代码的契约回归(确认测试用的是 lib 真代码)。
+#[test]
+fn uses_real_frontmatter_parse() {
+    let (fm, body) = frontmatter::parse(
+        "---\nname: 测试\ndescription: d\ntype: concept\nupdated: 2026-06-20\ntags: t\n---\n\n正文"
+    );
+    assert_eq!(fm.name, "测试");
+    assert!(body.contains("正文"));
 }
-
-// 确保引入 tempfile(需在 Cargo.toml dev-dependencies)

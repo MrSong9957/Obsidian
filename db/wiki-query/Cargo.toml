@@ -3,6 +3,14 @@ name = "wiki-query"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "wiki_query"
+path = "src/lib.rs"
+
+[[bin]]
+name = "wiki-query"
+path = "src/main.rs"
+
 [dependencies]
 rusqlite = { version = "0.31", features = ["bundled"] }
 serde = { version = "1.0", features = ["derive"] }
