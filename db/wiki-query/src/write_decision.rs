@@ -33,28 +33,39 @@ pub struct ExistingDoc {
 /// 2. 无任何已有匹配 → ADD
 /// 3. 有匹配且存在 name 完全相同(大小写不敏感) → NOOP(等价已存在)
 /// 4. 有匹配但 name 不同(相似主题) → CONFLICT(返回候选,不自动落盘)
+///
+/// 前置条件:new_frontmatter.name 应已通过 frontmatter::validate 校验非空。
+/// 此处用 debug_assert 兜底(绕过 validate 直接构造 DecisionInput 时报警)。
 pub fn decide(input: &DecisionInput) -> (WriteStatus, Option<Vec<ConflictCandidate>>) {
+    debug_assert!(
+        !input.new_frontmatter.name.trim().is_empty(),
+        "decide: name must be validated non-empty upstream"
+    );
+
+    // 兜底排序:即使调用方未保证顺序,按 score 升序(bm25 越小越相关)后取前 5。
+    // 这样 CONFLICT 候选的相关度顺序由纯函数自身保证,不依赖外部契约。
+    let mut sorted = input.existing_matches.clone();
+    sorted.sort_by(|a, b| a.score.partial_cmp(&b.score).unwrap_or(std::cmp::Ordering::Equal));
+
     // 规则 1:path 已存在 → UPDATE
     if input.path_exists {
         return (WriteStatus::Update, None);
     }
 
     // 规则 2:无任何已有匹配 → ADD
-    if input.existing_matches.is_empty() {
+    if sorted.is_empty() {
         return (WriteStatus::Add, None);
     }
 
     // 规则 3:存在 name 完全相同(大小写不敏感) → NOOP
-    let exact_match = input.existing_matches.iter().any(|d| {
-        d.name.trim().to_lowercase() == input.new_frontmatter.name.trim().to_lowercase()
-    });
+    let target_lower = input.new_frontmatter.name.trim().to_lowercase();
+    let exact_match = sorted.iter().any(|d| d.name.trim().to_lowercase() == target_lower);
     if exact_match {
         return (WriteStatus::Noop, None);
     }
 
-    // 规则 4:有匹配但 name 不同 → CONFLICT
-    let candidates: Vec<ConflictCandidate> = input
-        .existing_matches
+    // 规则 4:有匹配但 name 不同 → CONFLICT,取排序后前 5 个
+    let candidates: Vec<ConflictCandidate> = sorted
         .iter()
         .take(5)
         .map(|d| ConflictCandidate {
@@ -171,5 +182,43 @@ mod tests {
         };
         let (status, _) = decide(&input);
         assert_eq!(status, WriteStatus::Noop);
+    }
+
+    #[test]
+    fn update_short_circuits_even_with_name_match() {
+        // path_exists=true 且有同名匹配 → 仍判 UPDATE(path 优先于 name)
+        // pin 住 short-circuit 语义防回归
+        let input = DecisionInput {
+            target_path: "wiki/agent.md",
+            new_frontmatter: &fm("Agent"),
+            existing_matches: vec![existing("wiki/agent.md", "Agent", -1.0)],
+            path_exists: true,
+        };
+        let (status, cands) = decide(&input);
+        assert_eq!(status, WriteStatus::Update);
+        assert!(cands.is_none(), "UPDATE 不应返回候选");
+    }
+
+    #[test]
+    fn decide_sorts_candidates_by_score() {
+        // 验证兜底排序:输入乱序,候选应按 score 升序(最相关在前)
+        let matches = vec![
+            existing("wiki/least.md", "B", -0.5),   // 最不相关(score 大)
+            existing("wiki/most.md", "A", -3.0),    // 最相关(score 小)
+            existing("wiki/mid.md", "C", -1.5),
+        ];
+        let input = DecisionInput {
+            target_path: "wiki/new.md",
+            new_frontmatter: &fm("Different"),
+            existing_matches: matches,
+            path_exists: false,
+        };
+        let (status, cands) = decide(&input);
+        assert_eq!(status, WriteStatus::Conflict);
+        let cands = cands.unwrap();
+        // 最相关的(score=-3.0)应排第一
+        assert_eq!(cands[0].path, "wiki/most.md");
+        assert_eq!(cands[1].path, "wiki/mid.md");
+        assert_eq!(cands[2].path, "wiki/least.md");
     }
 }
