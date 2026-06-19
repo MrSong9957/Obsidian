@@ -14,4 +14,5 @@ pub mod error;
 pub mod fts;
 pub mod frontmatter;
 pub mod models;
+pub mod policy;
 pub mod sync;
