@@ -9,6 +9,7 @@
 //! - `fts` — jieba CJK 分词桥接
 //! - `error` — 统一错误类型
 
+pub mod core;
 pub mod db;
 pub mod error;
 pub mod fts;

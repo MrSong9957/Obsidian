@@ -2,13 +2,20 @@ use rusqlite::{Connection, Result};
 use std::path::Path;
 use crate::models::{Document, SearchResult};
 
-const DB_PATH: &str = "db/wiki.db";
+const DEFAULT_DB_PATH: &str = "db/wiki.db";
+
+/// 返回当前 DB 路径。优先 WIKI_DB_PATH 环境变量,否则默认 db/wiki.db。
+/// 测试通过设置 WIKI_DB_PATH 指向 tempdir 隔离数据库。
+pub fn db_path() -> String {
+    std::env::var("WIKI_DB_PATH").unwrap_or_else(|_| DEFAULT_DB_PATH.to_string())
+}
 
 pub fn init() -> Result<Connection> {
-    let db_dir = Path::new(DB_PATH).parent().unwrap();
+    let path = db_path();
+    let db_dir = Path::new(&path).parent().unwrap();
     std::fs::create_dir_all(db_dir).ok();
 
-    let conn = Connection::open(DB_PATH)?;
+    let conn = Connection::open(&path)?;
 
     conn.execute_batch(
         "CREATE TABLE IF NOT EXISTS documents (

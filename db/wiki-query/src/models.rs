@@ -26,7 +26,7 @@ pub struct SearchResult {
 
 /// write 四态决策的结果状态(学 Mem0 ADD/UPDATE/NOOP/CONFLICT)。
 /// serde rename_all="lowercase" 保证 JSON 输出小写,对 MCP 调用方友好。
-#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub enum WriteStatus {
     Add,

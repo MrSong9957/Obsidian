@@ -228,3 +228,15 @@ fn sync_file(conn: &Connection, path_str: &str, file_path: &Path) -> Result<(), 
         }
     }
 }
+
+/// 按相对路径同步单文件入索引(供 core::write 落盘后即时索引用)。
+///
+/// vault_root + path_str 解析出绝对路径,复用 sync_file 逻辑。
+/// 文件不存在时静默返回(由调用方保证已落盘)。
+pub(crate) fn sync_file_by_path(conn: &Connection, vault_root: &str, path_str: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let abs = Path::new(vault_root).join(path_str);
+    if !abs.exists() {
+        return Ok(());
+    }
+    sync_file(conn, path_str, &abs)
+}
