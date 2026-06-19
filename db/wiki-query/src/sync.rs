@@ -83,26 +83,45 @@ pub fn run() {
 
 /// 删除数据库里存在但磁盘上不存在的记录,返回删除条数。
 /// 同时清理 documents 和 documents_fts(保持两表一致)。
+///
+/// 注意:路径规范化约定 —— on_disk 与 DB 里存的 path 都用 `strip_prefix("./")`
+/// 后的形式,Windows 上含 `\`。跨平台同步(如从 Linux 同步用 `/` 的 path)会
+/// 因分隔符不一致触发误删,目前仅支持单平台 sync。
 fn prune_orphans(conn: &Connection, on_disk: &std::collections::HashSet<String>) -> usize {
     let db_paths: Vec<String> = {
         let mut stmt = match conn.prepare("SELECT path FROM documents") {
             Ok(s) => s,
-            Err(_) => return 0,
+            Err(e) => {
+                eprintln!("prune_orphans: prepare 失败: {}", e);
+                return 0;
+            }
         };
-        let rows: Vec<String> = stmt
-            .query_map([], |row| row.get::<_, String>(0))
+        stmt.query_map([], |row| row.get::<_, String>(0))
             .ok()
             .map(|iter| iter.filter_map(|r| r.ok()).collect())
-            .unwrap_or_default();
-        rows
+            .unwrap_or_default()
     };
 
     let mut pruned = 0;
     for path in &db_paths {
-        if !on_disk.contains(path) {
-            let _ = conn.execute("DELETE FROM documents WHERE path = ?1", params![path]);
-            let _ = conn.execute("DELETE FROM documents_fts WHERE path = ?1", params![path]);
-            pruned += 1;
+        if on_disk.contains(path) {
+            continue;
+        }
+        // documents 删成功才删 FTS5,保证两表一致(避免 documents 有、FTS5 无)。
+        // 用事务包两条 DELETE,任一失败则整体回滚。
+        let result: Result<(), rusqlite::Error> = (|| {
+            conn.execute("BEGIN", [])?;
+            let docs_deleted = conn.execute("DELETE FROM documents WHERE path = ?1", params![path])?;
+            conn.execute("DELETE FROM documents_fts WHERE path = ?1", params![path])?;
+            conn.execute("COMMIT", [])?;
+            if docs_deleted > 0 {
+                pruned += 1;
+            }
+            Ok(())
+        })();
+        if let Err(e) = result {
+            let _ = conn.execute("ROLLBACK", []);
+            eprintln!("prune_orphans: 删除 {} 失败(已回滚): {}", path, e);
         }
     }
     pruned
@@ -202,50 +221,65 @@ fn sync_file(conn: &Connection, path_str: &str, file_path: &Path) -> Result<(), 
 
     let word_count = body.split_whitespace().count() as i64;
 
-    conn.execute(
-        "INSERT INTO documents (path, name, description, type, updated, tags, content, word_count, modified_at)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
-         ON CONFLICT(path) DO UPDATE SET
-            name = excluded.name,
-            description = excluded.description,
-            type = excluded.type,
-            updated = excluded.updated,
-            tags = excluded.tags,
-            content = excluded.content,
-            word_count = excluded.word_count,
-            modified_at = excluded.modified_at",
-        params![
-            path_str,
-            meta.name,
-            meta.description,
-            meta.doc_type,
-            meta.updated,
-            meta.tags,
-            body,
-            word_count,
-            modified_str
-        ],
-    )?;
+    // 用事务包 documents upsert + FTS5 同步,保证两表原子一致。
+    // 中途崩溃(如进程被杀)不会出现 documents 已更新但 FTS5 旧记录已删未插的状态;
+    // 即便发生,needs_update 的 FTS5-缺失检查下次 sync 会自愈。
+    conn.execute("BEGIN", [])?;
+    let result: Result<(), rusqlite::Error> = (|| {
+        conn.execute(
+            "INSERT INTO documents (path, name, description, type, updated, tags, content, word_count, modified_at)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
+             ON CONFLICT(path) DO UPDATE SET
+                name = excluded.name,
+                description = excluded.description,
+                type = excluded.type,
+                updated = excluded.updated,
+                tags = excluded.tags,
+                content = excluded.content,
+                word_count = excluded.word_count,
+                modified_at = excluded.modified_at",
+            params![
+                path_str,
+                meta.name,
+                meta.description,
+                meta.doc_type,
+                meta.updated,
+                meta.tags,
+                body,
+                word_count,
+                modified_str
+            ],
+        )?;
 
-    // 同步 FTS5 索引:对文本字段做 jieba 预分词。
-    // FTS5 无 ON CONFLICT UPDATE,用 delete-then-insert 模式更新。
-    use crate::fts::tokenize_for_fts;
-    conn.execute(
-        "DELETE FROM documents_fts WHERE path = ?1",
-        params![path_str],
-    )?;
-    conn.execute(
-        "INSERT INTO documents_fts (path, name, description, type, tags, content)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
-        params![
-            path_str,
-            tokenize_for_fts(&meta.name),
-            tokenize_for_fts(&meta.description),
-            meta.doc_type,
-            tokenize_for_fts(&meta.tags),
-            tokenize_for_fts(&body),
-        ],
-    )?;
-
-    Ok(())
+        // 同步 FTS5 索引:对文本字段做 jieba 预分词。
+        // FTS5 无 ON CONFLICT UPDATE,用 delete-then-insert 模式更新。
+        use crate::fts::tokenize_for_fts;
+        conn.execute(
+            "DELETE FROM documents_fts WHERE path = ?1",
+            params![path_str],
+        )?;
+        conn.execute(
+            "INSERT INTO documents_fts (path, name, description, type, tags, content)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+            params![
+                path_str,
+                tokenize_for_fts(&meta.name),
+                tokenize_for_fts(&meta.description),
+                meta.doc_type,
+                tokenize_for_fts(&meta.tags),
+                tokenize_for_fts(&body),
+            ],
+        )?;
+        Ok(())
+    })();
+    match result {
+        Ok(()) => {
+            conn.execute("COMMIT", [])?;
+            Ok(())
+        }
+        Err(e) => {
+            let _ = conn.execute("ROLLBACK", []);
+            Err(Box::from(e))
+        }
+    }
 }

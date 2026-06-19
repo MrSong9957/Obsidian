@@ -6,7 +6,6 @@
 
 use rusqlite::Connection;
 use std::fs;
-use std::path::Path;
 
 /// 辅助:在临时目录建一个迷你 vault,跑 sync,返回 db 连接。
 fn setup_vault_with_docs(docs: &[(&str, &str)]) -> (tempfile::TempDir, String) {
