@@ -40,22 +40,36 @@ pub fn init() -> Result<Connection> {
 pub fn search(query: &str) {
     let conn = init().expect("Failed to init database");
 
-    let pattern = format!("%{}%", query);
+    // FTS5 检索:查询词先经 jieba 预分词,每个 token 加引号做 phrase,
+    // OR 连接(任一 token 命中即召回,bm25 排序保证多词命中靠前)。
+    use crate::fts::tokenize_for_fts;
+    let tokenized = tokenize_for_fts(query);
+    let tokens: Vec<&str> = tokenized.split_whitespace().collect();
+    if tokens.is_empty() {
+        println!("[]");
+        return;
+    }
+    let fts_query: String = tokens
+        .iter()
+        .map(|t| format!("\"{}\"", t))
+        .collect::<Vec<_>>()
+        .join(" OR ");
+
+    // FTS5 表无 updated 列,JOIN documents 取 updated。
+    // bm25 分数越小越相关(FTS5 约定),ASC 排序即最相关在前。
     let mut stmt = conn
         .prepare(
-            "SELECT path, name, description, type, updated, tags
-             FROM documents
-             WHERE name LIKE ?1
-                OR description LIKE ?1
-                OR tags LIKE ?1
-                OR path LIKE ?1
-             ORDER BY updated DESC
+            "SELECT d.path, d.name, d.description, d.type, d.updated, d.tags
+             FROM documents_fts f
+             JOIN documents d ON d.path = f.path
+             WHERE documents_fts MATCH ?1
+             ORDER BY bm25(documents_fts)
              LIMIT 20",
         )
         .expect("Failed to prepare statement");
 
     let results: Vec<SearchResult> = stmt
-        .query_map(rusqlite::params![pattern], |row| {
+        .query_map(rusqlite::params![fts_query], |row| {
             Ok(SearchResult {
                 path: row.get(0)?,
                 name: row.get(1)?,
