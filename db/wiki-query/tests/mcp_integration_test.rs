@@ -75,6 +75,7 @@ fn mcp_tools_list_exposes_wiki_tools() {
     );
     assert!(stdout.contains("wiki_read"), "应含 wiki_read");
     assert!(stdout.contains("wiki_write"), "应含 wiki_write");
+    assert!(stdout.contains("wiki_list"), "应含 wiki_list");
 }
 
 #[test]
@@ -88,6 +89,20 @@ fn mcp_wiki_search_tool_callable() {
     assert!(
         stdout.contains(r#""id":3"#) || stdout.contains("result"),
         "tools/call 应返回响应: {}",
+        &stdout[..stdout.len().min(500)]
+    );
+}
+
+#[test]
+fn mcp_wiki_list_tool_callable() {
+    // 实际调用 wiki_list(按 type 过滤,用真实 vault DB)
+    let init = r#"{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"test","version":"0.1"}}}"#;
+    let initialized = r#"{"jsonrpc":"2.0","method":"notifications/initialized"}"#;
+    let call = r#"{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"wiki_list","arguments":{"type":"concept","limit":5}}}"#;
+    let stdout = run_mcp_session(&[init, initialized, call]);
+    assert!(
+        stdout.contains(r#""id":4"#) || stdout.contains("result"),
+        "wiki_list 应返回响应: {}",
         &stdout[..stdout.len().min(500)]
     );
 }

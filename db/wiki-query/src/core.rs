@@ -172,3 +172,68 @@ pub fn write(
         candidates: None,
     })
 }
+
+/// list 过滤条件。各字段可选,组合 AND 语义。
+#[derive(Debug, Default, Clone)]
+pub struct ListFilter {
+    pub tag: Option<String>,
+    pub doc_type: Option<String>,
+    /// 目录前缀过滤,如 "wiki/"、"sources/dev/"
+    pub dir: Option<String>,
+    pub limit: Option<i64>,
+}
+
+/// 按结构化字段过滤列出文档(查 documents 表,非 FTS5)。
+///
+/// 与 search 区别:search 是全文语义检索(返回相关度排序),
+/// list 是结构化过滤(按 tag/type/目录精确匹配,返回全部元数据含正文以外字段)。
+pub fn list(filter: &ListFilter) -> Result<Vec<SearchResult>, WikiError> {
+    let conn = db::init()?;
+    let mut conditions: Vec<String> = vec![];
+    let mut params_vec: Vec<Box<dyn rusqlite::ToSql>> = vec![];
+
+    if let Some(t) = &filter.tag {
+        conditions.push("tags LIKE ?".to_string());
+        params_vec.push(Box::new(format!("%{}%", t)));
+    }
+    if let Some(t) = &filter.doc_type {
+        conditions.push("type = ?".to_string());
+        params_vec.push(Box::new(t.clone()));
+    }
+    if let Some(d) = &filter.dir {
+        conditions.push("path LIKE ?".to_string());
+        params_vec.push(Box::new(format!("{}%", d)));
+    }
+    let where_clause = if conditions.is_empty() {
+        String::new()
+    } else {
+        format!("WHERE {}", conditions.join(" AND "))
+    };
+    let limit = filter.limit.unwrap_or(100);
+    let sql = format!(
+        "SELECT path, name, description, type, updated, tags
+         FROM documents {} ORDER BY updated DESC LIMIT ?",
+        where_clause
+    );
+    let mut stmt = conn.prepare(&sql)?;
+    let param_refs: Vec<&dyn rusqlite::ToSql> = params_vec
+        .iter()
+        .map(|p| p.as_ref())
+        .chain(std::iter::once(&limit as &dyn rusqlite::ToSql))
+        .collect();
+    let results = stmt
+        .query_map(param_refs.as_slice(), |row| {
+            Ok(SearchResult {
+                path: row.get(0)?,
+                name: row.get(1)?,
+                description: row.get(2)?,
+                doc_type: row.get(3)?,
+                updated: row.get(4)?,
+                tags: row.get(5)?,
+                score: None,
+            })
+        })?
+        .filter_map(|r| r.ok())
+        .collect();
+    Ok(results)
+}

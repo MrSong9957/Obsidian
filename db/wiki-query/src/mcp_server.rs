@@ -73,6 +73,19 @@ pub struct WriteRequest {
     pub body: String,
 }
 
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct ListRequest {
+    #[schemars(description = "按标签过滤(子串匹配),如 'agent'。可选")]
+    pub tag: Option<String>,
+    #[schemars(description = "按 type 过滤(精确匹配),如 'concept'。可选")]
+    #[serde(rename = "type")]
+    pub doc_type: Option<String>,
+    #[schemars(description = "按目录前缀过滤,如 'wiki/' 或 'sources/dev/'。可选")]
+    pub dir: Option<String>,
+    #[schemars(description = "最大返回条数,默认 100")]
+    pub limit: Option<i64>,
+}
+
 #[tool_router(server_handler)]
 impl WikiServer {
     #[tool(description = "搜索 Obsidian 知识库文档(FTS5 全文检索,支持中文)。返回前 20 条匹配文档的元数据列表(路径/标题/描述/类型/标签/相关度分数,不含正文,需另调 wiki_read)。用 1-2 个关键词比长句更好。当需要查找某个主题、概念、技术的相关知识时使用。")]
@@ -115,6 +128,25 @@ impl WikiServer {
         match core::write(&self.vault_root, &req.path, &fm, &req.body) {
             Ok(result) => Ok(CallToolResult::success(vec![Content::text(
                 serde_json::to_string_pretty(&result).unwrap_or_else(|_| "{}".into()),
+            )])),
+            Err(e) => err_to_result(e),
+        }
+    }
+
+    #[tool(description = "按结构化条件列出 Obsidian 知识库文档(按标签/类型/目录过滤)。返回元数据列表(路径/标题/描述/类型/标签)。与 wiki_search 区别:search 是全文语义检索,list 是精确字段过滤(如列出某类型全部文档、某目录下所有文件)。参数均可选,不传则返回最近更新的文档。")]
+    fn wiki_list(
+        &self,
+        Parameters(req): Parameters<ListRequest>,
+    ) -> Result<CallToolResult, McpError> {
+        let filter = core::ListFilter {
+            tag: req.tag,
+            doc_type: req.doc_type,
+            dir: req.dir,
+            limit: req.limit,
+        };
+        match core::list(&filter) {
+            Ok(results) => Ok(CallToolResult::success(vec![Content::text(
+                serde_json::to_string_pretty(&results).unwrap_or_else(|_| "[]".into()),
             )])),
             Err(e) => err_to_result(e),
         }
