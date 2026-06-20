@@ -1,6 +1,5 @@
 use rusqlite::{Connection, Result};
 use std::path::Path;
-use crate::models::Document;
 
 const DEFAULT_DB_PATH: &str = "db/wiki.db";
 
@@ -55,54 +54,4 @@ pub fn init() -> Result<Connection> {
     )?;
 
     Ok(conn)
-}
-
-pub fn search(query: &str) {
-    // 复用 core::search_with_scores,避免 SQL/tokenize 逻辑重复(review Important-3)。
-    match crate::core::search_with_scores(query) {
-        Ok(results) => {
-            let json = serde_json::to_string_pretty(&results).unwrap();
-            println!("{}", json);
-        }
-        Err(e) => {
-            eprintln!("search 失败: {}", e);
-            println!("[]");
-        }
-    }
-}
-
-pub fn show(path: &str) {
-    let conn = init().expect("Failed to init database");
-
-    let result = conn.query_row(
-        "SELECT id, path, name, description, type, updated, tags, content, word_count, modified_at
-         FROM documents
-         WHERE path = ?1",
-        rusqlite::params![path],
-        |row| {
-            Ok(Document {
-                id: row.get(0)?,
-                path: row.get(1)?,
-                name: row.get(2)?,
-                description: row.get(3)?,
-                doc_type: row.get(4)?,
-                updated: row.get(5)?,
-                tags: row.get(6)?,
-                content: row.get(7)?,
-                word_count: row.get(8)?,
-                modified_at: row.get(9)?,
-            })
-        },
-    );
-
-    match result {
-        Ok(doc) => {
-            let json = serde_json::to_string_pretty(&doc).unwrap();
-            println!("{}", json);
-        }
-        Err(_) => {
-            eprintln!("Document not found: {}", path);
-            std::process::exit(1);
-        }
-    }
 }
