@@ -44,6 +44,9 @@ fn err_to_result(e: WikiError) -> Result<CallToolResult, McpError> {
 #[derive(Clone)]
 pub struct WikiServer {
     pub vault_root: String,
+    // 由 #[tool_router] 宏生成的 list_tools/call_tool 委托方法使用,
+    // rustc 的 dead_code 分析看穿不了宏,故显式 allow。
+    #[allow(dead_code)]
     tool_router: ToolRouter<WikiServer>,
 }
 

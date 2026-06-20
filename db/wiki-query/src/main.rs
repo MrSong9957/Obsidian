@@ -9,7 +9,7 @@ fn main() {
         eprintln!("Commands:");
         eprintln!("  sync              - Sync MD files to database (运维,git hook 用)");
         eprintln!("  serve             - Start MCP server (stdio, 本地无云)");
-        eprintln!("");
+        eprintln!();
         eprintln!("查询/读写走 MCP(agent 调用),非命令行。");
         std::process::exit(1);
     }

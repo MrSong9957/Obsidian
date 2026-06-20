@@ -278,11 +278,11 @@ fn locate_section(body: &str, heading: &str) -> Option<(usize, usize)> {
             let level = 1 + rest.bytes().take_while(|&b| b == b'#').count();
             let after_hashes = &rest[level - 1..];
             // 是 heading 行(# 开头且后跟空格或空)
-            if after_hashes.is_empty() || after_hashes.starts_with(' ') {
-                if level <= heading_level {
-                    end_idx = i;
-                    break;
-                }
+            if (after_hashes.is_empty() || after_hashes.starts_with(' '))
+                && level <= heading_level
+            {
+                end_idx = i;
+                break;
             }
         }
     }
@@ -359,7 +359,6 @@ mod tests {
     fn locate_h3_section() {
         let body = "## A\n\n### Sub\n子内容\n\n## B";
         let (start, end) = locate_section(body, "Sub").unwrap();
-        let lines: Vec<&str> = body.lines().collect();
         // "### Sub" 在 idx 2;"## B"(level 2 ≤ level 3)在 idx 5
         assert_eq!(start, 2);
         assert_eq!(end, 5);
