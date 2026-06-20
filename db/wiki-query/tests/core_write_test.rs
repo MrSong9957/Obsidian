@@ -129,3 +129,45 @@ fn write_creates_parent_dirs() {
     assert_eq!(result.status, WriteStatus::Add);
     assert!(std::path::Path::new(&format!("{}/{}", vault, path)).exists());
 }
+
+#[test]
+fn patch_replaces_section_content() {
+    let (_guard, _dir, vault) = setup_locked();
+    // 先写一个带多 section 的文档
+    let body = "## 配置\n\n旧配置内容\n\n## 用法\n\n用法说明";
+    let result = core::write(&vault, "wiki/patch-test.md", &fm("Patch测试"), body).unwrap();
+    assert_eq!(result.status, WriteStatus::Add);
+
+    // patch "配置" section
+    core::patch(&vault, "wiki/patch-test.md", "配置", "全新配置内容").unwrap();
+
+    // 读回验证:配置 section 变了,用法 section 保留
+    let content = std::fs::read_to_string(format!("{}/wiki/patch-test.md", vault)).unwrap();
+    assert!(content.contains("全新配置内容"), "新内容应写入");
+    assert!(!content.contains("旧配置内容"), "旧内容应被替换");
+    assert!(content.contains("用法说明"), "其他 section 应保留");
+}
+
+#[test]
+fn patch_heading_not_found_returns_error() {
+    let (_guard, _dir, vault) = setup_locked();
+    core::write(&vault, "wiki/no-heading.md", &fm("测试"), "## 存在\n内容").unwrap();
+
+    let result = core::patch(&vault, "wiki/no-heading.md", "不存在", "新内容");
+    assert!(result.is_err(), "heading 不存在应返回错误");
+}
+
+#[test]
+fn patch_file_not_found_returns_notfound() {
+    let (_guard, _dir, vault) = setup_locked();
+    let result = core::patch(&vault, "wiki/absent.md", "任何", "内容");
+    assert!(result.is_err(), "文件不存在应返回 NotFound");
+}
+
+#[test]
+fn patch_rejects_templates() {
+    let (_guard, _dir, vault) = setup_locked();
+    // templates 只读,patch 应被 policy 拒绝
+    let result = core::patch(&vault, "templates/x.md", "任何", "内容");
+    assert!(result.is_err(), "templates 应禁止 patch");
+}

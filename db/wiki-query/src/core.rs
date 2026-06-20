@@ -27,8 +27,7 @@ pub fn read(vault_root: &str, path: &str) -> Result<String, WikiError> {
 }
 
 /// FTS5 检索的核心实现,返回带 bm25 score 的结果。
-/// core::search、core::write(决策用)、db::search(CLI)共用此函数,
-/// 避免 SQL/tokenize 逻辑重复(review Important-3)。
+/// core::search、core::write(决策用)共用此函数。
 ///
 /// score 为 bm25 原始值(越小越相关,负值),写入 SearchResult.score。
 pub(crate) fn search_with_scores(query: &str) -> Result<Vec<SearchResult>, WikiError> {
@@ -242,4 +241,148 @@ pub fn list(filter: &ListFilter) -> Result<Vec<SearchResult>, WikiError> {
         .filter_map(|r| r.ok())
         .collect();
     Ok(results)
+}
+
+/// 在 body 中定位 heading 的 section 范围。
+///
+/// 返回 (heading 行号, section 结束行号)。section 范围是 heading 行的下一行
+/// 到「下一个同级或更高级 heading 行前」。heading 行本身不含在 section 内(保留不动)。
+/// 同名 heading 取第一个。heading 不存在返回 None。
+///
+/// 支持的 heading 级别:`#`(h1) ~ `######`(h6)。匹配时 heading 文本去首尾空格比较。
+fn locate_section(body: &str, heading: &str) -> Option<(usize, usize)> {
+    let lines: Vec<&str> = body.lines().collect();
+    let target = heading.trim();
+
+    // 找目标 heading 行
+    let (heading_idx, heading_level) = lines.iter().enumerate().find_map(|(i, line)| {
+        let trimmed = line.trim_start();
+        if let Some(rest) = trimmed.strip_prefix('#') {
+            // 数 # 的数量
+            let level = 1 + rest.bytes().take_while(|&b| b == b'#').count();
+            let after_hashes = &rest[level - 1..];
+            // after_hashes 应以空格开头或为空,后面是标题文本
+            let text = after_hashes.trim();
+            if text == target {
+                return Some((i, level));
+            }
+        }
+        None
+    })?;
+
+    // section 结束:下一个同级或更高级(level <= heading_level)的 heading 前
+    let mut end_idx = lines.len();
+    for (i, line) in lines.iter().enumerate().skip(heading_idx + 1) {
+        let trimmed = line.trim_start();
+        if let Some(rest) = trimmed.strip_prefix('#') {
+            let level = 1 + rest.bytes().take_while(|&b| b == b'#').count();
+            let after_hashes = &rest[level - 1..];
+            // 是 heading 行(# 开头且后跟空格或空)
+            if after_hashes.is_empty() || after_hashes.starts_with(' ') {
+                if level <= heading_level {
+                    end_idx = i;
+                    break;
+                }
+            }
+        }
+    }
+
+    Some((heading_idx, end_idx))
+}
+
+/// section 级编辑:按 heading 局部替换文档内容,保留 frontmatter 和其余 section。
+///
+/// heading 不存在返回 NotFound(业务错误,agent 可改 heading 重试)。
+/// 受 policy 校验(templates 禁 patch)。落盘后即时索引。
+pub fn patch(
+    vault_root: &str,
+    path: &str,
+    heading: &str,
+    new_content: &str,
+) -> Result<(), WikiError> {
+    policy::check(path, Op::Write)?;
+
+    let abs = Path::new(vault_root).join(path);
+    if !abs.exists() {
+        return Err(WikiError::NotFound(path.into()));
+    }
+    let content = std::fs::read_to_string(&abs)?;
+    let (fm, body) = frontmatter::parse(&content);
+
+    let (heading_idx, end_idx) = locate_section(&body, heading)
+        .ok_or_else(|| WikiError::NotFound(format!("heading '{}' 不存在", heading)))?;
+
+    // 重组 body:heading 行之前 + heading 行 + 新内容 + section 结束之后
+    let lines: Vec<&str> = body.lines().collect();
+    let mut new_body = String::new();
+    // heading 之前
+    for line in &lines[..=heading_idx] {
+        new_body.push_str(line);
+        new_body.push('\n');
+    }
+    // 新内容
+    new_body.push_str(new_content);
+    if !new_content.ends_with('\n') {
+        new_body.push('\n');
+    }
+    // section 结束之后
+    for line in &lines[end_idx..] {
+        new_body.push_str(line);
+        new_body.push('\n');
+    }
+
+    let serialized = frontmatter::serialize(&fm, new_body.trim_end_matches('\n'));
+    std::fs::write(&abs, &serialized)?;
+
+    // 即时索引
+    let conn = db::init()?;
+    crate::sync::sync_file_by_path(&conn, vault_root, path)
+        .map_err(|e| WikiError::Db(e.to_string()))?;
+
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn locate_h2_section() {
+        let body = "# Title\n\n## A\n内容A\n\n## B\n内容B";
+        let (start, end) = locate_section(body, "A").unwrap();
+        // heading "## A" 在第 2 行(idx 2),section 到 "## B"(idx 5)前
+        assert_eq!(start, 2);
+        assert_eq!(end, 5);
+    }
+
+    #[test]
+    fn locate_h3_section() {
+        let body = "## A\n\n### Sub\n子内容\n\n## B";
+        let (start, end) = locate_section(body, "Sub").unwrap();
+        let lines: Vec<&str> = body.lines().collect();
+        // "### Sub" 在 idx 2;"## B"(level 2 ≤ level 3)在 idx 5
+        assert_eq!(start, 2);
+        assert_eq!(end, 5);
+    }
+
+    #[test]
+    fn locate_section_at_doc_end() {
+        // 末尾 section,无后续 heading,end = 行数
+        let body = "## A\n内容\n\n## B\n末尾内容";
+        let (_, end) = locate_section(body, "B").unwrap();
+        assert_eq!(end, body.lines().count());
+    }
+
+    #[test]
+    fn locate_section_not_found() {
+        let body = "## A\n内容";
+        assert!(locate_section(body, "不存在").is_none());
+    }
+
+    #[test]
+    fn locate_section_first_match_when_duplicate() {
+        let body = "## A\n第一\n\n## A\n第二";
+        let (start, _) = locate_section(body, "A").unwrap();
+        assert_eq!(start, 0); // 取第一个
+    }
 }
