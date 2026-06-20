@@ -50,7 +50,7 @@ wiki-query 是 agent 记忆的**下游沉淀点**,不是上游来源。agent 不
 | 工具 | 输入 | 输出 | 何时用 |
 |------|------|------|--------|
 | `wiki_search` | query 关键词 | top 10 元数据(已按相关度排序,**不含 score**,不含正文) | 找知识 / 查重 / 提炼前看库里有没有 |
-| `wiki_list` | tag / type / dir(均可选) | 文档元数据列表 + **last_extract 时间戳**(从 meta 表顺带读) | 按结构化条件浏览;裸调时拿 last_extract 判断提炼间隔 |
+| `wiki_list` | tag / type / dir(均可选) | 文档元数据数组 + **末尾 meta 条目**(含 last_extract) | 按结构化条件浏览;末尾 meta 条目供判断提炼间隔 |
 | `wiki_sync` | scope(可选,默认 `"incremental"`) | 同步报告 + **查重报告**(scope 决定查重范围) | agent 写完文件后调;用户说"去重"时调 `scope="full"` |
 | `wiki_mark_extracted` | 无 | 确认 | 全量提炼完成后调,更新 SQLite meta 表的 last_extract 时间戳 |
 | `wiki_get_project_rules` | agent_type(可选,如 `"claude"` / `"codex"` / `"cursor"`,默认通用) | 可注入的规则文本(含查重提示词) | agent 首次接入 wiki-query 时调,拿文本写入当前项目根的 CLAUDE.md / AGENTS.md |
@@ -92,9 +92,9 @@ wiki-query 是 agent 记忆的**下游沉淀点**,不是上游来源。agent 不
    │   OpenCode:    .opencode/memory/*(格式依插件而定)
    │   (agent 内置文件工具,wiki-query 不碰)
    ▼
-2. agent (可选)调 wiki_list() 裸调拿 last_extract 时间戳
+2. agent (可选)调 wiki_list() 拿末尾 meta 条目的 last_extract
    │   → 判断间隔,太近且记忆无变化则告诉用户"刚提炼过,无需重复"
-   │   → last_extract 从 SQLite meta 表读,复用 wiki_list 返回
+   │   → last_extract 从 SQLite meta 表读,wiki_list 返回数组末尾附带
    ▼
 3. agent 对每篇记忆内容,调 wiki_search 逐篇查重(固定流程,不可省)
    │   → 相似的:agent 用文件工具读 vault 文档全文 → 决定合并/追加
@@ -186,21 +186,20 @@ agent 删了 wiki_read 后,无法用 MCP 工具直接读 SQLite meta 表。**方
 
 agent 判断"距上次提炼多久"的流程:调 `wiki_list()`(裸调,不带过滤)→ 返回值里含 last_extract → agent 拿到时间戳判断。
 
-**wiki_list 返回结构升级**(从纯数组升级为对象,含 meta 字段):
+**wiki_list 返回结构**(数组末尾追加 meta 条目,最小改动):
 
 ```json
-{
-  "last_extract": "2026-06-20T14:30:00+08:00",
-  "docs": [
-    {"path": "wiki/foo.md", "name": "...", "description": "...", ...},
-    ...
-  ]
-}
+[
+  {"path": "wiki/foo.md", "name": "...", "description": "...", ...},
+  {"path": "wiki/bar.md", "name": "...", "description": "...", ...},
+  {"path": ".wiki/meta", "last_extract": "2026-06-20T14:30:00+08:00"}
+]
 ```
 
+- 数组末尾追加一个 meta 条目,固定 `path: ".wiki/meta"`(让 agent 识别并跳过,不当文档处理)。
 - `last_extract`:从 SQLite meta 表读。若从未提炼过(wiki_mark_extracted 没调过),值为 `null`。
-- `docs`:原有的文档元数据列表,结构不变。
-- 这是**破坏性改动**(数组→对象),v5 大重构可接受。agent 解析 wiki_list 时取 `.docs` 字段。
+- 数组前面是正常文档元数据,结构不变。
+- 这是**兼容性改动**:原来解析数组前面元素的逻辑不用改,只在需要时间戳时识别末尾 meta 条目。
 
 **读写分离**:wiki_mark_extracted 写 last_extract,wiki_list 读 last_extract。各司其职,不引入新工具,不双写,不放弃功能。
 
