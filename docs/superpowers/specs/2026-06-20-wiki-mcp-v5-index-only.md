@@ -45,7 +45,7 @@ wiki-query 是 agent 记忆的**下游沉淀点**,不是上游来源。agent 不
 
 ---
 
-## 工具集(4 个 MCP 工具,全部围绕 SQLite)
+## 工具集(5 个 MCP 工具,全部围绕 SQLite + 规则分发)
 
 | 工具 | 输入 | 输出 | 何时用 |
 |------|------|------|--------|
@@ -53,6 +53,7 @@ wiki-query 是 agent 记忆的**下游沉淀点**,不是上游来源。agent 不
 | `wiki_list` | tag / type / dir(均可选) | 元数据列表 | 按结构化条件浏览某类文档 |
 | `wiki_sync` | scope(可选,默认 `"incremental"`) | 同步报告 + **查重报告**(scope 决定查重范围) | agent 写完文件后调;用户说"去重"时调 `scope="full"` |
 | `wiki_mark_extracted` | 无 | 确认 | 全量提炼完成后调,更新 SQLite meta 表的 last_extract 时间戳 |
+| `wiki_get_project_rules` | agent_type(可选,如 `"claude"` / `"codex"` / `"cursor"`,默认通用) | 可注入的规则文本(含查重提示词) | agent 首次接入 wiki-query 时调,拿文本写入当前项目根的 CLAUDE.md / AGENTS.md |
 
 ### wiki_sync 的 scope 参数
 
@@ -110,7 +111,7 @@ wiki-query 是 agent 记忆的**下游沉淀点**,不是上游来源。agent 不
 6. agent 删除自己记忆系统里的源文件(提炼后删源,避免重复提炼)
    │   (agent 侧 housekeeping,wiki-query 不管)
    ▼
-7. agent 调 wiki_mark_extracted()
+7. agent 调 wiki_mark_extracted()  [若选方案 C 则免此步]
    │   → wiki-query 写 SQLite meta 表:last_extract = now
    ▼
 8. agent 告诉用户"已提炼 N 篇,删源 M 个"
@@ -129,9 +130,10 @@ wiki-query 是 agent 记忆的**下游沉淀点**,不是上游来源。agent 不
 
 ## frontmatter 约定(降级,不再强制)
 
-v3/v4 用代码强校验 frontmatter(5 字段非空 + type 白名单)。v5 删除 wiki_write 后没有写入入口,无法强制。降级为**约定**:
+v3/v4 用代码强校验 frontmatter(5 字段非空 + type 白名单)。v5 删除 wiki_write 后没有写入入口,无法强制。降级为**约定**,通过规则注入机制分发(见「wiki_get_project_rules 工具」):
 
-- 在 AGENTS.md 写明:vault 内文档 frontmatter 应有 `name` + `description`(检索展示用),`type` / `tags` 建议填写。
+- 规则文本(vault 内 `templates/project-rules.md`)写明:vault 内文档 frontmatter 应有 `name` + `description`(检索展示用),`type` / `tags` 建议填写。
+- agent 首次接入时调 wiki_get_project_rules 拿规则,注入到当前项目根的 CLAUDE.md / AGENTS.md,之后在该项目里遵守。
 - wiki_sync 索引时,缺 name/description 的文档,对应字段存空字符串。search 时这类文档相关度靠正文命中,不致命。
 - type 不再校验白名单。各 agent 提炼过来的文档 type 五花八门,强制白名单反而拒收。
 
@@ -187,7 +189,7 @@ agent 删了 wiki_read 后,无法用 MCP 工具读 SQLite meta 表。判断"距�
 
 **建议:方案 C。** 源文件删了,全量提炼处理的就是增量,时间戳判断的价值有限,不值得为它加工具或引入双写复杂度。若后续证明需要,再加 wiki_status。
 
-> 若选方案 C,wiki_mark_extracted 工具也随之失去意义(写了没人读),可一并去掉,工具集降为 3 个(search/list/sync)。
+> 若选方案 C,wiki_mark_extracted 工具也随之失去意义(写了没人读),可一并去掉,工具集降为 4 个(search/list/sync/get_project_rules)。
 
 ### 2. wiki_sync 含 scope 查重报告
 
@@ -231,6 +233,80 @@ fn wiki_mark_extracted(&self) -> Result<CallToolResult, McpError>
 
 > 注意:此工具依赖 last_extract 待决项的结论。若选方案 C(放弃时间戳),本工具删除。
 
+### 4. wiki_get_project_rules 工具 + 规则注入机制
+
+**场景**:agent 在**别的项目**(如 `E:\项目X\`)干活时,通过 MCP 连上 wiki-query。为了让 agent 知道"这个项目接了 wiki-query、vault 在哪、怎么提炼记忆",需要把提炼规则注入到**项目根**的指令文件(CLAUDE.md / AGENTS.md)。
+
+**铁律**:wiki-query **不碰外部目录**。注入由 **agent 执行**(它有文件工具),wiki-query 只通过 `wiki_get_project_rules` 工具**返回规则文本**,agent 拿到后自己写入项目根。
+
+#### 工具签名
+
+```rust
+/// 返回可注入到项目根指令文件的规则文本。
+/// agent_type 决定目标文件名提示(Claude→CLAUDE.md,其他→AGENTS.md)。
+fn wiki_get_project_rules(
+    &self,
+    Parameters(req): Parameters<ProjectRulesRequest>,
+) -> Result<CallToolResult, McpError>
+
+pub struct ProjectRulesRequest {
+    /// 当前 agent 类型,决定返回文本里推荐的目标文件名。
+    /// "claude" → CLAUDE.md;"codex"/"cursor"/"opencode"/"mimo"/其他 → AGENTS.md。
+    /// 可选,默认按 AGENTS.md(最通用约定)。
+    pub agent_type: Option<String>,
+}
+```
+
+返回内容包含:
+1. **规则文本**(从 vault 内模板文件读取,见下)
+2. **注入指引**:目标文件名(根据 agent_type)、查重标记(避免重复注入)、注入步骤提示词
+
+#### 规则文本来源:vault 内模板文件
+
+规则文本**不硬编码在 Rust 里**(改规则要重编译),而是放在 vault 内的模板文件:
+
+```
+<vault>/templates/project-rules.md    ← 权威规则模板(wiki-query 读它返回)
+```
+
+放 `templates/` 的理由:该目录语义就是"模板",且 policy 里只读(防误改)。wiki-query 启动时读这个文件,通过工具返回。
+
+**模板文件内容由 4 块组成**(对应 spec 扫描出的需要 agent 遵守的约定):
+
+1. **frontmatter 约定**:vault 内文档 frontmatter 应有 `name` + `description`(检索展示用),`type` / `tags` 建议填写。
+2. **全量提炼工作流**:8 步流程(读记忆 → wiki_search 查重 → 文件工具写 vault → wiki_sync → 删源 → wiki_mark_extracted)。
+3. **提炼后删源**:避免重复提炼(记忆不断增加,不删源越来越重)。
+4. **查重是固定流程 + 合并归 agent**:每篇先 wiki_search;sync 的查重报告只提示,合不合并是 agent 自己的智能决策。
+
+#### 注入流程(agent 执行)
+
+```
+agent 首次接入 wiki-query(或在项目里第一次想提炼时):
+  │
+  ▼
+1. agent 调 wiki_get_project_rules(agent_type="claude")
+   → wiki-query 读 templates/project-rules.md + 注入指引,返回
+   ▼
+2. agent 读自己当前项目根,检查 CLAUDE.md(或 AGENTS.md)是否已含标记
+   → 标记约定:文件中含 "<!-- wiki-query-rules -->" 则已注入
+   → 已含:跳过,不重复注入
+   → 未含:继续
+   ▼
+3. agent 用文件工具把规则文本追加到项目根 CLAUDE.md(或 AGENTS.md)
+   → 追加,不覆盖已有内容
+   → 顶部带标记 "<!-- wiki-query-rules -->"
+   ▼
+4. 之后 agent 在该项目里就知道:有 wiki-query 可用、vault 路径、怎么提炼
+```
+
+#### 为什么不硬编码在 Rust
+
+规则文本是最常迭代的(提炼流程微调、frontmatter 要求调整、不同 agent 的格式差异)。硬编码意味着每次改规则要改 Rust + 重编译。放 vault 内模板文件,改规则直接改 markdown,符合"Markdown 是权威源"的精神。wiki-query 只是透传。
+
+#### 为什么不写进 ServerInfo instructions
+
+instructions 在每次 initialize 连接时全量传给 agent,适合放"工具列表 + 一句话定位"这种稳定的、必须每次都知道的信息。提炼规则文本较长(4 块),写进 instructions 会每次连接都传,浪费上下文。规则注入是一次性动作,用专门的工具按需获取更合适。
+
 ---
 
 ## 与 v4 的文件改动对照
@@ -244,14 +320,15 @@ db/wiki-query/src/
 ├── policy.rs            # 保留(几乎不动)
 ├── db.rs                # Modify: 加 meta 表 schema + 读写 last_extract(待决项 C 选定则不加)
 ├── sync.rs              # Modify: sync 接 scope 参数,调 find_similar 返回查重报告
-├── mcp_server.rs        # Modify: 工具集收敛为 4 个(删 read/write/patch/dedupe,保留 search/list,改 sync 加 scope,加 mark_extracted)
-└── models.rs            # Modify: 删 WriteResult/ConflictCandidate,加 SyncReport/SimilarPair
+├── mcp_server.rs        # Modify: 工具集收敛为 5 个(删 read/write/patch/dedupe,保留 search/list,改 sync 加 scope,加 mark_extracted + get_project_rules)
+└── models.rs            # Modify: 删 WriteResult/ConflictCandidate,加 SyncReport/SimilarPair/ProjectRulesRequest
 tests/
 ├── core_write_test.rs   # Delete/重写: write/patch 测试删,加 find_similar 查重测试
 ├── fts_test.rs          # 保留
-└── mcp_integration_test.rs  # Modify: 断言新工具集(4 个)
+└── mcp_integration_test.rs  # Modify: 断言新工具集(5 个)
 AGENTS.md                # Modify: frontmatter 约定 + 提炼工作流
 db/wiki-query/README.md  # Modify: 重写工具集 + 数据流
+templates/project-rules.md  # Create: 可注入的项目根规则模板(wiki_get_project_rules 读它)
 ```
 
 ---
@@ -273,7 +350,8 @@ db/wiki-query/README.md  # Modify: 重写工具集 + 数据流
 - **sync 查重(full)**:构造已知相似对,调 wiki_sync(scope="full"),断言全库报告包含该对。
 - **find_similar 阈值**:单元测试验证 score 低于阈值的不入报告(避免噪声)。
 - **wiki_mark_extracted**:调用后读 SQLite meta 表断言 last_extract 已更新(若选方案 C 则免)。
-- **MCP 集成测试**:tools/list 断言 4 个工具(search/list/sync/mark_extracted),initialize 断言 instructions 含新工具。
+- **wiki_get_project_rules**:断言返回值含规则文本的 4 块(frontmatter 约定 / 提炼流程 / 删源 / 查重);断言 agent_type="claude" 时推荐 CLAUDE.md,其他推荐 AGENTS.md;断言文本来自 templates/project-rules.md(改文件后返回值跟着变)。
+- **MCP 集成测试**:tools/list 断言 5 个工具(search/list/sync/mark_extracted/get_project_rules),initialize 断言 instructions 含新工具。
 - **删除的功能**:对应测试一并删除,不留孤儿测试。
 
 ---
@@ -287,8 +365,9 @@ db/wiki-query/README.md  # Modify: 重写工具集 + 数据流
 | db.rs 加 meta 表 + 读写(若选方案 C 则免) | 0.5h |
 | core.rs 加 find_similar 查重函数(共享给 incremental/full) | 1h |
 | sync.rs 接 scope 参数 + 返回查重报告 | 1h |
-| mcp_server 工具集重写(4 个)+ instructions 更新 | 1h |
+| mcp_server 工具集重写(5 个)+ instructions 更新 | 1h |
 | wiki_mark_extracted 工具(若选方案 C 则免) | 0.5h |
+| wiki_get_project_rules 工具 + templates/project-rules.md 模板 | 1h |
 | 测试重写 + MCP 集成测试 | 1.5h |
 | README + AGENTS.md 文档更新 | 0.5h |
-| **总计** | **~7.5h**(方案 C 则 ~6.5h) |
+| **总计** | **~8.5h**(方案 C 则 ~7.5h) |
