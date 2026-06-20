@@ -261,10 +261,13 @@ fn locate_section(body: &str, heading: &str) -> Option<(usize, usize)> {
             // 数 # 的数量
             let level = 1 + rest.bytes().take_while(|&b| b == b'#').count();
             let after_hashes = &rest[level - 1..];
-            // after_hashes 应以空格开头或为空,后面是标题文本
-            let text = after_hashes.trim();
-            if text == target {
-                return Some((i, level));
+            // CommonMark heading:`#` 后须跟空格(或为空)。与 section 结束判定对称,
+            // 避免 `##配置`(无空格)被误判为 heading "配置"。
+            if after_hashes.is_empty() || after_hashes.starts_with(' ') {
+                let text = after_hashes.trim();
+                if text == target {
+                    return Some((i, level));
+                }
             }
         }
         None
@@ -383,5 +386,21 @@ mod tests {
         let body = "## A\n第一\n\n## A\n第二";
         let (start, _) = locate_section(body, "A").unwrap();
         assert_eq!(start, 0); // 取第一个
+    }
+
+    #[test]
+    fn locate_section_rejects_no_space_after_hashes() {
+        // CommonMark:`#` 后须跟空格才是 heading。`##A`(无空格)不算 heading,
+        // 故文档只含 `##A` 时找 heading "A" 应失败(而非误判 `##A` 这一行)。
+        let body = "##A\n这不是一个标题";
+        assert!(locate_section(body, "A").is_none());
+    }
+
+    #[test]
+    fn locate_section_skips_invalid_matches_real_heading() {
+        // body 同时含非法 `##A` 与合法 `## A`:应跳过前者,匹配后者(idx 3)。
+        let body = "##A\n不是标题\n\n## A\n真正的 section";
+        let (start, _) = locate_section(body, "A").unwrap();
+        assert_eq!(start, 3);
     }
 }

@@ -56,8 +56,21 @@ fn mcp_initialize_handshake() {
     let init = r#"{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"test","version":"0.1"}}}"#;
     let stdout = run_mcp_session(&[init]);
     assert!(
-        stdout.contains("serverInfo") || stdout.contains("wiki"),
+        stdout.contains("serverInfo"),
         "initialize 应返回 serverInfo,实际: {}",
+        stdout
+    );
+    // ServerInfo instructions 必须下发:spec 要求 agent 在 initialize 阶段
+    // 就读到仓库模型。用 instructions 字段 + 其独有的 wiki_patch 文本双重断言,
+    // 避免与 serverInfo.name 等字段混淆。
+    assert!(
+        stdout.contains("instructions"),
+        "initialize 响应应含 instructions 字段: {}",
+        stdout
+    );
+    assert!(
+        stdout.contains("wiki_patch"),
+        "instructions 文本应提及 wiki_patch: {}",
         stdout
     );
 }
@@ -76,6 +89,7 @@ fn mcp_tools_list_exposes_wiki_tools() {
     assert!(stdout.contains("wiki_read"), "应含 wiki_read");
     assert!(stdout.contains("wiki_write"), "应含 wiki_write");
     assert!(stdout.contains("wiki_list"), "应含 wiki_list");
+    assert!(stdout.contains("wiki_patch"), "应含 wiki_patch");
 }
 
 #[test]

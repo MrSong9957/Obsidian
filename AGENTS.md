@@ -94,14 +94,17 @@
 ---
 
 # 本地 Wiki 检索工具说明
-仓库内置了一个高性能的 Rust 查询工具，路径为 `./db/wiki-query/wiki-query.exe`。
-当用户让你查找、分析、总结、关联知识库内的文档时，请按场景选择工具：
+仓库内置了一个高性能的 Rust 查询工具,产物路径为 `./db/wiki-query/target/release/wiki-query.exe`。
 
-**查找文档（按主题/关键词）** — 使用 wiki-query：
-1. 先使用 `wiki-query search "<关键词>"` 检索相关文档的元数据。
-2. 锁定特定文档后，使用 `wiki-query show "<文档相对路径>"` 读取正文。
+**查询/读写走 MCP**(agent 自动调用 wiki_* 工具,不手敲命令)。成品只保留两个 CLI 子命令:
+- `wiki-query sync` — 重建/更新 SQLite 索引(运维,git post-commit hook 用)
+- `wiki-query serve` — 启动 MCP server(agent 通过 stdio 交互)
 
-**搜索文件内容/代码/具体文本** — 使用 grep/glob：
+**查找文档(按主题/关键词)** — 通过 MCP 工具(由 agent 自动调用,无需手动):
+1. `wiki_search "<关键词>"` 检索相关文档的元数据列表(FTS5 全文检索)。
+2. `wiki_read "<文档相对路径>"` 读取正文全文。
+
+**搜索文件内容/代码/具体文本** — 使用 grep/glob:
 - 查找函数名、变量名、代码片段
 - 按文件名模式匹配
 - 搜索非 .md 文件
