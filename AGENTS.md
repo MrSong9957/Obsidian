@@ -96,13 +96,17 @@
 # 本地 Wiki 检索工具说明
 仓库内置了一个高性能的 Rust 查询工具,产物路径为 `./db/wiki-query/target/release/wiki-query.exe`。
 
-**查询/读写走 MCP**(agent 自动调用 wiki_* 工具,不手敲命令)。成品只保留两个 CLI 子命令:
+**v5 纯索引服务**:agent 用自己的文件工具读写 vault Markdown,wiki-query 只管 SQLite 索引。成品只保留两个 CLI 子命令:
 - `wiki-query sync` — 重建/更新 SQLite 索引(运维,git post-commit hook 用)
 - `wiki-query serve` — 启动 MCP server(agent 通过 stdio 交互)
 
-**查找文档(按主题/关键词)** — 通过 MCP 工具(由 agent 自动调用,无需手动):
-1. `wiki_search "<关键词>"` 检索相关文档的元数据列表(FTS5 全文检索)。
-2. `wiki_read "<文档相对路径>"` 读取正文全文。
+**4 个 MCP 工具**(agent 自动调用):
+- `wiki_search "<关键词>"` — FTS5 全文检索,返回 top 10 元数据(用于找知识 / 写入前查重)
+- `wiki_list` — 按 tag/type/dir 结构化浏览
+- `wiki_sync` — 同步索引 + 查重报告(scope=incremental/full);agent 写完文件后调
+- `wiki_get_project_rules` — 返回可注入到项目根指令文件的规则文本(首次接入时用)
+
+**读写 vault 正文** — agent 用自己的文件工具干,wiki-query 不碰正文。
 
 **搜索文件内容/代码/具体文本** — 使用 grep/glob:
 - 查找函数名、变量名、代码片段
@@ -138,6 +142,14 @@ AI agent 通常自带项目记忆(如 Claude Code 的 `CLAUDE.md` / `.claude/`�
 
 > "把这次会话的关键决策记到知识库"
 
-agent 流程:读自身记忆 → LLM 挑出长期价值内容 → 调 `wiki_write` 写入(`sources` 字段溯源到记忆出处)。wiki-query 不需要新工具,提炼的智能在 agent(LLM),wiki-query 只负责接收 + 四态决策查重。
+v5 提炼工作流(6 步,详见 `templates/project-rules.md`):
+1. agent 读自己的记忆系统(文件工具)
+2. 逐篇调 `wiki_search` 查重(固定流程,不可省)
+3. 用文件工具写 vault Markdown(frontmatter 带 `source` 溯源到记忆出处)
+4. 调 `wiki_sync` 同步索引 + 拿查重报告
+5. 删除自己记忆系统里的源文件(避免重复提炼)
+6. 告知用户
+
+**读写 vault 正文是 agent 用自己的文件工具干的事,wiki-query 不碰正文。** wiki-query 只负责索引 + 查重报告兜底。首次接入时调 `wiki_get_project_rules` 把这套规则注入到当前项目根的 CLAUDE.md/AGENTS.md。
 
 **提炼是手动触发,不自动**——避免把噪声(临时偏好、未定型的想法)灌进知识库。
