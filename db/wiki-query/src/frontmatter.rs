@@ -1,11 +1,9 @@
-//! frontmatter 解析、校验、序列化。
+//! frontmatter 解析、序列化。
 //!
-//! 从 sync.rs 抽出,sync 和 write 共用。修复了一个既有边界 bug:
-//! 当文件以 `---` 开头但从未闭合时,旧实现 end_idx=0 导致行为不一致
-//! (既解析了 frontmatter 行又把整文当 body 返回)。现在用 Option 表达
-//! "未找到闭合符",找不到则回退为原文 + 空 frontmatter。
+//! sync 建索引时用。v5 删除了强校验(write 工具已删,无拦截点),
+//! frontmatter 规范降级为 AGENTS.md 约定 + templates/project-rules.md 注入。
+//! 这里只保留 parse/serialize 供 sync 索引时提取字段。
 
-use crate::error::WikiError;
 use std::collections::BTreeMap;
 
 /// frontmatter 字段集合。对应 .md 文件 `---` 之间的 YAML 块。
@@ -23,28 +21,6 @@ pub struct Frontmatter {
     /// 非标准字段,按出现顺序保留(用 BTreeMap 保证 serialize 输出稳定)。
     pub extras: BTreeMap<String, String>,
 }
-
-/// 合法 type 白名单。write 时校验,防止写入非法分类。
-///
-/// 来源:对实际 vault 扫描 + 模板(sources-reference.md)对齐。
-/// 扫描结果:concept(304)/reference(17)/summary(4)/feedback(3)/
-/// guide(2)/index(2)/process(2)/article(1)/debugging-story(1)/
-/// project(1)/contradiction。空 type 文件(CLAUDE.md 等)非标准页,
-/// validate 拒绝它们是预期行为。
-pub const VALID_TYPES: &[&str] = &[
-    "concept",
-    "reference",
-    "summary",
-    "contradiction",
-    "feedback",
-    "guide",
-    "index",
-    "process",
-    "article",
-    "debugging-story",
-    "project",
-    "paper",
-];
 
 /// 解析 frontmatter + 正文。返回 (Frontmatter, body)。
 ///
@@ -102,28 +78,6 @@ pub fn parse(content: &str) -> (Frontmatter, String) {
     };
 
     (fm, body)
-}
-
-/// 校验 frontmatter 5 字段非空 + type 在白名单内。失败返回错误。
-///
-/// updated 字段特殊:允许空(serialize 时自动填今天)。
-pub fn validate(fm: &Frontmatter) -> Result<(), WikiError> {
-    if fm.name.trim().is_empty() {
-        return Err(WikiError::InvalidFrontmatter("name 不能为空".into()));
-    }
-    if fm.description.trim().is_empty() {
-        return Err(WikiError::InvalidFrontmatter("description 不能为空".into()));
-    }
-    if !VALID_TYPES.contains(&fm.doc_type.as_str()) {
-        return Err(WikiError::InvalidFrontmatter(format!(
-            "type 必须是 {:?} 之一,实际: {:?}",
-            VALID_TYPES, fm.doc_type
-        )));
-    }
-    if fm.tags.trim().is_empty() {
-        return Err(WikiError::InvalidFrontmatter("tags 不能为空".into()));
-    }
-    Ok(())
 }
 
 /// 把 Frontmatter + body 重组为完整 Markdown(frontmatter + 正文)。
@@ -185,44 +139,6 @@ mod tests {
         let (fm, _) = parse(content);
         assert_eq!(fm.extras.get("source").unwrap(), "[[doc.md]]");
         assert_eq!(fm.extras.get("aliases").unwrap(), "别名");
-    }
-
-    #[test]
-    fn validate_rejects_empty_name() {
-        let fm = Frontmatter {
-            name: "".into(),
-            description: "d".into(),
-            doc_type: "concept".into(),
-            ..Default::default()
-        };
-        assert!(validate(&fm).is_err());
-    }
-
-    #[test]
-    fn validate_rejects_invalid_type() {
-        let fm = Frontmatter {
-            name: "n".into(),
-            description: "d".into(),
-            doc_type: "invalid".into(),
-            ..Default::default()
-        };
-        assert!(validate(&fm).is_err());
-    }
-
-    #[test]
-    fn validate_accepts_all_whitelisted_types() {
-        // 回应 review Critical:确认白名单覆盖 vault 实际所有合法 type
-        for t in VALID_TYPES {
-            let fm = Frontmatter {
-                name: "n".into(),
-                description: "d".into(),
-                doc_type: (*t).into(),
-                updated: "2026-06-20".into(),
-                tags: "t".into(),
-                ..Default::default()
-            };
-            assert!(validate(&fm).is_ok(), "type={} 应被接受", t);
-        }
     }
 
     #[test]

@@ -1,8 +1,9 @@
-//! MCP server:把 wiki-query 核心能力暴露为 MCP 工具,供 AI agent 调用。
+//! MCP server:把 wiki-query 核心检索能力暴露为 MCP 工具,供 AI agent 调用。
 //!
-//! 传输:本地 stdio(agent 拉起子进程,无云无服务器)。
-//! 工具:wiki_search / wiki_read / wiki_write(Task 4.2 再加 list/patch/delete)。
-//! 工具直接调 wiki_query::core 的函数,单一真相源。
+//! v5 重构:纯索引服务。工具集 4 个:
+//!   wiki_search(FTS5 检索)/ wiki_list(结构化浏览)/
+//!   wiki_sync(索引同步 + 查重报告)/ wiki_get_project_rules(规则注入)。
+//! agent 用自己的文件工具读写 vault Markdown,wiki-query 只管 SQLite 索引。
 
 use rmcp::{
     ErrorData as McpError, ServerHandler,
@@ -18,27 +19,7 @@ use rmcp::{
 };
 use serde::Deserialize;
 use crate::core;
-use crate::error::WikiError;
-use crate::frontmatter::Frontmatter;
-
-/// 把 WikiError 转成 MCP 响应。
-///
-/// 业务可恢复错误(policy/frontmatter/路径穿越)→ is_error=true 的成功结构,
-/// agent 能读 message 调整行为(如改路径重试)。
-/// 系统错误(DB/IO)→ Err(McpError::internal_error),触发 JSON-RPC error。
-fn err_to_result(e: WikiError) -> Result<CallToolResult, McpError> {
-    match &e {
-        // 业务可恢复错误:用 tool-level error(agent 能读 message 调整行为,如改路径重试)
-        WikiError::PolicyViolation(_)
-        | WikiError::InvalidFrontmatter(_)
-        | WikiError::PathTraversal(_)
-        | WikiError::NotFound(_) => Ok(CallToolResult::error(vec![Content::text(
-            e.to_string(),
-        )])),
-        // 系统错误:返回 JSON-RPC error(DB/IO 损坏,非调用方能解决)
-        WikiError::Io(_) | WikiError::Db(_) => Err(McpError::internal_error(e.to_string(), None)),
-    }
-}
+use crate::models::ProjectRulesRequest;
 
 /// MCP server 状态:持有 vault root 路径 + tool 路由,供工具访问。
 #[derive(Clone)]
@@ -59,29 +40,6 @@ pub struct SearchRequest {
 }
 
 #[derive(Debug, Deserialize, schemars::JsonSchema)]
-pub struct ReadRequest {
-    #[schemars(description = "文档相对路径,如 wiki/agent.md 或 sources/dev/rust.md")]
-    pub path: String,
-}
-
-#[derive(Debug, Deserialize, schemars::JsonSchema)]
-pub struct WriteRequest {
-    #[schemars(description = "目标文档相对路径,如 wiki/new-concept.md")]
-    pub path: String,
-    #[schemars(description = "frontmatter name 字段(标题)")]
-    pub name: String,
-    #[schemars(description = "frontmatter description 字段(一句话说明)")]
-    pub description: String,
-    #[schemars(description = "frontmatter type 字段,须为 concept/reference/summary/contradiction 等合法类型")]
-    #[serde(rename = "type")]
-    pub doc_type: String,
-    #[schemars(description = "frontmatter tags 字段(逗号分隔)")]
-    pub tags: String,
-    #[schemars(description = "正文(Markdown,frontmatter 之后的完整内容)")]
-    pub body: String,
-}
-
-#[derive(Debug, Deserialize, schemars::JsonSchema)]
 pub struct ListRequest {
     #[schemars(description = "按标签过滤(子串匹配),如 'agent'。可选")]
     pub tag: Option<String>,
@@ -95,13 +53,9 @@ pub struct ListRequest {
 }
 
 #[derive(Debug, Deserialize, schemars::JsonSchema)]
-pub struct PatchRequest {
-    #[schemars(description = "目标文档相对路径,如 wiki/agent.md")]
-    pub path: String,
-    #[schemars(description = "要编辑的 section 标题(Markdown heading 文本,不含 # 号,如 '配置'。支持 h1~h6 任意级别,# 后须跟空格)")]
-    pub heading: String,
-    #[schemars(description = "该 section 的新内容(Markdown,替换原 section 内容,heading 行本身保留)")]
-    pub new_content: String,
+pub struct SyncRequest {
+    #[schemars(description = "查重范围:'incremental'(默认,只查本次新入库文档)或 'full'(全库两两查重)。可选。")]
+    pub scope: Option<String>,
 }
 
 #[tool_router]
@@ -112,48 +66,23 @@ impl WikiServer {
             tool_router: Self::tool_router(),
         }
     }
-    #[tool(description = "搜索 Obsidian 知识库文档(FTS5 全文检索,支持中文)。返回前 20 条匹配文档的元数据列表(路径/标题/描述/类型/标签/相关度分数,不含正文,需另调 wiki_read)。用 1-2 个关键词比长句更好。当需要查找某个主题、概念、技术的相关知识时使用。")]
+
+    #[tool(description = "搜索 Obsidian 知识库文档(FTS5 全文检索,支持中文)。返回前 10 条匹配文档的元数据列表(路径/标题/描述/类型/标签,不含正文,需另用文件工具读全文)。用 1-2 个关键词比长句更好。当需要查找某个主题、概念、技术的相关知识时使用;也用于写入前查重。")]
     fn wiki_search(
         &self,
         Parameters(req): Parameters<SearchRequest>,
     ) -> Result<CallToolResult, McpError> {
         match core::search(&req.query) {
-            Ok(results) => Ok(CallToolResult::success(vec![Content::text(
-                serde_json::to_string_pretty(&results).unwrap_or_else(|_| "[]".into()),
-            )])),
-            Err(e) => err_to_result(e),
-        }
-    }
-
-    #[tool(description = "读取 Obsidian 知识库中指定文档的完整内容(Markdown 原文)。参数 path 是相对路径,如 wiki/agent.md 或 sources/dev/rust.md。需要看文档全文时使用。")]
-    fn wiki_read(
-        &self,
-        Parameters(req): Parameters<ReadRequest>,
-    ) -> Result<CallToolResult, McpError> {
-        match core::read(&self.vault_root, &req.path) {
-            Ok(content) => Ok(CallToolResult::success(vec![Content::text(content)])),
-            Err(e) => err_to_result(e),
-        }
-    }
-
-    #[tool(description = "向 Obsidian 知识库写入或更新文档。写入前自动决策:新建(ADD)/更新(UPDATE)/跳过(NOOP,已存在同名文档)/冲突(CONFLICT,有相似文档需人工裁决)。会校验 frontmatter 字段完整性 + 三层目录权限(sources 可写禁删/wiki 可写/templates 只读)。UPDATE 时自动保留旧文档的 source/aliases 等扩展字段(不丢失溯源信息)。需要记录新知识或更新现有文档时使用。")]
-    fn wiki_write(
-        &self,
-        Parameters(req): Parameters<WriteRequest>,
-    ) -> Result<CallToolResult, McpError> {
-        let fm = Frontmatter {
-            name: req.name,
-            description: req.description,
-            doc_type: req.doc_type,
-            updated: String::new(), // core::serialize 会自动填今天
-            tags: req.tags,
-            ..Default::default()
-        };
-        match core::write(&self.vault_root, &req.path, &fm, &req.body) {
-            Ok(result) => Ok(CallToolResult::success(vec![Content::text(
-                serde_json::to_string_pretty(&result).unwrap_or_else(|_| "{}".into()),
-            )])),
-            Err(e) => err_to_result(e),
+            Ok(mut results) => {
+                // score(bm25 负值)对 agent 是噪声,清掉。只保留已排序的顺序。
+                for r in &mut results {
+                    r.score = None;
+                }
+                Ok(CallToolResult::success(vec![Content::text(
+                    serde_json::to_string_pretty(&results).unwrap_or_else(|_| "[]".into()),
+                )]))
+            }
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e.to_string())])),
         }
     }
 
@@ -172,21 +101,56 @@ impl WikiServer {
             Ok(results) => Ok(CallToolResult::success(vec![Content::text(
                 serde_json::to_string_pretty(&results).unwrap_or_else(|_| "[]".into()),
             )])),
-            Err(e) => err_to_result(e),
+            Err(e) => Ok(CallToolResult::error(vec![Content::text(e.to_string())])),
         }
     }
 
-    #[tool(description = "局部编辑文档的某个 section(按 Markdown heading 切分替换),避免整篇重写丢失未改部分。参数 path 文档路径,heading 要编辑的标题文本(不含 # 号,如 '配置'),new_content 该 section 的新内容。heading 或文件不存在返回错误。适合修改长文档的某一节,而非重写全文。")]
-    fn wiki_patch(
+    #[tool(description = "同步 vault 的 Markdown 到 SQLite 索引,并返回同步报告 + 查重报告。agent 用文件工具写完 vault 文档后调用此工具,让索引跟上 + 检测是否有相似文档(防重复)。scope 参数:'incremental'(默认,只查本次新入库文档)或 'full'(全库查重,用户说'去重一下'时用)。查重报告只提示不自动合并,合并归 agent。")]
+    fn wiki_sync(
         &self,
-        Parameters(req): Parameters<PatchRequest>,
+        Parameters(req): Parameters<SyncRequest>,
     ) -> Result<CallToolResult, McpError> {
-        match core::patch(&self.vault_root, &req.path, &req.heading, &req.new_content) {
-            Ok(()) => Ok(CallToolResult::success(vec![Content::text(
-                "section 已更新".to_string(),
-            )])),
-            Err(e) => err_to_result(e),
-        }
+        let scope = match req.scope.as_deref() {
+            Some("full") => "full",
+            _ => "incremental",
+        };
+        let report = crate::sync::run_with_scope(scope);
+        Ok(CallToolResult::success(vec![Content::text(
+            serde_json::to_string_pretty(&report).unwrap_or_else(|_| "{}".into()),
+        )]))
+    }
+
+    #[tool(description = "获取可注入到当前项目根指令文件(CLAUDE.md / AGENTS.md)的 wiki-query 使用规则文本。agent 首次接入 wiki-query 时调用:拿到文本后,检查当前项目根的指令文件是否已含 '<!-- wiki-query-rules -->' 标记,未含则把规则文本(含标记)追加到文件末尾,已含则跳过(避免重复注入)。agentType 参数:'claude'(注入到 CLAUDE.md)或其他(注入到 AGENTS.md)。规则文本来自 vault 内 templates/project-rules.md。")]
+    fn wiki_get_project_rules(
+        &self,
+        Parameters(req): Parameters<ProjectRulesRequest>,
+    ) -> Result<CallToolResult, McpError> {
+        let template_path = std::path::Path::new(&self.vault_root)
+            .join("templates")
+            .join("project-rules.md");
+        let rules = std::fs::read_to_string(&template_path).unwrap_or_else(|_| {
+            format!(
+                "[警告:未找到 templates/project-rules.md,vault_root={}]",
+                self.vault_root
+            )
+        });
+        let target_file = match req.agent_type.as_deref() {
+            Some("claude") => "CLAUDE.md",
+            _ => "AGENTS.md",
+        };
+        let inject_guide = format!(
+            "\n\n---\n## 注入指引(给 agent)\n\
+             目标文件:{}\n\
+             查重标记:`<!-- wiki-query-rules -->`\n\
+             流程:读当前项目根的 {},若不含上述标记,则把下方规则文本(含标记)追加到文件末尾。\
+             若已含标记,跳过(避免重复注入)。\n",
+            target_file, target_file
+        );
+        let output = format!(
+            "<!-- wiki-query-rules -->\n{}\n<!-- /wiki-query-rules -->{}",
+            rules, inject_guide
+        );
+        Ok(CallToolResult::success(vec![Content::text(output)]))
     }
 }
 
@@ -197,12 +161,14 @@ impl ServerHandler for WikiServer {
         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
             .with_server_info(Implementation::from_build_env())
             .with_instructions(
-                "Obsidian 知识库 MCP。三层结构:sources/(原始资料,只读为主)/ \
-                 wiki/(结构化知识)/ templates/(只读模板)。写入走四态决策\
-                 (ADD/UPDATE/NOOP/CONFLICT),自动查重避免重复。权限:\
-                 sources 可写禁删,wiki 可写,templates 只读。工具:\
-                 wiki_search(检索)/ wiki_read(读全文)/ wiki_write(写入)/ \
-                 wiki_list(列举)/ wiki_patch(局部编辑)。"
+                "Obsidian 知识库纯索引 MCP。Markdown 是权威源,SQLite 是派生索引(可随时 rm + sync 重建)。\
+                 三层结构:sources/(原始资料)/ wiki/(结构化知识)/ templates/(只读模板)。\
+                 agent 用自己的文件工具读写 vault Markdown,wiki-query 只管 SQLite 索引。\
+                 工具:wiki_search(FTS5 检索,返回 top10 元数据,不含正文)/ \
+                 wiki_list(按 tag/type/dir 浏览)/ \
+                 wiki_sync(同步索引 + 查重报告,scope=incremental/full)/ \
+                 wiki_get_project_rules(获取注入到项目根的使用规则文本)。\
+                 提炼工作流:读 agent 记忆 → wiki_search 查重 → 文件工具写 vault → wiki_sync → 删源。"
                     .to_string(),
             )
     }
@@ -212,7 +178,7 @@ impl ServerHandler for WikiServer {
 ///
 /// vault_root 优先 WIKI_VAULT_ROOT 环境变量,否则用 current_dir。
 /// 启动时校验 cwd 是否为合法 vault(含 wiki/ 或 sources/ 目录),
-/// 防止 MCP 客户端在错误目录拉起导致文件写到 vault 外(review Important-2)。
+/// 防止 MCP 客户端在错误目录拉起导致索引建在错误位置。
 pub async fn run() -> anyhow::Result<()> {
     let vault_root = std::env::var("WIKI_VAULT_ROOT")
         .or_else(|_| {
@@ -228,7 +194,6 @@ pub async fn run() -> anyhow::Result<()> {
     if !has_wiki && !has_sources {
         eprintln!(
             "[wiki-mcp] 警告: vault_root={} 下未找到 wiki/ 或 sources/ 目录。\
-             若 MCP 客户端在错误目录启动,文件会写到 vault 外。\
              可用 WIKI_VAULT_ROOT 环境变量指定正确的 vault 路径。",
             vault_root
         );

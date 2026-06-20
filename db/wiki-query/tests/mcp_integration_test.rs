@@ -60,17 +60,20 @@ fn mcp_initialize_handshake() {
         "initialize 应返回 serverInfo,实际: {}",
         stdout
     );
-    // ServerInfo instructions 必须下发:spec 要求 agent 在 initialize 阶段
-    // 就读到仓库模型。用 instructions 字段 + 其独有的 wiki_patch 文本双重断言,
-    // 避免与 serverInfo.name 等字段混淆。
+    // ServerInfo instructions 必须下发(v5:含新工具 wiki_get_project_rules)
     assert!(
         stdout.contains("instructions"),
         "initialize 响应应含 instructions 字段: {}",
         stdout
     );
     assert!(
-        stdout.contains("wiki_patch"),
-        "instructions 文本应提及 wiki_patch: {}",
+        stdout.contains("纯索引"),
+        "instructions 应提'纯索引'(v5 定位): {}",
+        stdout
+    );
+    assert!(
+        stdout.contains("wiki_get_project_rules"),
+        "instructions 应提新工具 wiki_get_project_rules: {}",
         stdout
     );
 }
@@ -81,15 +84,19 @@ fn mcp_tools_list_exposes_wiki_tools() {
     let initialized = r#"{"jsonrpc":"2.0","method":"notifications/initialized"}"#;
     let tools_list = r#"{"jsonrpc":"2.0","id":2,"method":"tools/list"}"#;
     let stdout = run_mcp_session(&[init, initialized, tools_list]);
+    // v5 工具集 4 个
     assert!(
         stdout.contains("wiki_search"),
         "tools/list 应含 wiki_search: {}",
         stdout
     );
-    assert!(stdout.contains("wiki_read"), "应含 wiki_read");
-    assert!(stdout.contains("wiki_write"), "应含 wiki_write");
     assert!(stdout.contains("wiki_list"), "应含 wiki_list");
-    assert!(stdout.contains("wiki_patch"), "应含 wiki_patch");
+    assert!(stdout.contains("wiki_sync"), "应含 wiki_sync");
+    assert!(stdout.contains("wiki_get_project_rules"), "应含 wiki_get_project_rules");
+    // 已删除的工具不应出现
+    assert!(!stdout.contains("wiki_read"), "不应再有 wiki_read");
+    assert!(!stdout.contains("wiki_write"), "不应再有 wiki_write");
+    assert!(!stdout.contains("wiki_patch"), "不应再有 wiki_patch");
 }
 
 #[test]

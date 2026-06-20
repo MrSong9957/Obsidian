@@ -1,33 +1,14 @@
-//! core:集成层,串联 policy/frontmatter/write_decision/db/sync。
+//! core:集成层,串联 db(检索)。提供 search/list。
 //!
-//! 提供 read/search/write 给 MCP server 和 CLI 调用。
-//! 所有业务逻辑(校验、决策、落盘、索引)在此编排,是单一真相源。
+//! v5 重构后只保留检索能力(写入/编辑归 agent 文件工具)。
 
 use crate::db;
 use crate::error::WikiError;
-use crate::frontmatter::{self, Frontmatter};
-use crate::models::{SearchResult, WriteResult, WriteStatus};
-use crate::policy::{self, Op};
-use crate::write_decision::{self, DecisionInput, ExistingDoc};
+use crate::models::SearchResult;
 use rusqlite::params;
-use std::path::Path;
-
-/// 读单文档:返回完整 Markdown 原文。
-/// policy 校验 Read 权限 + 路径穿越防御。
-///
-/// 文件不存在返回 NotFound(业务可恢复错误,agent 应改路径重试),
-/// 而非系统 IO 错误——避免拼错路径时 agent 吃 JSON-RPC error 污染上下文。
-pub fn read(vault_root: &str, path: &str) -> Result<String, WikiError> {
-    policy::check(path, Op::Read)?;
-    let abs = Path::new(vault_root).join(path);
-    if !abs.exists() {
-        return Err(WikiError::NotFound(path.into()));
-    }
-    Ok(std::fs::read_to_string(abs)?)
-}
 
 /// FTS5 检索的核心实现,返回带 bm25 score 的结果。
-/// core::search、core::write(决策用)共用此函数。
+/// core::search 复用此函数。
 ///
 /// score 为 bm25 原始值(越小越相关,负值),写入 SearchResult.score。
 pub(crate) fn search_with_scores(query: &str) -> Result<Vec<SearchResult>, WikiError> {
@@ -78,104 +59,91 @@ pub fn search(query: &str) -> Result<Vec<SearchResult>, WikiError> {
     search_with_scores(query)
 }
 
-/// 写入:四态决策 + frontmatter 校验 + policy 校验 + 落盘 + 即时索引。
+/// 对单个候选文档,在 all_docs 中找相似文档(bm25 score ≤ threshold)。
+/// 排除候选自身(path 相同)。返回相似对列表。
 ///
-/// ADD/UPDATE 会落盘并同步 FTS5;NOOP/CONFLICT 不落盘,返回信息。
-pub fn write(
-    vault_root: &str,
-    path: &str,
-    new_fm: &Frontmatter,
-    body: &str,
-) -> Result<WriteResult, WikiError> {
-    // 1. policy 校验(权限 + 路径穿越)
-    policy::check(path, Op::Write)?;
-    // 2. frontmatter 校验(5 字段非空 + type 白名单)
-    frontmatter::validate(new_fm)?;
-
-    let abs = Path::new(vault_root).join(path);
-    let path_exists = abs.exists();
-
-    // 3. 查 FTS5 看有无相似文档(用 name 做查询)。
-    //    错误必须传播:若 FTS5 损坏/锁失败,静默判 ADD 会写重复内容(review Important-2)。
-    let matches = search_with_scores(&new_fm.name)?;
-    let existing_docs: Vec<ExistingDoc> = matches
+/// threshold 是 bm25 阈值:score 越小(越负)越相关。
+/// 如 threshold=-2.0 表示 score ≤ -2.0 的才算相似。
+/// sync 的 incremental/full 查重共用此函数。
+pub fn find_similar(
+    candidate: &SearchResult,
+    all_docs: &[SearchResult],
+    threshold: f64,
+) -> Vec<crate::models::SimilarPair> {
+    all_docs
         .iter()
-        .map(|r| ExistingDoc {
-            path: r.path.clone(),
-            name: r.name.clone(),
-            score: r.score.unwrap_or(0.0), // 透传真 bm25,decide 内部按此排序
-        })
-        .collect();
-
-    // 4. 四态决策
-    let input = DecisionInput {
-        target_path: path,
-        new_frontmatter: new_fm,
-        existing_matches: existing_docs,
-        path_exists,
-    };
-    let (status, candidates) = write_decision::decide(&input);
-
-    // 5. CONFLICT / NOOP:不落盘
-    if status == WriteStatus::Conflict {
-        return Ok(WriteResult {
-            status,
-            path: path.into(),
-            synced: false,
-            reason: "检测到相似文档,需人工决策".into(),
-            candidates,
-        });
-    }
-    if status == WriteStatus::Noop {
-        return Ok(WriteResult {
-            status,
-            path: path.into(),
-            synced: false,
-            reason: "已存在等价文档(name 相同),未写入".into(),
-            candidates: None,
-        });
-    }
-
-    // 6. ADD / UPDATE:落盘(自动建父目录)
-    //
-    // UPDATE 路径保留旧文件的 extras(source/aliases 等扩展字段),
-    // 避免 agent 更新正文时丢失溯源信息(review Important-1)。
-    // 策略:从旧文件 parse 出 extras,与新 fm 的 extras 合并(新值优先,
-    // MCP 路径新 fm.extras 为空,等于完整保留旧 extras)。
-    let effective_fm = if status == WriteStatus::Update {
-        let mut merged = new_fm.clone();
-        if let Ok(old_content) = std::fs::read_to_string(&abs) {
-            let (old_fm, _) = frontmatter::parse(&old_content);
-            for (k, v) in old_fm.extras {
-                merged.extras.entry(k).or_insert(v);
+        .filter(|d| d.path != candidate.path) // 排除自身
+        .filter_map(|d| {
+            let score = d.score.unwrap_or(0.0);
+            if score <= threshold {
+                Some(crate::models::SimilarPair {
+                    candidate: candidate.path.clone(),
+                    similar_to: d.path.clone(),
+                    score,
+                })
+            } else {
+                None
             }
+        })
+        .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn sr(path: &str, score: f64) -> SearchResult {
+        SearchResult {
+            path: path.into(),
+            name: String::new(),
+            description: String::new(),
+            doc_type: String::new(),
+            updated: String::new(),
+            tags: String::new(),
+            score: Some(score),
         }
-        merged
-    } else {
-        new_fm.clone()
-    };
-    let content = frontmatter::serialize(&effective_fm, body);
-    if let Some(parent) = abs.parent() {
-        std::fs::create_dir_all(parent)?;
     }
-    std::fs::write(&abs, &content)?;
 
-    // 7. 即时索引该文件入 FTS5(复用 sync 的单文件逻辑)
-    let conn = db::init()?;
-    crate::sync::sync_file_by_path(&conn, vault_root, path)
-        .map_err(|e| WikiError::Db(e.to_string()))?;
+    #[test]
+    fn find_similar_returns_pair_when_score_below_threshold() {
+        // score=-3.5 比阈值 -2.0 更相关(更负),应入报告
+        let candidate = sr("wiki/new.md", 0.0);
+        let all = vec![sr("wiki/new.md", 0.0), sr("wiki/exist.md", -3.5)];
+        let pairs = find_similar(&candidate, &all, -2.0);
+        assert_eq!(pairs.len(), 1);
+        assert_eq!(pairs[0].candidate, "wiki/new.md");
+        assert_eq!(pairs[0].similar_to, "wiki/exist.md");
+    }
 
-    Ok(WriteResult {
-        status,
-        path: path.into(),
-        synced: true,
-        reason: if status == WriteStatus::Add {
-            "新建".into()
-        } else {
-            "更新".into()
-        },
-        candidates: None,
-    })
+    #[test]
+    fn find_similar_excludes_self() {
+        let candidate = sr("wiki/a.md", 0.0);
+        let all = vec![sr("wiki/a.md", -5.0)];
+        let pairs = find_similar(&candidate, &all, -2.0);
+        assert!(pairs.is_empty(), "不应把自己当相似文档");
+    }
+
+    #[test]
+    fn find_similar_excludes_low_relevance() {
+        // score=-1.0 不如阈值 -2.0 相关,不入报告
+        let candidate = sr("wiki/new.md", 0.0);
+        let all = vec![sr("wiki/new.md", 0.0), sr("wiki/other.md", -1.0)];
+        let pairs = find_similar(&candidate, &all, -2.0);
+        assert!(pairs.is_empty(), "相关度不够不应入报告");
+    }
+
+    #[test]
+    fn find_similar_collects_multiple_pairs() {
+        let candidate = sr("wiki/new.md", 0.0);
+        let all = vec![
+            sr("wiki/new.md", 0.0),
+            sr("wiki/a.md", -3.5),
+            sr("wiki/b.md", -3.0),
+            sr("wiki/c.md", -0.5),
+        ];
+        let pairs = find_similar(&candidate, &all, -2.0);
+        assert_eq!(pairs.len(), 2, "应含 a 和 b,c 不够相关");
+    }
 }
 
 /// list 过滤条件。各字段可选,组合 AND 语义。
@@ -231,176 +199,14 @@ pub fn list(filter: &ListFilter) -> Result<Vec<SearchResult>, WikiError> {
             Ok(SearchResult {
                 path: row.get(0)?,
                 name: row.get(1)?,
-                description: row.get(2)?,
                 doc_type: row.get(3)?,
                 updated: row.get(4)?,
                 tags: row.get(5)?,
+                description: row.get(2)?,
                 score: None,
             })
         })?
         .filter_map(|r| r.ok())
         .collect();
     Ok(results)
-}
-
-/// 在 body 中定位 heading 的 section 范围。
-///
-/// 返回 (heading 行号, section 结束行号)。section 范围是 heading 行的下一行
-/// 到「下一个同级或更高级 heading 行前」。heading 行本身不含在 section 内(保留不动)。
-/// 同名 heading 取第一个。heading 不存在返回 None。
-///
-/// 支持的 heading 级别:`#`(h1) ~ `######`(h6)。匹配时 heading 文本去首尾空格比较。
-fn locate_section(body: &str, heading: &str) -> Option<(usize, usize)> {
-    let lines: Vec<&str> = body.lines().collect();
-    let target = heading.trim();
-
-    // 找目标 heading 行
-    let (heading_idx, heading_level) = lines.iter().enumerate().find_map(|(i, line)| {
-        let trimmed = line.trim_start();
-        if let Some(rest) = trimmed.strip_prefix('#') {
-            // 数 # 的数量
-            let level = 1 + rest.bytes().take_while(|&b| b == b'#').count();
-            let after_hashes = &rest[level - 1..];
-            // CommonMark heading:`#` 后须跟空格(或为空)。与 section 结束判定对称,
-            // 避免 `##配置`(无空格)被误判为 heading "配置"。
-            if after_hashes.is_empty() || after_hashes.starts_with(' ') {
-                let text = after_hashes.trim();
-                if text == target {
-                    return Some((i, level));
-                }
-            }
-        }
-        None
-    })?;
-
-    // section 结束:下一个同级或更高级(level <= heading_level)的 heading 前
-    let mut end_idx = lines.len();
-    for (i, line) in lines.iter().enumerate().skip(heading_idx + 1) {
-        let trimmed = line.trim_start();
-        if let Some(rest) = trimmed.strip_prefix('#') {
-            let level = 1 + rest.bytes().take_while(|&b| b == b'#').count();
-            let after_hashes = &rest[level - 1..];
-            // 是 heading 行(# 开头且后跟空格或空)
-            if (after_hashes.is_empty() || after_hashes.starts_with(' '))
-                && level <= heading_level
-            {
-                end_idx = i;
-                break;
-            }
-        }
-    }
-
-    Some((heading_idx, end_idx))
-}
-
-/// section 级编辑:按 heading 局部替换文档内容,保留 frontmatter 和其余 section。
-///
-/// heading 不存在返回 NotFound(业务错误,agent 可改 heading 重试)。
-/// 受 policy 校验(templates 禁 patch)。落盘后即时索引。
-pub fn patch(
-    vault_root: &str,
-    path: &str,
-    heading: &str,
-    new_content: &str,
-) -> Result<(), WikiError> {
-    policy::check(path, Op::Write)?;
-
-    let abs = Path::new(vault_root).join(path);
-    if !abs.exists() {
-        return Err(WikiError::NotFound(path.into()));
-    }
-    let content = std::fs::read_to_string(&abs)?;
-    let (fm, body) = frontmatter::parse(&content);
-
-    let (heading_idx, end_idx) = locate_section(&body, heading)
-        .ok_or_else(|| WikiError::NotFound(format!("heading '{}' 不存在", heading)))?;
-
-    // 重组 body:heading 行之前 + heading 行 + 新内容 + section 结束之后
-    let lines: Vec<&str> = body.lines().collect();
-    let mut new_body = String::new();
-    // heading 之前
-    for line in &lines[..=heading_idx] {
-        new_body.push_str(line);
-        new_body.push('\n');
-    }
-    // 新内容
-    new_body.push_str(new_content);
-    if !new_content.ends_with('\n') {
-        new_body.push('\n');
-    }
-    // section 结束之后
-    for line in &lines[end_idx..] {
-        new_body.push_str(line);
-        new_body.push('\n');
-    }
-
-    let serialized = frontmatter::serialize(&fm, new_body.trim_end_matches('\n'));
-    std::fs::write(&abs, &serialized)?;
-
-    // 即时索引
-    let conn = db::init()?;
-    crate::sync::sync_file_by_path(&conn, vault_root, path)
-        .map_err(|e| WikiError::Db(e.to_string()))?;
-
-    Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn locate_h2_section() {
-        let body = "# Title\n\n## A\n内容A\n\n## B\n内容B";
-        let (start, end) = locate_section(body, "A").unwrap();
-        // heading "## A" 在第 2 行(idx 2),section 到 "## B"(idx 5)前
-        assert_eq!(start, 2);
-        assert_eq!(end, 5);
-    }
-
-    #[test]
-    fn locate_h3_section() {
-        let body = "## A\n\n### Sub\n子内容\n\n## B";
-        let (start, end) = locate_section(body, "Sub").unwrap();
-        // "### Sub" 在 idx 2;"## B"(level 2 ≤ level 3)在 idx 5
-        assert_eq!(start, 2);
-        assert_eq!(end, 5);
-    }
-
-    #[test]
-    fn locate_section_at_doc_end() {
-        // 末尾 section,无后续 heading,end = 行数
-        let body = "## A\n内容\n\n## B\n末尾内容";
-        let (_, end) = locate_section(body, "B").unwrap();
-        assert_eq!(end, body.lines().count());
-    }
-
-    #[test]
-    fn locate_section_not_found() {
-        let body = "## A\n内容";
-        assert!(locate_section(body, "不存在").is_none());
-    }
-
-    #[test]
-    fn locate_section_first_match_when_duplicate() {
-        let body = "## A\n第一\n\n## A\n第二";
-        let (start, _) = locate_section(body, "A").unwrap();
-        assert_eq!(start, 0); // 取第一个
-    }
-
-    #[test]
-    fn locate_section_rejects_no_space_after_hashes() {
-        // CommonMark:`#` 后须跟空格才是 heading。`##A`(无空格)不算 heading,
-        // 故文档只含 `##A` 时找 heading "A" 应失败(而非误判 `##A` 这一行)。
-        let body = "##A\n这不是一个标题";
-        assert!(locate_section(body, "A").is_none());
-    }
-
-    #[test]
-    fn locate_section_skips_invalid_matches_real_heading() {
-        // body 同时含非法 `##A` 与合法 `## A`:应跳过前者,匹配后者(idx 3)。
-        let body = "##A\n不是标题\n\n## A\n真正的 section";
-        let (start, _) = locate_section(body, "A").unwrap();
-        assert_eq!(start, 3);
-    }
 }
