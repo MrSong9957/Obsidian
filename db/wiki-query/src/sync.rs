@@ -113,10 +113,8 @@ fn scan_directory(
         on_disk.insert(path_str.clone());
 
         // 检查是否需要更新
-        if needs_update(conn, &path_str, &path) {
-            if sync_file(conn, &path_str, &path).is_ok() {
-                *updated += 1;
-            }
+        if needs_update(conn, &path_str, &path) && sync_file(conn, &path_str, &path).is_ok() {
+            *updated += 1;
         }
     }
 }
