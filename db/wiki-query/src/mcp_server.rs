@@ -98,7 +98,7 @@ pub struct ListRequest {
 pub struct PatchRequest {
     #[schemars(description = "目标文档相对路径,如 wiki/agent.md")]
     pub path: String,
-    #[schemars(description = "要编辑的 section 标题(## 或 ### 级 Markdown heading 的文本,不含 # 号)")]
+    #[schemars(description = "要编辑的 section 标题(Markdown heading 文本,不含 # 号,如 '配置'。支持 h1~h6 任意级别,# 后须跟空格)")]
     pub heading: String,
     #[schemars(description = "该 section 的新内容(Markdown,替换原 section 内容,heading 行本身保留)")]
     pub new_content: String,

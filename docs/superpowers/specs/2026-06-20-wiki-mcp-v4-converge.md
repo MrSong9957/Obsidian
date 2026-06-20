@@ -40,14 +40,14 @@
 **core::patch(vault_root, path, heading, new_content)**:
 1. policy::check(path, Write)
 2. 读文件,parse frontmatter + body
-3. 在 body 里定位 `## {heading}`(或 `### {heading}`),到下一个同级或更高级 heading 之间的内容为 section
+3. 在 body 里定位 heading 行(`#`~`######`,CommonMark 要求 `#` 后跟空格),到下一个同级或更高级 heading 之间的内容为 section
 4. heading 不存在 → 返回 `WikiError::NotFound`(业务错误)
 5. 替换该 section 内容为 new_content,保留 heading 行本身
 6. 重新 serialize(frontmatter + 改后的 body)
 7. 写回文件 + 即时 sync_file_by_path
 
 **heading 定位规则**(简化,避免复杂 AST):
-- 支持 `##`(h2)和 `###`(h3)
+- 支持 `#`(h1)~ `######`(h6)全级别(CommonMark:`#` 后须跟空格才算 heading)
 - section 范围:从目标 heading 行下一行,到下一个同级或更高级 heading 行前
 - 例:`## 配置` 的 section 是它下面到下一个 `##` 或 `#` 之前的内容
 - 只匹配第一个同名 heading(文档内 heading 应唯一,否则提示)
