@@ -1,14 +1,18 @@
 //! Task 4.1 集成测试:MCP server stdio 端到端。
 //!
 //! 启动 `wiki-query serve` 子进程,通过 stdin 发 JSON-RPC,
-//! 验证 initialize 握手 + tools/list 返回 wiki_ 工具。
-//! tools/call 的实际调用在 Task 4.2 完整工具后补。
+//! 验证 initialize 握手 + tools/list 返回 wiki_ 工具 + tools/call 可调用。
+//!
+//! 同步策略:发完消息关闭 stdin → rmcp stdio 读到 EOF → service.waiting()
+//! 返回 → 进程自然退出。这是确定性同步,不靠 sleep/kill(review Important-3)。
+//! 加超时线程防 server 卡死时测试永久挂起。
 
 use std::io::Write;
 use std::process::{Command, Stdio};
 use std::time::Duration;
 
 /// 启动 serve 子进程,发一组 JSON-RPC 消息,读全部 stdout。
+/// stdin 关闭后 server 自然退出;5 秒超时兜底防卡死。
 fn run_mcp_session(messages: &[&str]) -> String {
     let mut child = Command::new("./target/debug/wiki-query.exe")
         .arg("serve")
@@ -23,14 +27,26 @@ fn run_mcp_session(messages: &[&str]) -> String {
             let _ = stdin.write_all(msg.as_bytes());
             let _ = stdin.write_all(b"\n");
         }
-        // 关闭 stdin 触发 server 优雅退出
+        // 关闭 stdin:rmcp stdio transport 读到 EOF 后 service.waiting() 返回,
+        // 进程自然退出。不依赖 sleep(确定性同步)。
         drop(stdin);
     }
 
-    // 给 server 时间处理
-    std::thread::sleep(Duration::from_millis(500));
-
-    let _ = child.kill();
+    // 5 秒超时:若 server 异常卡住,kill 兜底避免测试永久挂起
+    let timeout = Duration::from_secs(5);
+    let start = std::time::Instant::now();
+    loop {
+        match child.try_wait().expect("wait failed") {
+            Some(_status) => break,
+            None => {
+                if start.elapsed() > timeout {
+                    let _ = child.kill();
+                    break;
+                }
+                std::thread::sleep(Duration::from_millis(20));
+            }
+        }
+    }
     let output = child.wait_with_output().expect("failed to wait");
     String::from_utf8_lossy(&output.stdout).to_string()
 }

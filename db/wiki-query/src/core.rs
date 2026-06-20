@@ -132,7 +132,24 @@ pub fn write(
     }
 
     // 6. ADD / UPDATE:落盘(自动建父目录)
-    let content = frontmatter::serialize(new_fm, body);
+    //
+    // UPDATE 路径保留旧文件的 extras(source/aliases 等扩展字段),
+    // 避免 agent 更新正文时丢失溯源信息(review Important-1)。
+    // 策略:从旧文件 parse 出 extras,与新 fm 的 extras 合并(新值优先,
+    // MCP 路径新 fm.extras 为空,等于完整保留旧 extras)。
+    let effective_fm = if status == WriteStatus::Update {
+        let mut merged = new_fm.clone();
+        if let Ok(old_content) = std::fs::read_to_string(&abs) {
+            let (old_fm, _) = frontmatter::parse(&old_content);
+            for (k, v) in old_fm.extras {
+                merged.extras.entry(k).or_insert(v);
+            }
+        }
+        merged
+    } else {
+        new_fm.clone()
+    };
+    let content = frontmatter::serialize(&effective_fm, body);
     if let Some(parent) = abs.parent() {
         std::fs::create_dir_all(parent)?;
     }
