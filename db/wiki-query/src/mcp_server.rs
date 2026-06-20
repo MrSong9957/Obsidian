@@ -5,9 +5,12 @@
 //! 工具直接调 wiki_query::core 的函数,单一真相源。
 
 use rmcp::{
-    ErrorData as McpError,
-    handler::server::wrapper::Parameters,
-    model::{CallToolResult, Content},
+    ErrorData as McpError, ServerHandler,
+    handler::server::{
+        router::tool::ToolRouter,
+        wrapper::Parameters,
+    },
+    model::{CallToolResult, Content, Implementation, ServerCapabilities, ServerInfo},
     schemars,
     service::ServiceExt,
     tool, tool_router,
@@ -37,10 +40,11 @@ fn err_to_result(e: WikiError) -> Result<CallToolResult, McpError> {
     }
 }
 
-/// MCP server 状态:持有 vault root 路径,供工具访问。
+/// MCP server 状态:持有 vault root 路径 + tool 路由,供工具访问。
 #[derive(Clone)]
 pub struct WikiServer {
     pub vault_root: String,
+    tool_router: ToolRouter<WikiServer>,
 }
 
 // ---- 请求结构体(schemars JsonSchema 让 MCP 暴露参数 schema 给 agent)----
@@ -87,8 +91,24 @@ pub struct ListRequest {
     pub limit: Option<i64>,
 }
 
-#[tool_router(server_handler)]
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct PatchRequest {
+    #[schemars(description = "目标文档相对路径,如 wiki/agent.md")]
+    pub path: String,
+    #[schemars(description = "要编辑的 section 标题(## 或 ### 级 Markdown heading 的文本,不含 # 号)")]
+    pub heading: String,
+    #[schemars(description = "该 section 的新内容(Markdown,替换原 section 内容,heading 行本身保留)")]
+    pub new_content: String,
+}
+
+#[tool_router]
 impl WikiServer {
+    pub fn new(vault_root: String) -> Self {
+        Self {
+            vault_root,
+            tool_router: Self::tool_router(),
+        }
+    }
     #[tool(description = "搜索 Obsidian 知识库文档(FTS5 全文检索,支持中文)。返回前 20 条匹配文档的元数据列表(路径/标题/描述/类型/标签/相关度分数,不含正文,需另调 wiki_read)。用 1-2 个关键词比长句更好。当需要查找某个主题、概念、技术的相关知识时使用。")]
     fn wiki_search(
         &self,
@@ -152,6 +172,37 @@ impl WikiServer {
             Err(e) => err_to_result(e),
         }
     }
+
+    #[tool(description = "局部编辑文档的某个 section(按 Markdown heading 切分替换),避免整篇重写丢失未改部分。参数 path 文档路径,heading 要编辑的标题文本(不含 # 号,如 '配置'),new_content 该 section 的新内容。heading 或文件不存在返回错误。适合修改长文档的某一节,而非重写全文。")]
+    fn wiki_patch(
+        &self,
+        Parameters(req): Parameters<PatchRequest>,
+    ) -> Result<CallToolResult, McpError> {
+        match core::patch(&self.vault_root, &req.path, &req.heading, &req.new_content) {
+            Ok(()) => Ok(CallToolResult::success(vec![Content::text(
+                "section 已更新".to_string(),
+            )])),
+            Err(e) => err_to_result(e),
+        }
+    }
+}
+
+/// 手写 ServerHandler 以提供 instructions(让 agent 在 initialize 阶段
+/// 就理解仓库模型)。list_tools/call_tool 用 trait 默认实现委托 tool_router。
+impl ServerHandler for WikiServer {
+    fn get_info(&self) -> ServerInfo {
+        ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+            .with_server_info(Implementation::from_build_env())
+            .with_instructions(
+                "Obsidian 知识库 MCP。三层结构:sources/(原始资料,只读为主)/ \
+                 wiki/(结构化知识)/ templates/(只读模板)。写入走四态决策\
+                 (ADD/UPDATE/NOOP/CONFLICT),自动查重避免重复。权限:\
+                 sources 可写禁删,wiki 可写,templates 只读。工具:\
+                 wiki_search(检索)/ wiki_read(读全文)/ wiki_write(写入)/ \
+                 wiki_list(列举)/ wiki_patch(局部编辑)。"
+                    .to_string(),
+            )
+    }
 }
 
 /// 启动 MCP stdio server。由 main.rs 的 `serve` 子命令调用。
@@ -180,7 +231,7 @@ pub async fn run() -> anyhow::Result<()> {
         );
     }
 
-    let service = WikiServer { vault_root }
+    let service = WikiServer::new(vault_root)
         .serve(stdio())
         .await
         .inspect_err(|e| eprintln!("[wiki-mcp] serve 错误: {:?}", e))?;
