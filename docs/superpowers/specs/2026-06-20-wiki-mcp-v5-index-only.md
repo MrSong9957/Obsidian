@@ -50,7 +50,7 @@ wiki-query 是 agent 记忆的**下游沉淀点**,不是上游来源。agent 不
 | 工具 | 输入 | 输出 | 何时用 |
 |------|------|------|--------|
 | `wiki_search` | query 关键词 | top 10 元数据(已按相关度排序,**不含 score**,不含正文) | 找知识 / 查重 / 提炼前看库里有没有 |
-| `wiki_list` | tag / type / dir(均可选) | 元数据列表 | 按结构化条件浏览某类文档 |
+| `wiki_list` | tag / type / dir(均可选) | 文档元数据列表 + **last_extract 时间戳**(从 meta 表顺带读) | 按结构化条件浏览;裸调时拿 last_extract 判断提炼间隔 |
 | `wiki_sync` | scope(可选,默认 `"incremental"`) | 同步报告 + **查重报告**(scope 决定查重范围) | agent 写完文件后调;用户说"去重"时调 `scope="full"` |
 | `wiki_mark_extracted` | 无 | 确认 | 全量提炼完成后调,更新 SQLite meta 表的 last_extract 时间戳 |
 | `wiki_get_project_rules` | agent_type(可选,如 `"claude"` / `"codex"` / `"cursor"`,默认通用) | 可注入的规则文本(含查重提示词) | agent 首次接入 wiki-query 时调,拿文本写入当前项目根的 CLAUDE.md / AGENTS.md |
@@ -92,9 +92,9 @@ wiki-query 是 agent 记忆的**下游沉淀点**,不是上游来源。agent 不
    │   OpenCode:    .opencode/memory/*(格式依插件而定)
    │   (agent 内置文件工具,wiki-query 不碰)
    ▼
-2. agent (可选)判断"距上次提炼多久"
-   │   → 方式待定(见下方「last_extract 读取方式」待决项)
+2. agent (可选)调 wiki_list() 裸调拿 last_extract 时间戳
    │   → 判断间隔,太近且记忆无变化则告诉用户"刚提炼过,无需重复"
+   │   → last_extract 从 SQLite meta 表读,复用 wiki_list 返回
    ▼
 3. agent 对每篇记忆内容,调 wiki_search 逐篇查重(固定流程,不可省)
    │   → 相似的:agent 用文件工具读 vault 文档全文 → 决定合并/追加
@@ -111,8 +111,9 @@ wiki-query 是 agent 记忆的**下游沉淀点**,不是上游来源。agent 不
 6. agent 删除自己记忆系统里的源文件(提炼后删源,避免重复提炼)
    │   (agent 侧 housekeeping,wiki-query 不管)
    ▼
-7. agent 调 wiki_mark_extracted()  [若选方案 C 则免此步]
+7. agent 调 wiki_mark_extracted()
    │   → wiki-query 写 SQLite meta 表:last_extract = now
+   │   → 下次 wiki_list 裸调时 agent 能读到这个新时间戳
    ▼
 8. agent 告诉用户"已提炼 N 篇,删源 M 个"
 ```
@@ -177,19 +178,36 @@ CREATE TABLE IF NOT EXISTS meta (
 
 初始 key:`last_extract`(ISO 8601 时间戳,记录上次全量提炼时间)。
 
-写入:wiki_mark_extracted 工具。
+写入:wiki_mark_extracted 工具。读取:wiki_list 工具顺带返回(见下)。
 
-#### ⚠️ 待决项:last_extract 的读取方式
+#### last_extract 的读取方式:复用 wiki_list
 
-agent 删了 wiki_read 后,无法用 MCP 工具读 SQLite meta 表。判断"距上次提炼多久"有三个方案:
+agent 删了 wiki_read 后,无法用 MCP 工具直接读 SQLite meta 表。**方案:让 wiki_list 返回值顺带携带 last_extract**——wiki_list 本来就是查 SQLite 返回元数据的工具,让它从 meta 表多读一个字段,零成本。
 
-- **方案 A**:加 wiki_status 工具(读 meta 表返回 last_extract)。干净,但多一个工具。
-- **方案 B**:last_extract 双写——SQLite meta 表(主)+ vault 内 `.wiki/last-extract.json`(副,供 agent 文件工具读)。不加工具,但引入非 Markdown 文件。
-- **方案 C**:放弃时间戳判断。agent 不读时间戳,每次提炼都全量(反正源已删,重复提炼的是增量)。
+agent 判断"距上次提炼多久"的流程:调 `wiki_list()`(裸调,不带过滤)→ 返回值里含 last_extract → agent 拿到时间戳判断。
 
-**建议:方案 C。** 源文件删了,全量提炼处理的就是增量,时间戳判断的价值有限,不值得为它加工具或引入双写复杂度。若后续证明需要,再加 wiki_status。
+**wiki_list 返回结构升级**(从纯数组升级为对象,含 meta 字段):
 
-> 若选方案 C,wiki_mark_extracted 工具也随之失去意义(写了没人读),可一并去掉,工具集降为 4 个(search/list/sync/get_project_rules)。
+```json
+{
+  "last_extract": "2026-06-20T14:30:00+08:00",
+  "docs": [
+    {"path": "wiki/foo.md", "name": "...", "description": "...", ...},
+    ...
+  ]
+}
+```
+
+- `last_extract`:从 SQLite meta 表读。若从未提炼过(wiki_mark_extracted 没调过),值为 `null`。
+- `docs`:原有的文档元数据列表,结构不变。
+- 这是**破坏性改动**(数组→对象),v5 大重构可接受。agent 解析 wiki_list 时取 `.docs` 字段。
+
+**读写分离**:wiki_mark_extracted 写 last_extract,wiki_list 读 last_extract。各司其职,不引入新工具,不双写,不放弃功能。
+
+> 取代的备选方案(已否决):
+> - 方案 A(加 wiki_status 工具):多一个工具,不如复用 wiki_list。
+> - 方案 B(last_extract 双写 SQLite + vault 文件):引入非 Markdown 文件,复杂。
+> - 方案 C(放弃时间戳):失去"判断提炼间隔"能力,功能退化。
 
 ### 2. wiki_sync 含 scope 查重报告
 
@@ -229,9 +247,7 @@ bm25 score 越小(越负)越相关。设相关度阈值(如 score ≤ -2.0),相�
 fn wiki_mark_extracted(&self) -> Result<CallToolResult, McpError>
 ```
 
-无参数。写 SQLite meta 表 `last_extract = chrono::now()`。返回确认信息。
-
-> 注意:此工具依赖 last_extract 待决项的结论。若选方案 C(放弃时间戳),本工具删除。
+无参数。写 SQLite meta 表 `last_extract = chrono::now()`。返回确认信息。读 last_extract 由 wiki_list 顺带返回(读写分离)。
 
 ### 4. wiki_get_project_rules 工具 + 规则注入机制
 
@@ -318,7 +334,7 @@ db/wiki-query/src/
 ├── write_decision.rs    # Delete: 四态决策整个删
 ├── frontmatter.rs       # Modify: 删 validate(白名单校验),保留 parse/serialize(sync 建索引用)
 ├── policy.rs            # 保留(几乎不动)
-├── db.rs                # Modify: 加 meta 表 schema + 读写 last_extract(待决项 C 选定则不加)
+├── db.rs                # Modify: 加 meta 表 schema + 读写 last_extract
 ├── sync.rs              # Modify: sync 接 scope 参数,调 find_similar 返回查重报告
 ├── mcp_server.rs        # Modify: 工具集收敛为 5 个(删 read/write/patch/dedupe,保留 search/list,改 sync 加 scope,加 mark_extracted + get_project_rules)
 └── models.rs            # Modify: 删 WriteResult/ConflictCandidate,加 SyncReport/SimilarPair/ProjectRulesRequest
@@ -349,7 +365,8 @@ templates/project-rules.md  # Create: 可注入的项目根规则模板(wiki_get
 - **sync 查重(incremental)**:新建文档后调 wiki_sync(默认 scope),断言返回值含相似对(构造重复 name 的两个文档)。
 - **sync 查重(full)**:构造已知相似对,调 wiki_sync(scope="full"),断言全库报告包含该对。
 - **find_similar 阈值**:单元测试验证 score 低于阈值的不入报告(避免噪声)。
-- **wiki_mark_extracted**:调用后读 SQLite meta 表断言 last_extract 已更新(若选方案 C 则免)。
+- **wiki_mark_extracted**:调用后读 SQLite meta 表断言 last_extract 已更新。
+- **wiki_list 返回 last_extract**:调 wiki_mark_extracted 后,再调 wiki_list() 断言返回值的 last_extract 字段为新时间戳;未提炼过时断言 last_extract 为 null。
 - **wiki_get_project_rules**:断言返回值含规则文本的 4 块(frontmatter 约定 / 提炼流程 / 删源 / 查重);断言 agent_type="claude" 时推荐 CLAUDE.md,其他推荐 AGENTS.md;断言文本来自 templates/project-rules.md(改文件后返回值跟着变)。
 - **MCP 集成测试**:tools/list 断言 5 个工具(search/list/sync/mark_extracted/get_project_rules),initialize 断言 instructions 含新工具。
 - **删除的功能**:对应测试一并删除,不留孤儿测试。
@@ -362,12 +379,12 @@ templates/project-rules.md  # Create: 可注入的项目根规则模板(wiki_get
 |------|------|
 | 删 write/read/patch 工具 + core 函数 + write_decision.rs | 1h |
 | frontmatter 删 validate,policy 微调 | 0.5h |
-| db.rs 加 meta 表 + 读写(若选方案 C 则免) | 0.5h |
+| db.rs 加 meta 表 + 读写 | 0.5h |
 | core.rs 加 find_similar 查重函数(共享给 incremental/full) | 1h |
 | sync.rs 接 scope 参数 + 返回查重报告 | 1h |
 | mcp_server 工具集重写(5 个)+ instructions 更新 | 1h |
-| wiki_mark_extracted 工具(若选方案 C 则免) | 0.5h |
+| wiki_mark_extracted 工具 + wiki_list 返回 last_extract | 0.5h |
 | wiki_get_project_rules 工具 + templates/project-rules.md 模板 | 1h |
 | 测试重写 + MCP 集成测试 | 1.5h |
 | README + AGENTS.md 文档更新 | 0.5h |
-| **总计** | **~8.5h**(方案 C 则 ~7.5h) |
+| **总计** | **~8.5h** |
