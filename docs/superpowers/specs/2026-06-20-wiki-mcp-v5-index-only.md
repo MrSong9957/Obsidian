@@ -45,22 +45,32 @@ wiki-query 是 agent 记忆的**下游沉淀点**,不是上游来源。agent 不
 
 ---
 
-## 工具集(5 个 MCP 工具,全部围绕 SQLite)
+## 工具集(4 个 MCP 工具,全部围绕 SQLite)
 
 | 工具 | 输入 | 输出 | 何时用 |
 |------|------|------|--------|
 | `wiki_search` | query 关键词 | top 10 元数据(已按相关度排序,**不含 score**,不含正文) | 找知识 / 查重 / 提炼前看库里有没有 |
 | `wiki_list` | tag / type / dir(均可选) | 元数据列表 | 按结构化条件浏览某类文档 |
-| `wiki_sync` | 无 | 同步报告 + **查重报告**(新入库文档与已有文档的相似对) | agent 写完文件后调,索引跟上 + 暴露意外重复 |
+| `wiki_sync` | scope(可选,默认 `"incremental"`) | 同步报告 + **查重报告**(scope 决定查重范围) | agent 写完文件后调;用户说"去重"时调 `scope="full"` |
 | `wiki_mark_extracted` | 无 | 确认 | 全量提炼完成后调,更新 SQLite meta 表的 last_extract 时间戳 |
-| `wiki_dedupe` | 无 | 全 vault 相似文档对报告(**不自动合并**) | 用户说"去重一下"时,agent 调它扫全库 |
+
+### wiki_sync 的 scope 参数
+
+`wiki_sync` 合并了原 v5 设计的 wiki_dedupe 功能。索引同步永远是全量扫描 vault(SQLite ← Markdown),`scope` **只控制查重范围**:
+
+| scope | 索引同步 | 查重范围 | 用途 |
+|-------|---------|---------|------|
+| `"incremental"`(默认) | 全量扫,更新索引 | **本次新入库/更新的文档** 对比全库 | 写入后即时反馈,抓"刚写的有没有撞车" |
+| `"full"` | 全量扫,更新索引 | **全库两两**对比 | 用户说"去重一下"时,扫历史积压的重复 |
+
+两种 scope 共享底层查重函数(`core::find_similar`),只是喂入的候选集不同。查重永远不拦截(文件已写),只返回报告让 agent 决策。
 
 ### 设计要点
 
 - **search 不返回 score**:bm25 原始值(负数)对 agent 是噪声。只返回排好序的结果,agent 信任顺序。
 - **search 返回 top 10**:避免一次检索淹没 agent 上下文。需要更多用 wiki_list 分页。
-- **sync 含查重**:agent 写完文件调一次 sync,既更新索引又拿到查重报告,一次调用两件事。查重不拦截写入(文件已写),只提示。
-- **dedupe 不自动合并**:去重的合并动作(保留哪篇、丢弃哪篇、正文怎么融合)是智能决策,归 agent。wiki_dedupe 只输出"哪几对文档高度相似"的报告。
+- **sync 是唯一的索引入口**:agent 写完文件调 sync,索引跟上 + 拿查重报告,一次调用两件事。scope 切换查重范围,不切换索引同步方式(永远全量扫,简单可靠)。
+- **查重不自动合并**:去重的合并动作(保留哪篇、丢弃哪篇、正文怎么融合)是智能决策,归 agent。sync 只输出"哪几对文档高度相似"的报告。
 - **每个工具的 description 就是它的场景提示词**:不额外做场景识别机制。工具说明写清楚,agent 自然知道何时用。
 
 ---
@@ -177,17 +187,18 @@ agent 删了 wiki_read 后,无法用 MCP 工具读 SQLite meta 表。判断"距�
 
 **建议:方案 C。** 源文件删了,全量提炼处理的就是增量,时间戳判断的价值有限,不值得为它加工具或引入双写复杂度。若后续证明需要,再加 wiki_status。
 
-> 若选方案 C,wiki_mark_extracted 工具也随之失去意义(写了没人读),可一并去掉,工具集降为 4 个(search/list/sync/dedupe)。
+> 若选方案 C,wiki_mark_extracted 工具也随之失去意义(写了没人读),可一并去掉,工具集降为 3 个(search/list/sync)。
 
-### 2. wiki_sync 含查重报告
+### 2. wiki_sync 含 scope 查重报告
 
-`wiki_sync` 返回值从纯同步报告升级为:
+`wiki_sync` 合并了原设计的 wiki_dedupe,通过 `scope` 参数切换查重范围。返回值:
 
 ```json
 {
   "synced": 375,
   "updated": 12,
   "pruned": 2,
+  "scope": "incremental",
   "dedupe_report": [
     {"new_doc": "wiki/foo.md", "similar_to": "wiki/bar.md", "score": -3.2},
     ...
@@ -195,7 +206,20 @@ agent 删了 wiki_read 后,无法用 MCP 工具读 SQLite meta 表。判断"距�
 }
 ```
 
-查重逻辑:对本次 sync 新增/更新的文档,每个用其 name 做 FTS5 search,取 top 1 相似文档(排除自身)。bm25 score 越小(越负)越相关,设一个相关度阈值(如 score ≤ -2.0),相关度高于阈值的纳入报告。阈值在实现时用真实 vault 数据实测调优。
+`scope="full"` 时,`dedupe_report` 是全库两两对比的相似对(双向去重,a/b 与 b/a 只报一次);`scope="incremental"`(默认)时,只对本次新入库/更新的文档查重。
+
+#### 查重算法(共享底层函数)
+
+```rust
+/// 对给定候选文档集,每个用其 name 做 FTS5 search,收集相似对。
+/// incremental 模式:候选集 = 本次 sync 新增/更新的文档
+/// full 模式:候选集 = 全库所有文档
+fn find_similar(candidates: &[DocMeta], all_docs: &[DocMeta], threshold: f64) -> Vec<SimilarPair>
+```
+
+bm25 score 越小(越负)越相关。设相关度阈值(如 score ≤ -2.0),相关度高于阈值的纳入报告。阈值在实现时用真实 vault 数据实测调优。
+
+查重永远**不自动合并**——合并(保留哪篇、丢弃哪篇、正文怎么融合)是智能决策,归 agent。sync 只输出报告。
 
 ### 3. wiki_mark_extracted 工具
 
@@ -205,24 +229,7 @@ fn wiki_mark_extracted(&self) -> Result<CallToolResult, McpError>
 
 无参数。写 SQLite meta 表 `last_extract = chrono::now()`。返回确认信息。
 
-### 4. wiki_dedupe 工具
-
-```rust
-fn wiki_dedupe(&self) -> Result<CallToolResult, McpError>
-```
-
-无参数。扫描全 vault,对每个文档用其 name 做 FTS5 search,收集所有相似对(双向去重),返回报告。**不自动合并**——合并是 agent 的智能决策。
-
-返回示例:
-```json
-{
-  "similar_pairs": [
-    {"a": "wiki/react-hooks.md", "b": "wiki/hooks-guide.md", "score": -3.5},
-    ...
-  ],
-  "total_pairs": 4
-}
-```
+> 注意:此工具依赖 last_extract 待决项的结论。若选方案 C(放弃时间戳),本工具删除。
 
 ---
 
@@ -230,19 +237,19 @@ fn wiki_dedupe(&self) -> Result<CallToolResult, McpError>
 
 ```
 db/wiki-query/src/
-├── main.rs              # Modify: sync 子命令输出含查重报告
-├── core.rs              # Modify: 删 write/read/patch,保留 search/list,加 sync_dedupe 辅助
+├── main.rs              # Modify: sync 子命令输出含查重报告(支持 scope)
+├── core.rs              # Modify: 删 write/read/patch,保留 search/list,加 find_similar 查重函数
 ├── write_decision.rs    # Delete: 四态决策整个删
 ├── frontmatter.rs       # Modify: 删 validate(白名单校验),保留 parse/serialize(sync 建索引用)
 ├── policy.rs            # 保留(几乎不动)
-├── db.rs                # Modify: 加 meta 表 schema + 读写 last_extract
-├── sync.rs              # Modify: sync 后跑查重,返回报告
-├── mcp_server.rs        # Modify: 工具集从 5 个砍到 5 个(删 read/write/patch,加 sync/mark_extracted/dedupe)
-└── models.rs            # Modify: 删 WriteResult/ConflictCandidate,加 SyncReport/DedupeReport
+├── db.rs                # Modify: 加 meta 表 schema + 读写 last_extract(待决项 C 选定则不加)
+├── sync.rs              # Modify: sync 接 scope 参数,调 find_similar 返回查重报告
+├── mcp_server.rs        # Modify: 工具集收敛为 4 个(删 read/write/patch/dedupe,保留 search/list,改 sync 加 scope,加 mark_extracted)
+└── models.rs            # Modify: 删 WriteResult/ConflictCandidate,加 SyncReport/SimilarPair
 tests/
-├── core_write_test.rs   # Delete/重写: write/patch 测试删,加 sync 查重测试
+├── core_write_test.rs   # Delete/重写: write/patch 测试删,加 find_similar 查重测试
 ├── fts_test.rs          # 保留
-└── mcp_integration_test.rs  # Modify: 断言新工具集
+└── mcp_integration_test.rs  # Modify: 断言新工具集(4 个)
 AGENTS.md                # Modify: frontmatter 约定 + 提炼工作流
 db/wiki-query/README.md  # Modify: 重写工具集 + 数据流
 ```
@@ -255,17 +262,18 @@ db/wiki-query/README.md  # Modify: 重写工具集 + 数据流
 - **向量语义检索**:当前用 FTS5 + jieba 关键词检索够用,且 SQLite-only 的定位下不引入向量依赖。
 - **知识图谱**(wikilink 关系查询):nice-to-have,推迟。
 - **wiki_status 工具**(读 meta 表):本轮只写 last_extract。读需求出现再加。
-- **自动合并去重**:wiki_dedupe 只报告不合并,合并智能归 agent。
+- **自动合并去重**:sync 的查重报告只提示相似对,不自动合并。合并智能归 agent。
 
 ---
 
 ## 测试策略
 
 - **FTS5 / jieba / policy**:保留现有测试,确保重构不破坏检索能力。
-- **sync 查重报告**:新建文档后 sync,断言返回值含相似对(构造重复 name 的两个文档)。
-- **wiki_mark_extracted**:调用后读 SQLite meta 表断言 last_extract 已更新。
-- **wiki_dedupe**:构造已知相似对,断言报告包含。
-- **MCP 集成测试**:tools/list 断言 5 个工具(search/list/sync/mark_extracted/dedupe),initialize 断言 instructions 含新工具。
+- **sync 查重(incremental)**:新建文档后调 wiki_sync(默认 scope),断言返回值含相似对(构造重复 name 的两个文档)。
+- **sync 查重(full)**:构造已知相似对,调 wiki_sync(scope="full"),断言全库报告包含该对。
+- **find_similar 阈值**:单元测试验证 score 低于阈值的不入报告(避免噪声)。
+- **wiki_mark_extracted**:调用后读 SQLite meta 表断言 last_extract 已更新(若选方案 C 则免)。
+- **MCP 集成测试**:tools/list 断言 4 个工具(search/list/sync/mark_extracted),initialize 断言 instructions 含新工具。
 - **删除的功能**:对应测试一并删除,不留孤儿测试。
 
 ---
@@ -276,10 +284,11 @@ db/wiki-query/README.md  # Modify: 重写工具集 + 数据流
 |------|------|
 | 删 write/read/patch 工具 + core 函数 + write_decision.rs | 1h |
 | frontmatter 删 validate,policy 微调 | 0.5h |
-| db.rs 加 meta 表 + 读写 | 0.5h |
-| sync.rs 加查重报告逻辑 | 1.5h |
-| mcp_server 工具集重写 + instructions 更新 | 1h |
-| wiki_dedupe 工具 | 1h |
+| db.rs 加 meta 表 + 读写(若选方案 C 则免) | 0.5h |
+| core.rs 加 find_similar 查重函数(共享给 incremental/full) | 1h |
+| sync.rs 接 scope 参数 + 返回查重报告 | 1h |
+| mcp_server 工具集重写(4 个)+ instructions 更新 | 1h |
+| wiki_mark_extracted 工具(若选方案 C 则免) | 0.5h |
 | 测试重写 + MCP 集成测试 | 1.5h |
 | README + AGENTS.md 文档更新 | 0.5h |
-| **总计** | **~7.5h** |
+| **总计** | **~7.5h**(方案 C 则 ~6.5h) |
