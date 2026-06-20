@@ -15,6 +15,7 @@ pub mod error;
 pub mod fts;
 pub mod frontmatter;
 pub mod models;
+pub mod mcp_server;
 pub mod policy;
 pub mod sync;
 pub mod write_decision;

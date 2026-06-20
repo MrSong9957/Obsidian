@@ -10,6 +10,7 @@ fn main() {
         eprintln!("  sync              - Sync MD files to database");
         eprintln!("  search <query>    - Search documents by metadata");
         eprintln!("  show <path>       - Show full document");
+        eprintln!("  serve             - Start MCP server (stdio, 本地无云)");
         std::process::exit(1);
     }
 
@@ -28,6 +29,14 @@ fn main() {
                 std::process::exit(1);
             }
             db::show(&args[2])
+        }
+        "serve" => {
+            // tokio runtime 运行 async MCP server(阻塞直到连接关闭)
+            let rt = tokio::runtime::Runtime::new().expect("failed to create tokio runtime");
+            if let Err(e) = rt.block_on(wiki_query::mcp_server::run()) {
+                eprintln!("[wiki-mcp] server 异常退出: {:?}", e);
+                std::process::exit(1);
+            }
         }
         _ => {
             eprintln!("Unknown command: {}", args[1]);
