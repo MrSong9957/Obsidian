@@ -28,7 +28,8 @@ fn err_to_result(e: WikiError) -> Result<CallToolResult, McpError> {
         // 业务可恢复错误:用 tool-level error(agent 能读 message 调整行为,如改路径重试)
         WikiError::PolicyViolation(_)
         | WikiError::InvalidFrontmatter(_)
-        | WikiError::PathTraversal(_) => Ok(CallToolResult::error(vec![Content::text(
+        | WikiError::PathTraversal(_)
+        | WikiError::NotFound(_) => Ok(CallToolResult::error(vec![Content::text(
             e.to_string(),
         )])),
         // 系统错误:返回 JSON-RPC error(DB/IO 损坏,非调用方能解决)
@@ -112,7 +113,7 @@ impl WikiServer {
         }
     }
 
-    #[tool(description = "向 Obsidian 知识库写入或更新文档。写入前自动决策:新建(ADD)/更新(UPDATE)/跳过(NOOP,已存在同名文档)/冲突(CONFLICT,有相似文档需人工裁决)。会校验 frontmatter 字段完整性 + 三层目录权限(sources 可写禁删/wiki 可写/templates 只读)。注意:UPDATE 会覆盖目标文档 frontmatter 的 source 等扩展字段,建议先 wiki_read 确认。需要记录新知识或更新现有文档时使用。")]
+    #[tool(description = "向 Obsidian 知识库写入或更新文档。写入前自动决策:新建(ADD)/更新(UPDATE)/跳过(NOOP,已存在同名文档)/冲突(CONFLICT,有相似文档需人工裁决)。会校验 frontmatter 字段完整性 + 三层目录权限(sources 可写禁删/wiki 可写/templates 只读)。UPDATE 时自动保留旧文档的 source/aliases 等扩展字段(不丢失溯源信息)。需要记录新知识或更新现有文档时使用。")]
     fn wiki_write(
         &self,
         Parameters(req): Parameters<WriteRequest>,

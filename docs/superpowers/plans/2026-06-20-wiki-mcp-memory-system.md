@@ -1488,3 +1488,18 @@ git commit -m "chore: post-commit hook 维持 wiki-query sync" --allow-empty
 ```
 
 每阶段产出可测试软件。每 Task 末尾 commit。
+
+---
+
+## Out of Scope(MVP 推迟项)
+
+以下原计划/spec 列出但 MVP 未实现,留作演进:
+
+- **wiki_patch(section 级编辑)**:Task 4.2 原列,推迟。agent 可用 wiki_read + wiki_write 整篇更新替代,精度差但够用。
+- **wiki_delete(含 deprecated 标记工作流)**:Task 4.2 原列,推迟。spec 的矛盾页 + deprecate 工作流也同期推迟。`policy::Op::Delete` 已实现权限矩阵但无 core/MCP 入口调用——保留为基础设施,待 delete 工具实现时直接接入。sources 禁删/wiki deprecated 标记的语义已在 policy 层就绪。
+- **write 的 mode 参数(auto/add/update)**:spec 写了 `mode` 字段,实现硬编码 auto。CONFLICT 时 agent 无法强制写入,需先 read 候选再对指定 path 发 write 触发 UPDATE 绕过。
+- **search 返回 snippet**:spec 数据流写"返回元数据+snippet",实现只返回元数据(工具描述已声明"需另调 wiki_read")。
+- **FTS5 external content 表(`content='documents'`)**:Task 1.2 Step 2 曾尝试,因更新陷阱改回自有内容表(正文存两份),数千篇规模可接受。
+
+这些不阻断 MVP 合并,记录供后续迭代。
+

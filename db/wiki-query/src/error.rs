@@ -13,6 +13,8 @@ pub enum WikiError {
     PathTraversal(String),
     /// 权限策略违反(sources 禁删 / templates 只读 等)
     PolicyViolation(String),
+    /// 文档不存在(agent 拼错路径等业务可恢复错误)
+    NotFound(String),
     /// IO 错误
     Io(String),
     /// 数据库错误
@@ -25,6 +27,7 @@ impl fmt::Display for WikiError {
             WikiError::InvalidFrontmatter(msg) => write!(f, "frontmatter 校验失败: {}", msg),
             WikiError::PathTraversal(p) => write!(f, "路径穿越拒绝: {}", p),
             WikiError::PolicyViolation(msg) => write!(f, "权限策略: {}", msg),
+            WikiError::NotFound(p) => write!(f, "文档不存在: {}", p),
             WikiError::Io(msg) => write!(f, "IO 错误: {}", msg),
             WikiError::Db(msg) => write!(f, "数据库错误: {}", msg),
         }

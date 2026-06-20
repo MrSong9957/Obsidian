@@ -14,9 +14,15 @@ use std::path::Path;
 
 /// 读单文档:返回完整 Markdown 原文。
 /// policy 校验 Read 权限 + 路径穿越防御。
+///
+/// 文件不存在返回 NotFound(业务可恢复错误,agent 应改路径重试),
+/// 而非系统 IO 错误——避免拼错路径时 agent 吃 JSON-RPC error 污染上下文。
 pub fn read(vault_root: &str, path: &str) -> Result<String, WikiError> {
     policy::check(path, Op::Read)?;
     let abs = Path::new(vault_root).join(path);
+    if !abs.exists() {
+        return Err(WikiError::NotFound(path.into()));
+    }
     Ok(std::fs::read_to_string(abs)?)
 }
 

@@ -24,6 +24,12 @@ pub fn init() -> Result<Connection> {
 
     let conn = Connection::open(&path)?;
 
+    // 并发安全:WAL 模式 + busy_timeout(review C1)。
+    // WAL 允许读写并发(MCP serve 常驻 + git hook sync + 多 agent 同时访问),
+    // busy_timeout 让短时锁竞争自动重试而非立即 SQLITE_BUSY 失败。
+    conn.pragma_update(None, "journal_mode", "WAL")?;
+    conn.pragma_update(None, "busy_timeout", 5000)?;
+
     conn.execute_batch(
         "CREATE TABLE IF NOT EXISTS documents (
             id INTEGER PRIMARY KEY,
