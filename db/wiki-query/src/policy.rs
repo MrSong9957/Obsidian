@@ -58,7 +58,7 @@ pub fn check(path: &str, op: Op) -> Result<(), WikiError> {
             if is_templates {
                 Err(WikiError::PolicyViolation("templates 只读,禁止写入".into()))
             } else {
-                // sources / wiki 允许写(sources 的 append 语义由 core::write 体现)
+                // sources / wiki 允许写(v5 后写入归 agent 文件工具,policy 只管 sync 时路径校验)
                 Ok(())
             }
         }
