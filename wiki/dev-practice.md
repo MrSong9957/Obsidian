@@ -2,8 +2,8 @@
 name: 开发实践
 description: TDD/代码质量/调试方法论/代码讲解/提示词技巧/KV缓存设计/协作提示词 — 遇到开发质量、调试方法、提示词优化问题时参考
 type: concept
-updated: 2026-04-17
-tags: dev, tdd, debugging, prompt, code-quality
+updated: 2026-06-22
+tags: dev, tdd, debugging, prompt, code-quality, karpathy, ai-workflow
 source: sources/dev/dev-practice.md
 ---
 # 开发实践
@@ -21,6 +21,16 @@ source: sources/dev/dev-practice.md
 - **永远先观察，再假设**：打印实际值，不猜测；创建最小诊断脚本
 - **三段式可观测性**：before/after/failed 事件日志，append-only JSONL，最轻量的调试手段
 - **先确认操作上下文，再假设代码 bug**：用户描述的"操作现场"是最关键线索
+
+> 详细内容见 sources/dev/dev-practice.md
+
+## Karpathy 拼贴工作流
+
+Andrej Karpathy 将不同 AI 工具的优缺点"拼接"起来的编程工作流：
+
+1. **75% 靠 Tab 补全（如 Cursor）**：在代码正确位置写几行片段或注释，是向 AI 传达任务信息量最高、最快的方式，比纯大段 Prompt 聊天效率高得多
+2. **局部重构**：选中大模型写得臃肿的代码，定向命令"把这段改写得更优雅、更精简"
+3. **高阶逻辑留给顶级模型**：遇到特别烧脑的硬骨头，Agent 搞不定时，剥离出来丢给最顶级的推理模型（如 GPT-4o）单点突破
 
 > 详细内容见 sources/dev/dev-practice.md
 
