@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "wiki": {
+      "command": "E:\\Files\\Obsidian\\db\\wiki-query\\target\\release\\wiki-query.exe",
+      "args": ["serve"],
+      "env": {
+        "WIKI_VAULT_ROOT": "E:\\Files\\Obsidian"
+      }
+    }
+  }
+}
