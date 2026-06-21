@@ -24,7 +24,7 @@ pub fn build_fts_query(input: &str) -> String {
         return String::new();
     }
     // 检测是否包含显式 OR 关键词
-    let has_or = tokens.iter().any(|t| *t == "OR");
+    let has_or = tokens.contains(&"OR");
     let connector = if has_or { " OR " } else { " AND " };
     // 过滤掉 OR 关键词本身(它是操作符不是搜索词)
     let search_tokens: Vec<&str> = tokens
