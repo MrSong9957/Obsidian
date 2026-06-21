@@ -106,96 +106,103 @@ fn build_dedupe_report(
     updated_paths: &[String],
     conn: &Connection,
 ) -> Vec<SimilarPair> {
-    let threshold = -2.0; // bm25 阈值:score ≤ -2.0 算相似。实测调。
+    let threshold = -2.0;
+    let all_docs = load_all_docs(conn);
 
-    let all_docs = load_all_docs_with_scores(conn);
-    // 候选集:full 用全库,incremental 用本次更新的文档
-    let candidates: Vec<crate::models::SearchResult> = if scope == "full" {
-        all_docs.clone()
+    let candidates: Vec<&crate::models::SearchResult> = if scope == "full" {
+        all_docs.iter().collect()
     } else {
         updated_paths
             .iter()
-            .filter_map(|p| all_docs.iter().find(|d| &d.path == p).cloned())
+            .filter_map(|p| all_docs.iter().find(|d| &d.path == p))
             .collect()
     };
 
     let mut pairs = Vec::new();
     let mut seen = std::collections::HashSet::new();
     for candidate in &candidates {
-        for pair in crate::core::find_similar(candidate, &all_docs, threshold) {
-            // 双向去重:(a,b) 与 (b,a) 只报一次
-            let key = if pair.candidate < pair.similar_to {
-                format!("{}|{}", pair.candidate, pair.similar_to)
+        let similar = search_similar_by_name(conn, &candidate.path, &candidate.name);
+        for (similar_path, score) in similar {
+            if score > threshold {
+                continue; // 不够相关
+            }
+            let key = if candidate.path < similar_path {
+                format!("{}|{}", candidate.path, similar_path)
             } else {
-                format!("{}|{}", pair.similar_to, pair.candidate)
+                format!("{}|{}", similar_path, candidate.path)
             };
             if seen.insert(key) {
-                pairs.push(pair);
+                pairs.push(SimilarPair {
+                    candidate: candidate.path.clone(),
+                    similar_to: similar_path,
+                    score,
+                });
             }
         }
     }
     pairs
 }
 
-/// 从 documents 表加载所有文档,对每个用 name 做 FTS5 search 拿 score。
-/// 性能 O(n²)(每个文档都搜一次),MVP 够用,文档量大时优化。
-fn load_all_docs_with_scores(conn: &Connection) -> Vec<crate::models::SearchResult> {
-    // 一次查询拿全库 path+name+description+type+updated+tags(元数据)
-    let rows: Vec<(String, String, String, String, String, String)> = {
-        let mut stmt = match conn.prepare(
-            "SELECT path, name, description, type, updated, tags FROM documents",
-        ) {
-            Ok(s) => s,
-            Err(_) => return vec![],
-        };
-        stmt.query_map([], |row| {
-            Ok((
-                row.get::<_, String>(0)?,
-                row.get::<_, String>(1)?,
-                row.get::<_, String>(2)?,
-                row.get::<_, String>(3)?,
-                row.get::<_, String>(4)?,
-                row.get::<_, String>(5)?,
-            ))
-        })
-        .ok()
-        .map(|iter| iter.filter_map(|r| r.ok()).collect())
-        .unwrap_or_default()
+/// 从 documents 表加载所有文档的元数据（不含 score，score 由查重时实时计算）。
+fn load_all_docs(conn: &Connection) -> Vec<crate::models::SearchResult> {
+    let mut stmt = match conn.prepare(
+        "SELECT path, name, description, type, updated, tags FROM documents",
+    ) {
+        Ok(s) => s,
+        Err(_) => return vec![],
     };
-
-    // 对每个文档,用传入的 conn 内联 FTS5 查询拿 bm25 score(不开新连接)。
-    // 之前每个文档调 core::search_with_scores 各开一次 db::init 连接,O(n) 连接,
-    // 是 sync(full) 极慢的主因。现在复用 conn,O(n) 次同连接查询。
-    rows.into_iter()
-        .map(|(path, name, description, doc_type, updated, tags)| {
-            let score = fts_score_for_name(conn, &path, &name);
-            crate::models::SearchResult {
-                path,
-                name,
-                description,
-                doc_type,
-                updated,
-                tags,
-                score,
-            }
+    stmt.query_map([], |row| {
+        Ok(crate::models::SearchResult {
+            path: row.get(0)?,
+            name: row.get(1)?,
+            description: row.get(2)?,
+            doc_type: row.get(3)?,
+            updated: row.get(4)?,
+            tags: row.get(5)?,
+            score: None,
         })
-        .collect()
+    })
+    .ok()
+    .map(|iter| iter.filter_map(|r| r.ok()).collect())
+    .unwrap_or_default()
 }
 
-/// 用传入的 conn 对单个文档(按 path)的 name 做 FTS5 查询,返回 bm25 score。
-/// 复用现有连接,不开新连接。查不到(如 name 为空/无 token)返回 None。
-fn fts_score_for_name(conn: &Connection, path: &str, name: &str) -> Option<f64> {
-    let fts_query = crate::core::build_fts_query(name);
+/// 用 candidate_name 做 FTS5 查询，在全库中找 BM25 分数最低（最相关）的文档。
+/// 返回 Vec<(path, score)>，排除 candidate 自身的 path。
+/// 这是真正的跨文档相似度计算。
+fn search_similar_by_name(
+    conn: &Connection,
+    candidate_path: &str,
+    candidate_name: &str,
+) -> Vec<(String, f64)> {
+    let fts_query = crate::core::build_fts_query(candidate_name);
     if fts_query.is_empty() {
-        return None;
+        return vec![];
     }
-    conn.query_row(
-        "SELECT bm25(documents_fts) FROM documents_fts
-         WHERE documents_fts MATCH ?1 AND path = ?2",
-        params![fts_query, path],
-        |row| row.get(0),
-    )
+    let mut stmt = match conn.prepare(
+        "SELECT d.path, bm25(documents_fts) AS score
+         FROM documents_fts f
+         JOIN documents d ON d.path = f.path
+         WHERE documents_fts MATCH ?1
+         ORDER BY score
+         LIMIT 20",
+    ) {
+        Ok(s) => s,
+        Err(_) => return vec![],
+    };
+    stmt.query_map(rusqlite::params![fts_query], |row| {
+        Ok((
+            row.get::<_, String>(0)?,
+            row.get::<_, f64>(1)?,
+        ))
+    })
     .ok()
+    .map(|iter| {
+        iter.filter_map(|r| r.ok())
+            .filter(|(path, _)| path != candidate_path)
+            .collect()
+    })
+    .unwrap_or_default()
 }
 
 /// 删除数据库里存在但磁盘上不存在的记录,返回删除条数。
