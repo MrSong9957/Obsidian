@@ -400,7 +400,7 @@ fn similar_pair_serializes_correctly() {
 #[test]
 fn check_scope_request_deserializes() {
     let json = r#"{"path": "sources/dev/rust.md"}"#;
-    let req: wiki_query::models::CheckScopeRequest = serde_json::from_str(json).unwrap();
+    let req: wiki_query::mcp_server::CheckScopeRequest = serde_json::from_str(json).unwrap();
     assert_eq!(req.path, "sources/dev/rust.md");
     assert!(req.vault_root.is_none(), "vault_root 应为 None");
 }
@@ -408,7 +408,7 @@ fn check_scope_request_deserializes() {
 #[test]
 fn check_scope_request_with_vault_root() {
     let json = r#"{"path": ".claude/projects/xxx/memory/file.md", "vault_root": "E:\\Files\\Obsidian"}"#;
-    let req: wiki_query::models::CheckScopeRequest = serde_json::from_str(json).unwrap();
+    let req: wiki_query::mcp_server::CheckScopeRequest = serde_json::from_str(json).unwrap();
     assert_eq!(req.path, ".claude/projects/xxx/memory/file.md");
     assert_eq!(req.vault_root.as_deref(), Some("E:\\Files\\Obsidian"));
 }
