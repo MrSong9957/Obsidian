@@ -7,25 +7,50 @@ use crate::error::WikiError;
 use crate::models::SearchResult;
 use rusqlite::params;
 
-/// FTS5 检索的核心实现,返回带 bm25 score 的结果。
-/// core::search 复用此函数。
+/// 从原始查询字符串构造 FTS5 MATCH 表达式。
 ///
-/// score 为 bm25 原始值(越小越相关,负值),写入 SearchResult.score。
-pub(crate) fn search_with_scores(query: &str) -> Result<Vec<SearchResult>, WikiError> {
+/// 流程:jieba 分词 → 过滤无效 token → 检测显式 OR 关键词 → 每个 token 加双引号 → 连接。
+/// - 输入含显式 "OR" 关键词时,用 OR 连接(并移除 OR 本身)
+/// - 否则默认用 AND 连接(多词必须全部命中,更精确)
+/// - 返回空字符串表示无有效 token(调用方应返回空结果)
+pub fn build_fts_query(input: &str) -> String {
     use crate::fts::tokenize_for_fts;
-    let tokenized = tokenize_for_fts(query);
+    let tokenized = tokenize_for_fts(input);
     let tokens: Vec<&str> = tokenized
         .split_whitespace()
         .filter(|t| !t.contains('"') && t.chars().any(|c| c.is_alphanumeric()))
         .collect();
     if tokens.is_empty() {
-        return Ok(vec![]);
+        return String::new();
     }
-    let fts_query: String = tokens
+    // 检测是否包含显式 OR 关键词
+    let has_or = tokens.iter().any(|t| *t == "OR");
+    let connector = if has_or { " OR " } else { " AND " };
+    // 过滤掉 OR 关键词本身(它是操作符不是搜索词)
+    let search_tokens: Vec<&str> = tokens
+        .iter()
+        .filter(|t| **t != "OR")
+        .copied()
+        .collect();
+    if search_tokens.is_empty() {
+        return String::new();
+    }
+    search_tokens
         .iter()
         .map(|t| format!("\"{}\"", t))
         .collect::<Vec<_>>()
-        .join(" OR ");
+        .join(connector)
+}
+
+/// FTS5 检索的核心实现,返回带 bm25 score 的结果。
+/// core::search 复用此函数。
+///
+/// score 为 bm25 原始值(越小越相关,负值),写入 SearchResult.score。
+pub(crate) fn search_with_scores(query: &str) -> Result<Vec<SearchResult>, WikiError> {
+    let fts_query = build_fts_query(query);
+    if fts_query.is_empty() {
+        return Ok(vec![]);
+    }
 
     let conn = db::init()?;
     let mut stmt = conn.prepare(

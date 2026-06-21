@@ -185,14 +185,7 @@ fn load_all_docs_with_scores(conn: &Connection) -> Vec<crate::models::SearchResu
 /// 用传入的 conn 对单个文档(按 path)的 name 做 FTS5 查询,返回 bm25 score。
 /// 复用现有连接,不开新连接。查不到(如 name 为空/无 token)返回 None。
 fn fts_score_for_name(conn: &Connection, path: &str, name: &str) -> Option<f64> {
-    use crate::fts::tokenize_for_fts;
-    let tokenized = tokenize_for_fts(name);
-    let fts_query: String = tokenized
-        .split_whitespace()
-        .filter(|t| !t.contains('"') && t.chars().any(|c| c.is_alphanumeric()))
-        .map(|t| format!("\"{}\"", t))
-        .collect::<Vec<_>>()
-        .join(" OR ");
+    let fts_query = crate::core::build_fts_query(name);
     if fts_query.is_empty() {
         return None;
     }
