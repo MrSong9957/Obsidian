@@ -5,6 +5,66 @@ use crate::db::init;
 use crate::frontmatter;
 use crate::models::{SyncReport, SimilarPair};
 
+// ============================================================
+// 路径作用域检查
+// ============================================================
+
+/// 将路径中的反斜杠替换为正斜杠,去除开头的 `./` 和前导 `/`,
+/// 并解析 `..` / `.` 路径段。内部统一用正斜杠。
+fn normalize_path(path: &str) -> String {
+    let normalized = path.replace('\\', "/");
+
+    // 去除前导 / 和 ./
+    let stripped = normalized
+        .trim_start_matches('/')
+        .trim_start_matches("./");
+
+    // 解析 .. 和 . 路径段
+    let segments: Vec<&str> = stripped.split('/').collect();
+    let mut resolved: Vec<&str> = Vec::new();
+    for seg in &segments {
+        match *seg {
+            "." => {}
+            ".." => {
+                resolved.pop();
+            }
+            s if !s.is_empty() => resolved.push(s),
+            _ => {}
+        }
+    }
+    resolved.join("/")
+}
+
+/// 从绝对路径中去除 vault root 前缀,返回相对路径。
+/// 例如 `strip_vault_root("/home/user/vault/wiki/page.md", "/home/user/vault")`
+/// 返回 `"wiki/page.md"`。
+pub fn strip_vault_root(path: &str, vault_root: &str) -> String {
+    let normalized_root = normalize_path(vault_root);
+    let normalized_path = normalize_path(path);
+    // 尝试去除 root 前缀(带或不带尾部斜杠)
+    let root_variants = [
+        format!("{}/", normalized_root),
+        normalized_root.clone(),
+    ];
+    for root in &root_variants {
+        if let Some(rest) = normalized_path.strip_prefix(root) {
+            return rest.to_string();
+        }
+    }
+    // 前缀不匹配,原样返回
+    normalized_path
+}
+
+/// 判断路径是否属于 wiki 知识库的作用域。
+/// 作用域: `sources/`、`wiki/`、`templates/` 三个目录下的 `.md` 文件。
+/// 传入的路径应为相对路径(如 `wiki/page.md`、`sources/dev/rust.md`)。
+/// 如果是绝对路径,需先调用 `strip_vault_root` 去除前缀。
+pub fn is_in_wiki_scope(path: &str) -> bool {
+    let normalized = normalize_path(path);
+    let in_scope_dirs = ["sources/", "wiki/", "templates/"];
+    in_scope_dirs.iter().any(|dir| normalized.starts_with(dir))
+}
+
 /// CLI 入口:全量 sync + incremental 查重,打印报告。
 pub fn run() {
     let report = run_with_scope("incremental");
