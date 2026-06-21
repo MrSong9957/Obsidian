@@ -355,7 +355,7 @@ db/wiki-query/target/release/wiki-query.exe sync
 - **传输方式**：本地 stdio（AI 和 wiki-query 通过管道对话，不走网络）
 - **存储**：SQLite 数据库（`db/wiki.db`），可随时从 Markdown 重建
 - **分词**：用 jieba 做中文分词，搜"记忆"能命中"记忆系统"
-- **查重**：用 BM25 算法算相似度，阈值 -2.0 以下算重复
+- **查重**：用候选文档的 name 做 FTS5 查询，在全库中找 BM25 分数 ≤ -2.0 的相似文档
 
 ---
 
