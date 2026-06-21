@@ -49,3 +49,14 @@ pub struct ProjectRulesRequest {
     #[schemars(description = "当前 agent 类型:'claude'(注入到 CLAUDE.md)或其他(注入到 AGENTS.md)。可选,默认 AGENTS.md。")]
     pub agent_type: Option<String>,
 }
+
+/// wiki_check_scope 的请求参数。
+#[derive(Debug, serde::Deserialize, schemars::JsonSchema)]
+pub struct CheckScopeRequest {
+    /// 要检查的文件路径(相对路径或绝对路径均可)。
+    #[schemars(description = "要检查的文件路径(如 'sources/dev/rust.md' 或 '.claude/projects/xxx/memory/file.md')。")]
+    pub path: String,
+    /// 可选:vault 根路径。如果传入,会先去除路径中的 vault root 前缀再判断。
+    #[schemars(description = "可选:vault 根路径(如 'E:\\Files\\Obsidian')。传入后会自动去除路径中的 vault root 前缀再判断。")]
+    pub vault_root: Option<String>,
+}
