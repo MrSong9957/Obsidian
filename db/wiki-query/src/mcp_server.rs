@@ -35,7 +35,7 @@ pub struct WikiServer {
 
 #[derive(Debug, Deserialize, schemars::JsonSchema)]
 pub struct SearchRequest {
-    #[schemars(description = "搜索查询(支持中文,FTS5 全文检索)。用 1-2 个关键词比长句更好。")]
+    #[schemars(description = "搜索查询(支持中文,FTS5 全文检索)。多词默认 AND(全部命中),需任一命中用大写 OR 分隔(如 'mimo OR provider')。")]
     pub query: String,
 }
 
@@ -58,6 +58,14 @@ pub struct SyncRequest {
     pub scope: Option<String>,
 }
 
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+pub struct CheckScopeRequest {
+    #[schemars(description = "要检查的文件路径(如 'sources/dev/rust.md' 或 '.claude/projects/xxx/memory/file.md')。")]
+    pub path: String,
+    #[schemars(description = "可选:vault 根路径(如 'E:\\Files\\Obsidian')。传入后会自动去除路径中的 vault root 前缀再判断。")]
+    pub vault_root: Option<String>,
+}
+
 #[tool_router]
 impl WikiServer {
     pub fn new(vault_root: String) -> Self {
@@ -67,7 +75,7 @@ impl WikiServer {
         }
     }
 
-    #[tool(description = "搜索 Obsidian 知识库文档(FTS5 全文检索,支持中文)。返回前 10 条匹配文档的元数据列表(路径/标题/描述/类型/标签,不含正文,需另用文件工具读全文)。用 1-2 个关键词比长句更好。当需要查找某个主题、概念、技术的相关知识时使用;也用于写入前查重。")]
+    #[tool(description = "搜索 Obsidian 知识库文档(FTS5 全文检索,支持中文)。返回前 10 条匹配文档的元数据列表(路径/标题/描述/类型/标签,不含正文,需另用文件工具读全文)。多词默认 AND(全部命中),需任一命中用大写 OR 分隔。当需要查找某个主题、概念、技术的相关知识时使用;也用于写入前查重。")]
     fn wiki_search(
         &self,
         Parameters(req): Parameters<SearchRequest>,
@@ -151,6 +159,39 @@ impl WikiServer {
             rules, inject_guide
         );
         Ok(CallToolResult::success(vec![Content::text(output)]))
+    }
+
+    #[tool(description = "判断文件路径是否在 wiki 管辖范围内(sources/ wiki/ templates/)。AI 提炼记忆前调用:在范围内 → 跳过(已是 wiki 的一部分);不在范围内 → 需要提炼。支持相对路径和绝对路径,自动处理 Windows/Unix 路径分隔符差异。")]
+    fn wiki_check_scope(
+        &self,
+        Parameters(req): Parameters<CheckScopeRequest>,
+    ) -> Result<CallToolResult, McpError> {
+        let path_to_check = match &req.vault_root {
+            Some(root) => crate::sync::strip_vault_root(&req.path, root),
+            None => req.path.clone(),
+        };
+        let in_scope = crate::sync::is_in_wiki_scope(&path_to_check);
+        let (scope_dir, suggestion) = if in_scope {
+            let dir = if path_to_check.starts_with("sources/") || path_to_check == "sources" {
+                "sources"
+            } else if path_to_check.starts_with("wiki/") || path_to_check == "wiki" {
+                "wiki"
+            } else {
+                "templates"
+            };
+            (Some(dir.to_string()), "文件已在 wiki 范围内,不需要提炼。如果内容需要更新,直接编辑即可。".to_string())
+        } else {
+            (None, "文件不在 wiki 范围内,需要提炼到 sources/ 或 wiki/ 目录。".to_string())
+        };
+        let result = serde_json::json!({
+            "in_scope": in_scope,
+            "path": path_to_check,
+            "scope_dir": scope_dir,
+            "suggestion": suggestion,
+        });
+        Ok(CallToolResult::success(vec![Content::text(
+            serde_json::to_string_pretty(&result).unwrap_or_else(|_| "{}".into()),
+        )]))
     }
 }
 
