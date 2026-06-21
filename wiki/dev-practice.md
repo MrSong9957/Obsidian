@@ -26,13 +26,7 @@ source: sources/dev/dev-practice.md
 
 ## Karpathy 拼贴工作流
 
-Andrej Karpathy 将不同 AI 工具的优缺点"拼接"起来的编程工作流：
-
-1. **75% 靠 Tab 补全（如 Cursor）**：在代码正确位置写几行片段或注释，是向 AI 传达任务信息量最高、最快的方式，比纯大段 Prompt 聊天效率高得多
-2. **局部重构**：选中大模型写得臃肿的代码，定向命令"把这段改写得更优雅、更精简"
-3. **高阶逻辑留给顶级模型**：遇到特别烧脑的硬骨头，Agent 搞不定时，剥离出来丢给最顶级的推理模型（如 GPT-4o）单点突破
-
-> 详细内容见 sources/dev/dev-practice.md
+→ [[wiki/karpathy-methodology|Karpathy 方法论 — 拼贴工作流及其他 5 套方法论]]
 
 ## 代码质量约束
 
