@@ -155,7 +155,10 @@ impl WikiServer {
 }
 
 /// 手写 ServerHandler 以提供 instructions(让 agent 在 initialize 阶段
-/// 就理解仓库模型)。list_tools/call_tool 用 trait 默认实现委托 tool_router。
+/// 就理解仓库模型)。list_tools/call_tool/get_tool 显式委托 tool_router——
+/// rmcp 1.7 的 #[tool_router] 宏只生成 tool_router 字段和 Self::tool_router()
+/// 构造方法,不自动生成 ServerHandler 的 list_tools 委托。若只 impl get_info,
+/// list_tools 会用 trait 默认实现(返回空列表),tools/list 就是 []。
 impl ServerHandler for WikiServer {
     fn get_info(&self) -> ServerInfo {
         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
@@ -171,6 +174,39 @@ impl ServerHandler for WikiServer {
                  提炼工作流:读 agent 记忆 → wiki_search 查重 → 文件工具写 vault → wiki_sync → 删源。"
                     .to_string(),
             )
+    }
+
+    /// 委托给 tool_router:返回 4 个工具的定义。
+    /// 不写这个的话,trait 默认实现返回空列表,tools/list 就是 []。
+    fn list_tools(
+        &self,
+        _request: Option<rmcp::model::PaginatedRequestParams>,
+        _context: rmcp::service::RequestContext<rmcp::RoleServer>,
+    ) -> impl std::future::Future<
+        Output = Result<rmcp::model::ListToolsResult, McpError>,
+    > + rmcp::service::MaybeSendFuture + '_ {
+        let tools = self.tool_router.list_all();
+        std::future::ready(Ok(rmcp::model::ListToolsResult {
+            tools,
+            ..Default::default()
+        }))
+    }
+
+    /// 委托给 tool_router:按 name 调用对应工具。
+    fn call_tool(
+        &self,
+        request: rmcp::model::CallToolRequestParams,
+        context: rmcp::service::RequestContext<rmcp::RoleServer>,
+    ) -> impl std::future::Future<Output = Result<rmcp::model::CallToolResult, McpError>>
+        + rmcp::service::MaybeSendFuture + '_ {
+        let tool_call_context =
+            rmcp::handler::server::tool::ToolCallContext::new(self, request, context);
+        async move { self.tool_router.call(tool_call_context).await }
+    }
+
+    /// 委托给 tool_router:按 name 查工具定义(用于参数校验)。
+    fn get_tool(&self, name: &str) -> Option<rmcp::model::Tool> {
+        self.tool_router.get(name).cloned()
     }
 }
 
