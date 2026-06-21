@@ -332,7 +332,10 @@ fn needs_update(conn: &Connection, path_str: &str, file_path: &Path) -> bool {
         Err(_) => return true,
     };
 
-    let modified = metadata.modified().unwrap();
+    let modified = match metadata.modified() {
+        Ok(m) => m,
+        Err(_) => return true, // 无法获取修改时间（FAT32/网络挂载），强制更新
+    };
     let modified_dt: chrono::DateTime<Local> = modified.into();
     let modified_str = modified_dt.format("%Y-%m-%d %H:%M:%S").to_string();
 
@@ -365,7 +368,8 @@ fn sync_file(conn: &Connection, path_str: &str, file_path: &Path) -> Result<(), 
     let (meta, body) = frontmatter::parse(&content);
 
     let metadata = std::fs::metadata(file_path)?;
-    let modified = metadata.modified().unwrap();
+    let modified = metadata.modified()
+        .map_err(|e| format!("无法获取修改时间（可能是 FAT32/网络挂载）: {}", e))?;
     let modified_dt: chrono::DateTime<Local> = modified.into();
     let modified_str = modified_dt.format("%Y-%m-%d %H:%M:%S").to_string();
 

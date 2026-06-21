@@ -18,7 +18,7 @@ pub fn init() -> Result<Connection> {
     if path != DEFAULT_DB_PATH {
         eprintln!("[wiki-query] 使用非默认 DB 路径: {}", path);
     }
-    let db_dir = Path::new(&path).parent().unwrap();
+    let db_dir = Path::new(&path).parent().unwrap_or(Path::new("."));
     std::fs::create_dir_all(db_dir).ok();
 
     let conn = Connection::open(&path)?;
