@@ -84,7 +84,7 @@ fn mcp_tools_list_exposes_wiki_tools() {
     let initialized = r#"{"jsonrpc":"2.0","method":"notifications/initialized"}"#;
     let tools_list = r#"{"jsonrpc":"2.0","id":2,"method":"tools/list"}"#;
     let stdout = run_mcp_session(&[init, initialized, tools_list]);
-    // v5 工具集 4 个
+    // v5 工具集 5 个
     assert!(
         stdout.contains("wiki_search"),
         "tools/list 应含 wiki_search: {}",

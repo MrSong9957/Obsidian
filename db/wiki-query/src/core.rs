@@ -60,7 +60,7 @@ pub(crate) fn search_with_scores(query: &str) -> Result<Vec<SearchResult>, WikiE
          JOIN documents d ON d.path = f.path
          WHERE documents_fts MATCH ?1
          ORDER BY score
-         LIMIT 20",
+         LIMIT 10",
     )?;
     let results = stmt
         .query_map(params![fts_query], |row| {
