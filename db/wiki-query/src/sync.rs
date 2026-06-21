@@ -41,18 +41,16 @@ fn normalize_path(path: &str) -> String {
 pub fn strip_vault_root(path: &str, vault_root: &str) -> String {
     let normalized_root = normalize_path(vault_root);
     let normalized_path = normalize_path(path);
-    // 尝试去除 root 前缀(带或不带尾部斜杠)
-    let root_variants = [
-        format!("{}/", normalized_root),
-        normalized_root.clone(),
-    ];
-    for root in &root_variants {
-        if let Some(rest) = normalized_path.strip_prefix(root) {
-            return rest.to_string();
-        }
+    // 先用尾部斜杠匹配(安全,不会误匹配 vault → vault2)
+    if let Some(rest) = normalized_path.strip_prefix(&format!("{}/", normalized_root)) {
+        return rest.to_string();
+    }
+    // 路径恰好等于 root 时,返回空字符串(表示 root 本身就是目标)
+    if normalized_path == normalized_root {
+        return String::new();
     }
     // 前缀不匹配,原样返回
-    normalized_path
+    path.to_string()
 }
 
 /// 判断路径是否属于 wiki 知识库的作用域。

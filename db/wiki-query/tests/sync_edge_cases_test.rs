@@ -378,6 +378,22 @@ mod scope_tests {
         assert!(is_in_wiki_scope(&rel));
     }
 
+    #[test]
+    fn strip_vault_root_partial_prefix_not_stripped() {
+        // vault2 不应被当作 vault 的子路径
+        let abs = "/home/user/vault2/page.md";
+        let vault = "/home/user/vault";
+        let rel = strip_vault_root(abs, vault);
+        assert_eq!(rel, "/home/user/vault2/page.md");
+    }
+
+    #[test]
+    fn strip_vault_root_exact_match() {
+        // 路径恰好等于 root 时返回空字符串
+        let rel = strip_vault_root("/home/user/vault", "/home/user/vault");
+        assert_eq!(rel, "");
+    }
+
     // --- 边界情况 ---
 
     #[test]
