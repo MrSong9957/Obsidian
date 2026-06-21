@@ -246,24 +246,23 @@ fn sync_file(conn: &Connection, path_str: &str, file_path: &Path) -> Result<(), 
     let modified_dt: chrono::DateTime<Local> = modified.into();
     let modified_str = modified_dt.format("%Y-%m-%d %H:%M:%S").to_string();
 
-    let word_count = body.split_whitespace().count() as i64;
-
     // 用事务包 documents upsert + FTS5 同步,保证两表原子一致。
     // 中途崩溃(如进程被杀)不会出现 documents 已更新但 FTS5 旧记录已删未插的状态;
     // 即便发生,needs_update 的 FTS5-缺失检查下次 sync 会自愈。
+    //
+    // documents 表只存元数据(不含正文,符合 v5 原则);
+    // documents_fts 存正文(FTS5 倒排索引的原始数据,检索根基)。
     conn.execute("BEGIN", [])?;
     let result: Result<(), rusqlite::Error> = (|| {
         conn.execute(
-            "INSERT INTO documents (path, name, description, type, updated, tags, content, word_count, modified_at)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
+            "INSERT INTO documents (path, name, description, type, updated, tags, modified_at)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
              ON CONFLICT(path) DO UPDATE SET
                 name = excluded.name,
                 description = excluded.description,
                 type = excluded.type,
                 updated = excluded.updated,
                 tags = excluded.tags,
-                content = excluded.content,
-                word_count = excluded.word_count,
                 modified_at = excluded.modified_at",
             params![
                 path_str,
@@ -272,8 +271,6 @@ fn sync_file(conn: &Connection, path_str: &str, file_path: &Path) -> Result<(), 
                 meta.doc_type,
                 meta.updated,
                 meta.tags,
-                body,
-                word_count,
                 modified_str
             ],
         )?;

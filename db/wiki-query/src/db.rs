@@ -38,15 +38,14 @@ pub fn init() -> Result<Connection> {
             type TEXT,
             updated TEXT,
             tags TEXT,
-            content TEXT,
-            word_count INTEGER,
             modified_at TEXT
         );
-        CREATE INDEX IF NOT EXISTS idx_name ON documents(name);
         CREATE INDEX IF NOT EXISTS idx_type ON documents(type);
         -- FTS5 自有内容表(不用 content='documents',避免外部内容表的更新陷阱)。
         -- 字段值在 sync 时由 fts::tokenize_for_fts 做 jieba 预分词,
         -- 使 unicode61 tokenizer 能按词命中中文。
+        -- 注意:FTS5 的 content 是倒排索引的原始数据(必须存才能检索),不是「存档正文」。
+        -- documents 表不存正文(符合 v5「SQLite 只存元数据」原则)。
         CREATE VIRTUAL TABLE IF NOT EXISTS documents_fts USING fts5(
             path, name, description, type, tags, content,
             tokenize='unicode61'
