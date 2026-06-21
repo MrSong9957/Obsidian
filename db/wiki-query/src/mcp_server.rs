@@ -124,9 +124,13 @@ impl WikiServer {
             _ => "incremental",
         };
         let report = crate::sync::run_with_scope(scope);
-        Ok(CallToolResult::success(vec![Content::text(
-            serde_json::to_string_pretty(&report).unwrap_or_else(|_| "{}".into()),
-        )]))
+        let report_json = serde_json::to_string_pretty(&report).unwrap_or_else(|_| "{}".into());
+        // 提炼提醒:sync 完成后提醒 agent 删除源记忆文件,避免重复提炼
+        let hint = "\n\n[提醒] 如果本次 sync 是从记忆文件提炼到 wiki 的,请删除源记忆文件以避免重复提炼。";
+        Ok(CallToolResult::success(vec![
+            Content::text(report_json),
+            Content::text(hint.to_string()),
+        ]))
     }
 
     #[tool(description = "获取可注入到当前项目根指令文件(CLAUDE.md / AGENTS.md)的 wiki-query 使用规则文本。agent 首次接入 wiki-query 时调用:拿到文本后,检查当前项目根的指令文件是否已含 '<!-- wiki-query-rules -->' 标记,未含则把规则文本(含标记)追加到文件末尾,已含则跳过(避免重复注入)。agentType 参数:'claude'(注入到 CLAUDE.md)或其他(注入到 AGENTS.md)。规则文本来自 vault 内 templates/project-rules.md。")]

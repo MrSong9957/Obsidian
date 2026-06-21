@@ -218,6 +218,19 @@ fn wiki_sync_report_has_dedupe_report() {
     assert!(stdout.contains("dedupe_report"), "应含 dedupe_report 字段");
 }
 
+#[test]
+fn wiki_sync_hint_remembers_to_delete_source() {
+    let (init, notif) = mcp_handshake();
+    let call = r#"{"jsonrpc":"2.0","id":35,"method":"tools/call","params":{"name":"wiki_sync","arguments":{}}}"#;
+    let stdout = run_mcp_session(&[init, notif, call]);
+    assert!(stdout.contains(r#""id":35"#));
+    assert!(
+        stdout.contains("删除") || stdout.contains("源文件") || stdout.contains("提炼"),
+        "sync 结束后应提醒删除源记忆文件: {}",
+        &stdout[..stdout.len().min(800)]
+    );
+}
+
 // ============================================================
 // wiki_get_project_rules 工具全面测试
 // ============================================================
