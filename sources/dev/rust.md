@@ -2,9 +2,10 @@
 name: rust
 description: Rust 语言安装、环境配置、工具链使用、核心概念（枚举/模式匹配/错误处理/宏）、内存管理与堆漏洞利用安全分析、查阅类型与文档的六种方法
 type: reference
-updated: 2026-06-07
+updated: 2026-06-22
 tags: rust, toolchain, installation, cargo, heap-exploitation, memory-safety, enum, pattern-matching, error-handling, macros, ownership, borrowing, lifetime, rust-analyzer, cargo-doc, documentation, docs.rs
 source: https://example.com
+source_memory: ~/.claude/projects/E--Files-Obsidian/memory/rust-gnu-toolchain-setup.md
 ---
 
 # Rust 基础内容
@@ -129,6 +130,26 @@ cargo run
 
 > [!question] `cargo run` 报错找不到链接器 `cc` 或 `gcc`？
 > Windows 纯净系统缺少 GNU 链接器。**不要装 Visual Studio**。安装 [Git](https://git-scm.com/)（自带轻量链接器）或单独下载 MinGW（不到 100MB），将其 `bin` 目录加入系统环境变量 `Path`，重启 VS Code。
+>
+> 推荐用 winget 一键安装 MinGW（WinLibs，UCRT 版）：
+> ```powershell
+> winget install BrechtSanders.WinLibs.MCF.UCRT
+> ```
+> 安装后需**重启 shell**，或手动添加 PATH：
+> ```
+> C:\Users\<用户名>\AppData\Local\Microsoft\WinGet\Packages\BrechtSanders.WinLibs.MCF.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\mingw64\bin
+> ```
+> 验证：`gcc --version`
+
+> [!question] `cargo check` 报权限错误"拒绝访问 (os error 5)"？
+> build script 缓存损坏或 Windows 权限问题。清理 `target/` 后改用 `cargo build`：
+> ```bash
+> rm -rf target/
+> cargo build
+> ```
+
+> [!question] 首次编译失败后后续编译也异常？
+> 编译失败产生的中间产物可能导致后续编译异常。删除 `target/` 目录重新编译。
 
 > [!question] 什么是 `cargo check`？
 > 只做语法和类型检查，不生成可执行文件，比 `cargo run` 快得多。
