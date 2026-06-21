@@ -82,30 +82,69 @@ fn build_dedupe_report(
 /// 从 documents 表加载所有文档,对每个用 name 做 FTS5 search 拿 score。
 /// 性能 O(n²)(每个文档都搜一次),MVP 够用,文档量大时优化。
 fn load_all_docs_with_scores(conn: &Connection) -> Vec<crate::models::SearchResult> {
-    let paths: Vec<(String, String)> = {
-        let mut stmt = match conn.prepare("SELECT path, name FROM documents") {
+    // 一次查询拿全库 path+name+description+type+updated+tags(元数据)
+    let rows: Vec<(String, String, String, String, String, String)> = {
+        let mut stmt = match conn.prepare(
+            "SELECT path, name, description, type, updated, tags FROM documents",
+        ) {
             Ok(s) => s,
             Err(_) => return vec![],
         };
-        stmt.query_map([], |row| Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?)))
-            .ok()
-            .map(|iter| iter.filter_map(|r| r.ok()).collect())
-            .unwrap_or_default()
+        stmt.query_map([], |row| {
+            Ok((
+                row.get::<_, String>(0)?,
+                row.get::<_, String>(1)?,
+                row.get::<_, String>(2)?,
+                row.get::<_, String>(3)?,
+                row.get::<_, String>(4)?,
+                row.get::<_, String>(5)?,
+            ))
+        })
+        .ok()
+        .map(|iter| iter.filter_map(|r| r.ok()).collect())
+        .unwrap_or_default()
     };
-    paths
-        .iter()
-        .filter_map(|(p, n)| {
-            // 用 name 做 search,找到自己那条的 score
-            crate::core::search_with_scores(n).ok().and_then(|mut results| {
-                // 取出自身(按 path 匹配),它应排在最前(name 完全匹配)
-                if let Some(idx) = results.iter().position(|r| r.path == *p) {
-                    Some(results.remove(idx))
-                } else {
-                    results.into_iter().next()
-                }
-            })
+
+    // 对每个文档,用传入的 conn 内联 FTS5 查询拿 bm25 score(不开新连接)。
+    // 之前每个文档调 core::search_with_scores 各开一次 db::init 连接,O(n) 连接,
+    // 是 sync(full) 极慢的主因。现在复用 conn,O(n) 次同连接查询。
+    rows.into_iter()
+        .map(|(path, name, description, doc_type, updated, tags)| {
+            let score = fts_score_for_name(conn, &path, &name);
+            crate::models::SearchResult {
+                path,
+                name,
+                description,
+                doc_type,
+                updated,
+                tags,
+                score,
+            }
         })
         .collect()
+}
+
+/// 用传入的 conn 对单个文档(按 path)的 name 做 FTS5 查询,返回 bm25 score。
+/// 复用现有连接,不开新连接。查不到(如 name 为空/无 token)返回 None。
+fn fts_score_for_name(conn: &Connection, path: &str, name: &str) -> Option<f64> {
+    use crate::fts::tokenize_for_fts;
+    let tokenized = tokenize_for_fts(name);
+    let fts_query: String = tokenized
+        .split_whitespace()
+        .filter(|t| !t.contains('"') && t.chars().any(|c| c.is_alphanumeric()))
+        .map(|t| format!("\"{}\"", t))
+        .collect::<Vec<_>>()
+        .join(" OR ");
+    if fts_query.is_empty() {
+        return None;
+    }
+    conn.query_row(
+        "SELECT bm25(documents_fts) FROM documents_fts
+         WHERE documents_fts MATCH ?1 AND path = ?2",
+        params![fts_query, path],
+        |row| row.get(0),
+    )
+    .ok()
 }
 
 /// 删除数据库里存在但磁盘上不存在的记录,返回删除条数。
@@ -114,7 +153,10 @@ fn load_all_docs_with_scores(conn: &Connection) -> Vec<crate::models::SearchResu
 /// 注意:路径规范化约定 —— on_disk 与 DB 里存的 path 都用 `strip_prefix("./")`
 /// 后的形式,Windows 上含 `\`。跨平台同步(如从 Linux 同步用 `/` 的 path)会
 /// 因分隔符不一致触发误删,目前仅支持单平台 sync。
-fn prune_orphans(conn: &Connection, on_disk: &std::collections::HashSet<String>) -> usize {
+///
+/// 删除前对每个候选 path 做 exists() 二次确认:文件实际还在(如被杀毒锁导致
+/// read_dir 跳过)则保留,不误删。
+pub(crate) fn prune_orphans(conn: &Connection, on_disk: &std::collections::HashSet<String>) -> usize {
     let db_paths: Vec<String> = {
         let mut stmt = match conn.prepare("SELECT path FROM documents") {
             Ok(s) => s,
@@ -134,20 +176,30 @@ fn prune_orphans(conn: &Connection, on_disk: &std::collections::HashSet<String>)
         if on_disk.contains(path) {
             continue;
         }
+        // 二次确认:文件确实不存在才删。
+        // 防止 read_dir 因文件锁定跳过(scan_directory 里 flatten→显式 Err skip)
+        // 导致文件不进 on_disk → 误删有效文档。exists() 为真说明文件还在,保留。
+        let abs = Path::new(".").join(path);
+        if abs.exists() {
+            continue;
+        }
         // documents 删成功才删 FTS5,保证两表一致(避免 documents 有、FTS5 无)。
         // 用事务包两条 DELETE,任一失败则整体回滚。
         let result: Result<(), rusqlite::Error> = (|| {
             conn.execute("BEGIN", [])?;
             let docs_deleted = conn.execute("DELETE FROM documents WHERE path = ?1", params![path])?;
             conn.execute("DELETE FROM documents_fts WHERE path = ?1", params![path])?;
-            conn.execute("COMMIT", [])?;
+            // COMMIT 失败也要 ROLLBACK,避免连接卡在打开事务(与 sync_file 同理)
+            if let Err(e) = conn.execute("COMMIT", []) {
+                let _ = conn.execute("ROLLBACK", []);
+                return Err(e);
+            }
             if docs_deleted > 0 {
                 pruned += 1;
             }
             Ok(())
         })();
         if let Err(e) = result {
-            let _ = conn.execute("ROLLBACK", []);
             eprintln!("prune_orphans: 删除 {} 失败(已回滚): {}", path, e);
         }
     }
@@ -167,7 +219,20 @@ fn scan_directory(
         Err(_) => return,
     };
 
-    for entry in entries.flatten() {
+    for entry in entries {
+        // 显式处理 DirEntry 错误(不用 flatten):文件被杀毒/索引器锁定时
+        // read_dir 返回 Err。这里记录警告并 skip,不进 on_disk。
+        // 真正的防误删由 prune_orphans 的二次确认(exists 检查)兜底。
+        let entry = match entry {
+            Ok(e) => e,
+            Err(e) => {
+                eprintln!(
+                    "[wiki-sync] 警告:读取目录项失败 {:?}: {},跳过",
+                    dir, e
+                );
+                continue;
+            }
+        };
         let path = entry.path();
 
         // 跳过隐藏目录
@@ -298,7 +363,13 @@ fn sync_file(conn: &Connection, path_str: &str, file_path: &Path) -> Result<(), 
     })();
     match result {
         Ok(()) => {
-            conn.execute("COMMIT", [])?;
+            // COMMIT 失败也必须 ROLLBACK,否则连接卡在打开事务,
+            // 后续所有 sync_file 的 BEGIN 会报 "cannot start a transaction
+            // within a transaction",整个 sync 静默失败。
+            if let Err(e) = conn.execute("COMMIT", []) {
+                let _ = conn.execute("ROLLBACK", []);
+                return Err(Box::from(e));
+            }
             Ok(())
         }
         Err(e) => {

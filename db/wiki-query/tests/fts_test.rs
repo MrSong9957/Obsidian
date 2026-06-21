@@ -31,10 +31,12 @@ fn setup_vault_with_docs(docs: &[(&str, &str)]) -> (tempfile::TempDir, String) {
     {
         let conn = Connection::open(&db_path_str).unwrap();
         conn.execute_batch(
+            // schema 手动维护,须与 src/db.rs 保持一致(v5:删 content/word_count)。
+            // 这里只建 sync_file 会 INSERT 的列,FTS5 content 列同步时单独写。
             "CREATE TABLE documents (
                 id INTEGER PRIMARY KEY, path TEXT UNIQUE NOT NULL,
                 name TEXT, description TEXT, type TEXT, updated TEXT,
-                tags TEXT, content TEXT, word_count INTEGER, modified_at TEXT
+                tags TEXT, modified_at TEXT
             );
             CREATE VIRTUAL TABLE documents_fts USING fts5(
                 path, name, description, type, tags, content, tokenize='unicode61'
@@ -47,14 +49,13 @@ fn setup_vault_with_docs(docs: &[(&str, &str)]) -> (tempfile::TempDir, String) {
             let (fm, body) = frontmatter::parse(content);
             let path_str = rel.replace('\\', "/");
             conn.execute(
-                "INSERT INTO documents (path,name,description,type,updated,tags,content,word_count,modified_at)
-                 VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9)
+                "INSERT INTO documents (path,name,description,type,updated,tags,modified_at)
+                 VALUES (?1,?2,?3,?4,?5,?6,?7)
                  ON CONFLICT(path) DO UPDATE SET name=excluded.name,description=excluded.description,
-                   type=excluded.type,updated=excluded.updated,tags=excluded.tags,content=excluded.content,
-                   word_count=excluded.word_count,modified_at=excluded.modified_at",
+                   type=excluded.type,updated=excluded.updated,tags=excluded.tags,modified_at=excluded.modified_at",
                 rusqlite::params![
                     path_str, fm.name, fm.description, fm.doc_type, fm.updated, fm.tags,
-                    body, body.split_whitespace().count() as i64, "2026-06-20 00:00:00"
+                    "2026-06-20 00:00:00"
                 ],
             ).unwrap();
             // FTS5 同步:真代码用 lib 的 fts::tokenize_for_fts 预分词
