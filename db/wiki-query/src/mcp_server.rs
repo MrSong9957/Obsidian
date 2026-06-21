@@ -1,8 +1,9 @@
 //! MCP server:把 wiki-query 核心检索能力暴露为 MCP 工具,供 AI agent 调用。
 //!
-//! v5 重构:纯索引服务。工具集 4 个:
+//! v5 重构:纯索引服务。工具集 5 个:
 //!   wiki_search(FTS5 检索)/ wiki_list(结构化浏览)/
-//!   wiki_sync(索引同步 + 查重报告)/ wiki_get_project_rules(规则注入)。
+//!   wiki_sync(索引同步 + 查重报告)/ wiki_get_project_rules(规则注入)/
+//!   wiki_check_scope(路径范围判断)。
 //! agent 用自己的文件工具读写 vault Markdown,wiki-query 只管 SQLite 索引。
 
 use rmcp::{
@@ -211,13 +212,14 @@ impl ServerHandler for WikiServer {
                  工具:wiki_search(FTS5 检索,返回 top10 元数据,不含正文)/ \
                  wiki_list(按 tag/type/dir 浏览)/ \
                  wiki_sync(同步索引 + 查重报告,scope=incremental/full)/ \
-                 wiki_get_project_rules(获取注入到项目根的使用规则文本)。\
+                 wiki_get_project_rules(获取注入到项目根的使用规则文本)/ \
+                 wiki_check_scope(判断文件是否在 wiki 范围内,sources/wiki/templates)。\
                  提炼工作流:读 agent 记忆 → wiki_search 查重 → 文件工具写 vault → wiki_sync → 删源。"
                     .to_string(),
             )
     }
 
-    /// 委托给 tool_router:返回 4 个工具的定义。
+    /// 委托给 tool_router:返回 5 个工具的定义。
     /// 不写这个的话,trait 默认实现返回空列表,tools/list 就是 []。
     fn list_tools(
         &self,
