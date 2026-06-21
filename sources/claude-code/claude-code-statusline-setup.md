@@ -1,10 +1,10 @@
 ---
-name: claude-code-statusline-setup
-description: 一句话说明
-type: concept
+name: Claude Code 状态栏插件安装指南
+description: Claude Code StatusLine 配置方法 — Python/Shell 脚本、可用 stdin 变量、配色方案、Safety-net 集成、常见崩溃防御
+type: guide
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: claude-code, statusline, python, settings, ansi
+source: self
 ---
 # Claude Code 状态栏插件安装指南
 

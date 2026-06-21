@@ -4,7 +4,7 @@ description: TDD/代码质量/调试方法论/代码讲解/提示词技巧/KV缓
 type: concept
 updated: 2026-04-17
 tags: dev, tdd, debugging, prompt, code-quality
-source: https://example.com
+source: sources/dev/dev-practice.md
 ---
 # 开发实践
 

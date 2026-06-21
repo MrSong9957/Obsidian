@@ -1,7 +1,10 @@
 ---
-created: 2026-06-01
+name: Git 快速参考（兜底手册）
+description: AI 工具不可用时的手动 git 操作指南 — Obsidian 仓库备份、ZCode 配置同步、Wiki MCP 项目的常用命令速查
+type: reference
 updated: 2026-06-01
-tags: [git, quick-reference, backup]
+tags: git, quick-reference, backup
+source: self
 ---
 
 # Git 快速参考（兜底手册）

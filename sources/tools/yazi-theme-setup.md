@@ -1,10 +1,10 @@
 ---
-name: yazi-theme-setup
-description: 一句话说明
-type: concept
+name: Yazi 主题安装与配色配置
+description: Yazi flavor/theme 系统说明 — Catppuccin Mocha 安装、theme.toml 配置、30+ 社区 flavor 列表、护眼推荐
+type: guide
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: yazi, theme, flavor, catppuccin, windows
+source: self
 ---
 # Yazi 主题安装与配色配置
 

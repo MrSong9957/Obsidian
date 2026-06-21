@@ -4,7 +4,7 @@ description: 本机 Claude Code 完整配置清单 + 自检清单（插件/Hooks
 type: concept
 updated: 2026-06-17
 tags: claude-code, setup, plugins, hooks, mcp, skills, agents, config, checklist
-source: https://example.com
+source: sources/claude-code/claude-code-setup-references.md
 ---
 
 # Claude Code 当前配置清单

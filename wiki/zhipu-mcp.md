@@ -4,7 +4,7 @@ description: 智谱MCP服务器配置速查/Web抓取缓存与JS渲染问题 —
 type: concept
 updated: 2026-05-07
 tags: zhipu, mcp, web-scraping, caching
-source: https://example.com
+source: sources/claude-code/zhipu-mcp.md
 ---
 # 智谱 MCP
 

@@ -4,7 +4,7 @@ description: 全局（karpathy 行为准则）+ 项目级（superpowers 工作�
 type: reference
 updated: 2026-05-10
 tags: claude-md, template, karpathy, superpowers, kv-cache, two-tier
-source: https://example.com
+source: self
 ---
 
 # CLAUDE.md 双层架构模板
