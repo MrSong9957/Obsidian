@@ -16,35 +16,37 @@
 
 ### 1. 编译
 
-打开终端，运行：
+打开终端，运行一键构建脚本（Git Bash / macOS / Linux 通用）：
 
 ```bash
-cd E:\Files\Obsidian\db\wiki-query
-cargo build --release
+cd <你的 vault 根目录>
+bash db/wiki-query/build.sh
 ```
 
-等它编译完（约 1 分钟），你会得到 `db/wiki-query/target/release/wiki-query.exe`。
+它会 `cargo build --release`，然后把可执行文件拷到固定位置 `db/wiki-query/wiki-query[.exe]`（Windows 是 `.exe`，Mac/Linux 无后缀）。
+
+> 也可以手动编译：`cd db/wiki-query && cargo build --release`，然后手动拷贝 `target/release/wiki-query[.exe]` 到 `db/wiki-query/`。
 
 ### 2. 建索引
 
 ```bash
-cd E:\Files\Obsidian
-db/wiki-query/target/release/wiki-query.exe sync
+cd <你的 vault 根目录>
+db/wiki-query/wiki-query.exe sync
 ```
 
 它会扫描你知识库里所有 `.md` 文件，建一个搜索索引。以后新加了文档，再跑一次就行。
 
 ### 3. 告诉 AI 怎么找它
 
-在你项目根目录创建 `.mcp.json`（如果没有的话）：
+在你项目根目录创建 `.mcp.json`（如果没有的话），command 指向上一步的固定位置：
 
 ```json
 {
   "mcpServers": {
     "wiki": {
-      "command": "E:\\Files\\Obsidian\\db\\wiki-query\\target\\release\\wiki-query.exe",
+      "command": "<你的 vault 根目录>/db/wiki-query/wiki-query.exe",
       "args": ["serve"],
-      "cwd": "E:\\Files\\Obsidian"
+      "cwd": "<你的 vault 根目录>"
     }
   }
 }
