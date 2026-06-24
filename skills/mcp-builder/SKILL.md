@@ -1,6 +1,6 @@
 ---
 name: mcp-builder
-description: Build MCP (Model Context Protocol) servers that give Claude new capabilities. Use when user wants to create an MCP server, add tools to Claude, or integrate external services.
+description: Build and test MCP (Model Context Protocol) servers that give Claude new capabilities. Use when user wants to create an MCP server, add tools to Claude, integrate external services, or test/debug an existing MCP server.
 ---
 
 # MCP Server Building Skill
@@ -195,12 +195,78 @@ async def read_file(path: str) -> str:
 
 ## Testing
 
-```bash
-# Test with MCP Inspector
-npx @anthropics/mcp-inspector python3 my_server.py
+### Quick Test with MCP Inspector
 
-# Or send test messages directly
-echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | python3 my_server.py
+```bash
+npx @anthropics/mcp-inspector python3 my_server.py
+```
+
+### Manual JSON-RPC Testing
+
+MCP 基于 JSON-RPC 2.0 over stdio。测试时需要按顺序发送初始化消息：
+
+```bash
+# 1. Initialize handshake
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}
+{"jsonrpc":"2.0","id":2,"method":"notifications/initialized","params":{}}' | python3 my_server.py
+
+# 2. List available tools
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}
+{"jsonrpc":"2.0","id":2,"method":"notifications/initialized","params":{}}
+{"jsonrpc":"2.0","id":3,"method":"tools/list","params":{}}' | python3 my_server.py
+
+# 3. Call a tool
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}
+{"jsonrpc":"2.0","id":2,"method":"notifications/initialized","params":{}}
+{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"hello","arguments":{"name":"World"}}}' | python3 my_server.py
+```
+
+### PowerShell 测试（Windows）
+
+```powershell
+# Initialize + list tools
+$init = '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}'
+$notif = '{"jsonrpc":"2.0","id":2,"method":"notifications/initialized","params":{}}'
+$list = '{"jsonrpc":"2.0","id":3,"method":"tools/list","params":{}}'
+"$init`n$notif`n$list" | py my_server.py
+```
+
+### 自动化测试脚本
+
+```python
+#!/usr/bin/env python3
+"""test_mcp.py - Automated MCP server testing"""
+import subprocess, json, sys
+
+def test_server(script, commands):
+    """Send JSON-RPC commands to MCP server and collect responses."""
+    messages = [
+        {"jsonrpc":"2.0","id":1,"method":"initialize",
+         "params":{"protocolVersion":"2024-11-05","capabilities":{},
+                   "clientInfo":{"name":"test","version":"1.0"}}},
+        {"jsonrpc":"2.0","id":2,"method":"notifications/initialized","params":{}},
+    ] + commands
+
+    input_data = "\n".join(json.dumps(m) for m in messages)
+    result = subprocess.run(
+        ["python3", script],
+        input=input_data, capture_output=True, text=True, timeout=10
+    )
+
+    for line in result.stdout.strip().split("\n"):
+        if line:
+            resp = json.loads(line)
+            print(f"  id={resp.get('id')}: {json.dumps(resp.get('result', resp.get('error')), indent=2)[:200]}")
+
+    if result.stderr:
+        print(f"  stderr: {result.stderr[:200]}")
+
+# Example usage:
+# test_server("my_server.py", [
+#     {"jsonrpc":"2.0","id":3,"method":"tools/list","params":{}},
+#     {"jsonrpc":"2.0","id":4,"method":"tools/call",
+#      "params":{"name":"hello","arguments":{"name":"Test"}}},
+# ])
 ```
 
 ## Best Practices

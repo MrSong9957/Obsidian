@@ -15,7 +15,7 @@ use rusqlite::params;
 /// - 返回空字符串表示无有效 token(调用方应返回空结果)
 pub fn build_fts_query(input: &str) -> String {
     use crate::fts::tokenize_for_fts;
-    let tokenized = tokenize_for_fts(input);
+    let tokenized: String = tokenize_for_fts(input);
     let tokens: Vec<&str> = tokenized
         .split_whitespace()
         .filter(|t| !t.contains('"') && t.chars().any(|c| c.is_alphanumeric()))
@@ -24,8 +24,8 @@ pub fn build_fts_query(input: &str) -> String {
         return String::new();
     }
     // 检测是否包含显式 OR 关键词
-    let has_or = tokens.contains(&"OR");
-    let connector = if has_or { " OR " } else { " AND " };
+    let has_or: bool = tokens.contains(&"OR");
+    let connector: &str = if has_or { " OR " } else { " AND " };
     // 过滤掉 OR 关键词本身(它是操作符不是搜索词)
     let search_tokens: Vec<&str> = tokens
         .iter()
@@ -47,13 +47,13 @@ pub fn build_fts_query(input: &str) -> String {
 ///
 /// score 为 bm25 原始值(越小越相关,负值),写入 SearchResult.score。
 pub(crate) fn search_with_scores(query: &str) -> Result<Vec<SearchResult>, WikiError> {
-    let fts_query = build_fts_query(query);
+    let fts_query: String = build_fts_query(query);
     if fts_query.is_empty() {
         return Ok(vec![]);
     }
 
-    let conn = db::init()?;
-    let mut stmt = conn.prepare(
+    let conn: rusqlite::Connection = db::init()?;
+    let mut stmt: rusqlite::Statement<'_> = conn.prepare(
         "SELECT d.path, d.name, d.description, d.type, d.updated, d.tags,
                 bm25(documents_fts) AS score
          FROM documents_fts f
@@ -62,7 +62,7 @@ pub(crate) fn search_with_scores(query: &str) -> Result<Vec<SearchResult>, WikiE
          ORDER BY score
          LIMIT 10",
     )?;
-    let results = stmt
+    let results: Vec<SearchResult> = stmt
         .query_map(params![fts_query], |row| {
             Ok(SearchResult {
                 path: row.get(0)?,
@@ -74,7 +74,7 @@ pub(crate) fn search_with_scores(query: &str) -> Result<Vec<SearchResult>, WikiE
                 score: Some(row.get(6)?),
             })
         })?
-        .filter_map(|r| r.ok())
+        .filter_map(|r: Result<SearchResult, rusqlite::Error>| r.ok())
         .collect();
     Ok(results)
 }
@@ -97,8 +97,8 @@ pub fn find_similar(
 ) -> Vec<crate::models::SimilarPair> {
     all_docs
         .iter()
-        .filter(|d| d.path != candidate.path) // 排除自身
-        .filter_map(|d| {
+        .filter(|d: &&SearchResult| d.path != candidate.path) // 排除自身
+        .filter_map(|d: &SearchResult| {
             let score = d.score.unwrap_or(0.0);
             if score <= threshold {
                 Some(crate::models::SimilarPair {
@@ -132,9 +132,9 @@ mod tests {
     #[test]
     fn find_similar_returns_pair_when_score_below_threshold() {
         // score=-3.5 比阈值 -2.0 更相关(更负),应入报告
-        let candidate = sr("wiki/new.md", 0.0);
-        let all = vec![sr("wiki/new.md", 0.0), sr("wiki/exist.md", -3.5)];
-        let pairs = find_similar(&candidate, &all, -2.0);
+        let candidate: SearchResult = sr("wiki/new.md", 0.0);
+        let all: Vec<SearchResult> = vec![sr("wiki/new.md", 0.0), sr("wiki/exist.md", -3.5)];
+        let pairs: Vec<crate::models::SimilarPair> = find_similar(&candidate, &all, -2.0);
         assert_eq!(pairs.len(), 1);
         assert_eq!(pairs[0].candidate, "wiki/new.md");
         assert_eq!(pairs[0].similar_to, "wiki/exist.md");
@@ -142,31 +142,31 @@ mod tests {
 
     #[test]
     fn find_similar_excludes_self() {
-        let candidate = sr("wiki/a.md", 0.0);
-        let all = vec![sr("wiki/a.md", -5.0)];
-        let pairs = find_similar(&candidate, &all, -2.0);
+        let candidate: SearchResult = sr("wiki/a.md", 0.0);
+        let all: Vec<SearchResult> = vec![sr("wiki/a.md", -5.0)];
+        let pairs: Vec<crate::models::SimilarPair> = find_similar(&candidate, &all, -2.0);
         assert!(pairs.is_empty(), "不应把自己当相似文档");
     }
 
     #[test]
     fn find_similar_excludes_low_relevance() {
         // score=-1.0 不如阈值 -2.0 相关,不入报告
-        let candidate = sr("wiki/new.md", 0.0);
-        let all = vec![sr("wiki/new.md", 0.0), sr("wiki/other.md", -1.0)];
-        let pairs = find_similar(&candidate, &all, -2.0);
+        let candidate: SearchResult = sr("wiki/new.md", 0.0);
+        let all: Vec<SearchResult> = vec![sr("wiki/new.md", 0.0), sr("wiki/other.md", -1.0)];
+        let pairs: Vec<crate::models::SimilarPair> = find_similar(&candidate, &all, -2.0);
         assert!(pairs.is_empty(), "相关度不够不应入报告");
     }
 
     #[test]
     fn find_similar_collects_multiple_pairs() {
-        let candidate = sr("wiki/new.md", 0.0);
-        let all = vec![
+        let candidate: SearchResult = sr("wiki/new.md", 0.0);
+        let all: Vec<SearchResult> = vec![
             sr("wiki/new.md", 0.0),
             sr("wiki/a.md", -3.5),
             sr("wiki/b.md", -3.0),
             sr("wiki/c.md", -0.5),
         ];
-        let pairs = find_similar(&candidate, &all, -2.0);
+        let pairs: Vec<crate::models::SimilarPair> = find_similar(&candidate, &all, -2.0);
         assert_eq!(pairs.len(), 2, "应含 a 和 b,c 不够相关");
     }
 }
@@ -186,7 +186,7 @@ pub struct ListFilter {
 /// 与 search 区别:search 是全文语义检索(返回相关度排序),
 /// list 是结构化过滤(按 tag/type/目录精确匹配,返回全部元数据含正文以外字段)。
 pub fn list(filter: &ListFilter) -> Result<Vec<SearchResult>, WikiError> {
-    let conn = db::init()?;
+    let conn: rusqlite::Connection = db::init()?;
     let mut conditions: Vec<String> = vec![];
     let mut params_vec: Vec<Box<dyn rusqlite::ToSql>> = vec![];
 
@@ -202,13 +202,13 @@ pub fn list(filter: &ListFilter) -> Result<Vec<SearchResult>, WikiError> {
         conditions.push("path LIKE ?".to_string());
         params_vec.push(Box::new(format!("{}%", d)));
     }
-    let where_clause = if conditions.is_empty() {
+    let where_clause: String = if conditions.is_empty() {
         String::new()
     } else {
         format!("WHERE {}", conditions.join(" AND "))
     };
-    let limit = filter.limit.unwrap_or(100);
-    let sql = format!(
+    let limit: i64 = filter.limit.unwrap_or(100);
+    let sql: String = format!(
         "SELECT path, name, description, type, updated, tags
          FROM documents {} ORDER BY updated DESC LIMIT ?",
         where_clause
@@ -219,8 +219,8 @@ pub fn list(filter: &ListFilter) -> Result<Vec<SearchResult>, WikiError> {
         .map(|p| p.as_ref())
         .chain(std::iter::once(&limit as &dyn rusqlite::ToSql))
         .collect();
-    let results = stmt
-        .query_map(param_refs.as_slice(), |row| {
+    let results: Vec<SearchResult> = stmt
+        .query_map(param_refs.as_slice(), |row: &rusqlite::Row<'_>| {
             Ok(SearchResult {
                 path: row.get(0)?,
                 name: row.get(1)?,
@@ -231,7 +231,7 @@ pub fn list(filter: &ListFilter) -> Result<Vec<SearchResult>, WikiError> {
                 score: None,
             })
         })?
-        .filter_map(|r| r.ok())
+        .filter_map(|r: Result<SearchResult, rusqlite::Error>| r.ok())
         .collect();
     Ok(results)
 }

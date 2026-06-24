@@ -125,8 +125,6 @@ source: self
 
 项目层放**开发工作流 + 项目配置**。每个项目独立定制。
 
-## 核心工作流（Superpowers 七阶段）
-
 ```markdown
 # CLAUDE.md
 
