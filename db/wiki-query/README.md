@@ -14,31 +14,47 @@
 
 ## 安装（只需一次）
 
-### 1. 编译
+有两种方式,选其一。**推荐下载预编译版**(不用装 Rust)。
 
-打开终端，运行一键构建脚本（Git Bash / macOS / Linux 通用）：
+### 方式 A:下载预编译版(推荐)
+
+去 [Releases 页面](https://github.com/MrSong9957/Obsidian/releases),下载对应平台的二进制:
+
+| 平台 | 文件 |
+|------|------|
+| Windows | `wiki-query-windows-x86_64.exe` |
+| macOS (Intel) | `wiki-query-macos-x86_64` |
+| macOS (Apple Silicon M1/M2/M3) | `wiki-query-macos-aarch64` |
+| Linux | `wiki-query-linux-x86_64` |
+
+下载后放到 `<vault 根目录>/db/wiki-query/`,改名为 `wiki-query`(Windows 加 `.exe`)。
+
+### 方式 B:自己编译
+
+需要装 [Rust](https://rustup.rs)。打开终端运行一键脚本(Git Bash / macOS / Linux 通用):
 
 ```bash
 cd <你的 vault 根目录>
 bash db/wiki-query/build.sh
 ```
 
-它会 `cargo build --release`，然后把可执行文件拷到固定位置 `db/wiki-query/wiki-query[.exe]`（Windows 是 `.exe`，Mac/Linux 无后缀）。
+它会 `cargo build --release`,然后把可执行文件拷到 `db/wiki-query/wiki-query[.exe]`。
 
-> 也可以手动编译：`cd db/wiki-query && cargo build --release`，然后手动拷贝 `target/release/wiki-query[.exe]` 到 `db/wiki-query/`。
+---
 
-### 2. 建索引
+### 建索引
+
+二进制就位后,在 vault 根目录执行:
 
 ```bash
-cd <你的 vault 根目录>
 db/wiki-query/wiki-query.exe sync
 ```
 
-它会扫描你知识库里所有 `.md` 文件，建一个搜索索引。以后新加了文档，再跑一次就行。
+它会扫描知识库里所有 `.md` 文件,建一个搜索索引。以后新加了文档,再跑一次就行。
 
-### 3. 告诉 AI 怎么找它
+### 告诉 AI 怎么找它
 
-在你项目根目录创建 `.mcp.json`（如果没有的话），command 指向上一步的固定位置：
+在你项目根目录创建 `.mcp.json`(如果没有的话),command 指向二进制位置:
 
 ```json
 {
@@ -52,7 +68,7 @@ db/wiki-query/wiki-query.exe sync
 }
 ```
 
-重启 AI agent（Claude Code / Cursor / MiMo-Code 等），它就能搜你的知识库了。
+重启 AI agent(Claude Code / Cursor / MiMo-Code 等),它就能搜你的知识库了。
 
 ---
 
