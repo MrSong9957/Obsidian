@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-06-14
+updated: 2026-06-25
 ---
 
 # 原始资料索引
@@ -81,6 +81,7 @@ updated: 2026-06-14
 | [[sources/projects/publish-plan\|发布方案]] | Email Assistant 多平台发布方案与一键发布工具 |
 | [[sources/projects/2026-05-14-persona-style-progress\|人格化回复进度]] | 人格化邮件回复功能开发进度（已合并 master） |
 | [[sources/projects/mimocode-reading-guide\|MiMo-Code 源码阅读指南]] | MiMo-Code（OpenCode fork）源码阅读顺序、核心架构、关键技术栈 |
+| [[sources/projects/wiki-query-deploy-references\|wiki-query 跨平台部署记录]] | wiki-query MCP 从单机配置到 GitHub Actions 三平台分发的完整过程、踩坑与调试故事 |
 
 ## security/
 
