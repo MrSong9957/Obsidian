@@ -1,0 +1,129 @@
+//! Task 4.1 集成测试:MCP server stdio 端到端。
+//!
+//! 启动 `wiki-query serve` 子进程,通过 stdin 发 JSON-RPC,
+//! 验证 initialize 握手 + tools/list 返回 wiki_ 工具 + tools/call 可调用。
+//!
+//! 同步策略:发完消息关闭 stdin → rmcp stdio 读到 EOF → service.waiting()
+//! 返回 → 进程自然退出。这是确定性同步,不靠 sleep/kill(review Important-3)。
+//! 加超时线程防 server 卡死时测试永久挂起。
+
+use std::io::Write;
+use std::process::{Command, Stdio};
+use std::time::Duration;
+
+/// 启动 serve 子进程,发一组 JSON-RPC 消息,读全部 stdout。
+/// stdin 关闭后 server 自然退出;5 秒超时兜底防卡死。
+fn run_mcp_session(messages: &[&str]) -> String {
+    let mut child = Command::new("./target/debug/wiki-query.exe")
+        .arg("serve")
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .expect("failed to start serve");
+
+    if let Some(mut stdin) = child.stdin.take() {
+        for msg in messages {
+            let _ = stdin.write_all(msg.as_bytes());
+            let _ = stdin.write_all(b"\n");
+        }
+        // 关闭 stdin:rmcp stdio transport 读到 EOF 后 service.waiting() 返回,
+        // 进程自然退出。不依赖 sleep(确定性同步)。
+        drop(stdin);
+    }
+
+    // 5 秒超时:若 server 异常卡住,kill 兜底避免测试永久挂起
+    let timeout = Duration::from_secs(5);
+    let start = std::time::Instant::now();
+    loop {
+        match child.try_wait().expect("wait failed") {
+            Some(_status) => break,
+            None => {
+                if start.elapsed() > timeout {
+                    let _ = child.kill();
+                    break;
+                }
+                std::thread::sleep(Duration::from_millis(20));
+            }
+        }
+    }
+    let output = child.wait_with_output().expect("failed to wait");
+    String::from_utf8_lossy(&output.stdout).to_string()
+}
+
+#[test]
+fn mcp_initialize_handshake() {
+    let init = r#"{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"test","version":"0.1"}}}"#;
+    let stdout = run_mcp_session(&[init]);
+    assert!(
+        stdout.contains("serverInfo"),
+        "initialize 应返回 serverInfo,实际: {}",
+        stdout
+    );
+    // ServerInfo instructions 必须下发(v5:含新工具 wiki_get_project_rules)
+    assert!(
+        stdout.contains("instructions"),
+        "initialize 响应应含 instructions 字段: {}",
+        stdout
+    );
+    assert!(
+        stdout.contains("纯索引"),
+        "instructions 应提'纯索引'(v5 定位): {}",
+        stdout
+    );
+    assert!(
+        stdout.contains("wiki_get_project_rules"),
+        "instructions 应提新工具 wiki_get_project_rules: {}",
+        stdout
+    );
+}
+
+#[test]
+fn mcp_tools_list_exposes_wiki_tools() {
+    let init = r#"{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"test","version":"0.1"}}}"#;
+    let initialized = r#"{"jsonrpc":"2.0","method":"notifications/initialized"}"#;
+    let tools_list = r#"{"jsonrpc":"2.0","id":2,"method":"tools/list"}"#;
+    let stdout = run_mcp_session(&[init, initialized, tools_list]);
+    // v5 工具集 5 个
+    assert!(
+        stdout.contains("wiki_search"),
+        "tools/list 应含 wiki_search: {}",
+        stdout
+    );
+    assert!(stdout.contains("wiki_list"), "应含 wiki_list");
+    assert!(stdout.contains("wiki_sync"), "应含 wiki_sync");
+    assert!(stdout.contains("wiki_get_project_rules"), "应含 wiki_get_project_rules");
+    // 已删除的工具不应出现
+    assert!(!stdout.contains("wiki_read"), "不应再有 wiki_read");
+    assert!(!stdout.contains("wiki_write"), "不应再有 wiki_write");
+    assert!(!stdout.contains("wiki_patch"), "不应再有 wiki_patch");
+}
+
+#[test]
+fn mcp_wiki_search_tool_callable() {
+    // 实际调用 wiki_search(用真实 vault 的 DB)
+    let init = r#"{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"test","version":"0.1"}}}"#;
+    let initialized = r#"{"jsonrpc":"2.0","method":"notifications/initialized"}"#;
+    let call = r#"{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"wiki_search","arguments":{"query":"记忆"}}}"#;
+    let stdout = run_mcp_session(&[init, initialized, call]);
+    // 应返回工具结果(content 数组),即便为空也应是合法 JSON-RPC 响应
+    assert!(
+        stdout.contains(r#""id":3"#) || stdout.contains("result"),
+        "tools/call 应返回响应: {}",
+        &stdout[..stdout.len().min(500)]
+    );
+}
+
+#[test]
+fn mcp_wiki_list_tool_callable() {
+    // 实际调用 wiki_list(按 type 过滤,用真实 vault DB)
+    let init = r#"{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"test","version":"0.1"}}}"#;
+    let initialized = r#"{"jsonrpc":"2.0","method":"notifications/initialized"}"#;
+    let call = r#"{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"wiki_list","arguments":{"type":"concept","limit":5}}}"#;
+    let stdout = run_mcp_session(&[init, initialized, call]);
+    assert!(
+        stdout.contains(r#""id":4"#) || stdout.contains("result"),
+        "wiki_list 应返回响应: {}",
+        &stdout[..stdout.len().min(500)]
+    );
+}

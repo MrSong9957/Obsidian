@@ -4,7 +4,7 @@ description: Obsidian CLI工具使用/知识仓库管理 — 遇到Obsidian操�
 type: concept
 updated: 2026-04-17
 tags: obsidian, knowledge-management
-source: https://example.com
+source: sources/tools/obsidian-knowledge-system.md
 ---
 # Obsidian
 

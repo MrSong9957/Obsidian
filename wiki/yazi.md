@@ -1,14 +1,14 @@
 ---
 name: yazi
 description: Yazi 安装、配置经验 — Windows 安装、主题配色、预览插件、踩坑记录
-metadata: 
-  node_type: memory
-  type: summary
-  updated: 2026-06-05
-  tags: "cli, yazi, config, theme, windows"
-  source: self
-  originSessionId: 42a3e0e7-65d6-4a16-8633-30e9a0b95b7e
+type: summary
+updated: 2026-06-05
+tags: cli, yazi, config, theme, windows
+source: self
+node_type: memory
+originSessionId: 42a3e0e7-65d6-4a16-8633-30e9a0b95b7e
 ---
+
 
 # Yazi 文件管理器
 

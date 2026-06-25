@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-06-17
+updated: 2026-06-25
 ---
 
 # Wiki 索引
@@ -28,3 +28,4 @@ updated: 2026-06-17
 | [[wiki/token-management\|Token 管理]] | Token 使用与成本优化 | token, cost, optimization |
 | [[wiki/yazi\|Yazi 文件管理器]] | Yazi 配置经验——主题、配色、Windows 路径 | cli, yazi, config, theme |
 | [[wiki/zhipu-mcp\|智谱 MCP]] | 智谱 MCP 服务器配置速查/Web 抓取缓存问题 | zhipu, mcp, web-scraping |
+| [[wiki/wiki-query-deploy\|wiki-query MCP 部署]] | wiki-query MCP 安装/配置/跨平台分发（GitHub Actions）与踩坑 | wiki-query, mcp, deploy, github-actions, release |

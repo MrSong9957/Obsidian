@@ -1,10 +1,10 @@
 ---
-name: yazi-preview-line-numbers
-description: 一句话说明
-type: concept
+name: Yazi 预览行号方案探索与实现
+description: 给 Yazi 文件预览加行号 — 7 个方案演进（bat 缓存/pcall 混合/Command API）、性能瓶颈分析、code-ln 插件实现
+type: debugging-story
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: yazi, plugin, lua, bat, preview, performance
+source: self
 ---
 # Yazi 预览行号 — 方案探索与实现
 

@@ -33,6 +33,10 @@ source: https://example.com
 - 用 before/after 确认操作是否完成，用 failed 捕获异常现场
 - 不需要复杂框架，一个 JSONL 文件 + append 就够
 
+## Karpathy 拼贴工作流
+
+→ [[wiki/karpathy-methodology|Karpathy 方法论 — 拼贴工作流]]
+
 ## 调试教训
 
 ### 2026-03-21: 菜单返回 Bug

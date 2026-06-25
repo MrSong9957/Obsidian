@@ -1,10 +1,10 @@
 ---
-name: mimo-provider-debug
-description: 一句话说明
-type: concept
-updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+name: MiMo Provider 切换调试记录
+description: Claude Code 切换到小米 MiMo provider 的调试过程 — 401 认证字段、模型后缀大小写、域名拼写错误（xiaomimimo vs xiaomimimimo）三重根因
+type: debugging-story
+updated: 2026-05-29
+tags: claude-code, mimo, provider, debugging, dns
+source: self
 ---
 # MiMo Provider 切换调试记录
 

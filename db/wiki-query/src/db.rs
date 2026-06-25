@@ -1,14 +1,33 @@
 use rusqlite::{Connection, Result};
 use std::path::Path;
-use crate::models::{Document, SearchResult};
 
-const DB_PATH: &str = "db/wiki.db";
+const DEFAULT_DB_PATH: &str = "db/wiki.db";
+
+/// 返回当前 DB 路径。优先 WIKI_DB_PATH 环境变量,否则默认 db/wiki.db。
+///
+/// 注意:env 在集成测试(tests/ 独立 crate)和生产都生效。init() 会在
+/// 使用非默认路径时打 stderr 日志,避免生产误设 WIKI_DB_PATH 静默指向错误库
+/// (review Important-4)。
+pub fn db_path() -> String {
+    std::env::var("WIKI_DB_PATH").unwrap_or_else(|_| DEFAULT_DB_PATH.to_string())
+}
 
 pub fn init() -> Result<Connection> {
-    let db_dir = Path::new(DB_PATH).parent().unwrap();
+    let path = db_path();
+    // 非默认路径时打日志,防止生产误设 WIKI_DB_PATH 静默指向错误库(review Important-4)
+    if path != DEFAULT_DB_PATH {
+        eprintln!("[wiki-query] 使用非默认 DB 路径: {}", path);
+    }
+    let db_dir = Path::new(&path).parent().unwrap_or(Path::new("."));
     std::fs::create_dir_all(db_dir).ok();
 
-    let conn = Connection::open(DB_PATH)?;
+    let conn = Connection::open(&path)?;
+
+    // 并发安全:WAL 模式 + busy_timeout(review C1)。
+    // WAL 允许读写并发(MCP serve 常驻 + git hook sync + 多 agent 同时访问),
+    // busy_timeout 让短时锁竞争自动重试而非立即 SQLITE_BUSY 失败。
+    conn.pragma_update(None, "journal_mode", "WAL")?;
+    conn.pragma_update(None, "busy_timeout", 5000)?;
 
     conn.execute_batch(
         "CREATE TABLE IF NOT EXISTS documents (
@@ -19,85 +38,19 @@ pub fn init() -> Result<Connection> {
             type TEXT,
             updated TEXT,
             tags TEXT,
-            content TEXT,
-            word_count INTEGER,
             modified_at TEXT
         );
-        CREATE INDEX IF NOT EXISTS idx_name ON documents(name);
-        CREATE INDEX IF NOT EXISTS idx_type ON documents(type);"
+        CREATE INDEX IF NOT EXISTS idx_type ON documents(type);
+        -- FTS5 自有内容表(不用 content='documents',避免外部内容表的更新陷阱)。
+        -- 字段值在 sync 时由 fts::tokenize_for_fts 做 jieba 预分词,
+        -- 使 unicode61 tokenizer 能按词命中中文。
+        -- 注意:FTS5 的 content 是倒排索引的原始数据(必须存才能检索),不是「存档正文」。
+        -- documents 表不存正文(符合 v5「SQLite 只存元数据」原则)。
+        CREATE VIRTUAL TABLE IF NOT EXISTS documents_fts USING fts5(
+            path, name, description, type, tags, content,
+            tokenize='unicode61'
+        );"
     )?;
 
     Ok(conn)
-}
-
-pub fn search(query: &str) {
-    let conn = init().expect("Failed to init database");
-
-    let pattern = format!("%{}%", query);
-    let mut stmt = conn
-        .prepare(
-            "SELECT path, name, description, type, updated, tags
-             FROM documents
-             WHERE name LIKE ?1
-                OR description LIKE ?1
-                OR tags LIKE ?1
-                OR path LIKE ?1
-             ORDER BY updated DESC
-             LIMIT 20",
-        )
-        .expect("Failed to prepare statement");
-
-    let results: Vec<SearchResult> = stmt
-        .query_map(rusqlite::params![pattern], |row| {
-            Ok(SearchResult {
-                path: row.get(0)?,
-                name: row.get(1)?,
-                description: row.get(2)?,
-                doc_type: row.get(3)?,
-                updated: row.get(4)?,
-                tags: row.get(5)?,
-            })
-        })
-        .expect("Query failed")
-        .filter_map(|r| r.ok())
-        .collect();
-
-    let json = serde_json::to_string_pretty(&results).unwrap();
-    println!("{}", json);
-}
-
-pub fn show(path: &str) {
-    let conn = init().expect("Failed to init database");
-
-    let result = conn.query_row(
-        "SELECT id, path, name, description, type, updated, tags, content, word_count, modified_at
-         FROM documents
-         WHERE path = ?1",
-        rusqlite::params![path],
-        |row| {
-            Ok(Document {
-                id: row.get(0)?,
-                path: row.get(1)?,
-                name: row.get(2)?,
-                description: row.get(3)?,
-                doc_type: row.get(4)?,
-                updated: row.get(5)?,
-                tags: row.get(6)?,
-                content: row.get(7)?,
-                word_count: row.get(8)?,
-                modified_at: row.get(9)?,
-            })
-        },
-    );
-
-    match result {
-        Ok(doc) => {
-            let json = serde_json::to_string_pretty(&doc).unwrap();
-            println!("{}", json);
-        }
-        Err(_) => {
-            eprintln!("Document not found: {}", path);
-            std::process::exit(1);
-        }
-    }
 }

@@ -61,6 +61,7 @@ obsidian/
 | [[wiki/obsidian.md\|Obsidian]] | Obsidian CLI、知识仓库管理 |
 | [[wiki/yazi.md\|Yazi]] | 文件管理器配置、主题、配色 |
 | [[wiki/zhipu-mcp.md\|智谱 MCP]] | MCP 服务器配置、Web 抓取问题排查 |
+| [[wiki/wiki-query-deploy.md\|wiki-query MCP 部署]] | wiki-query MCP 安装/配置/跨平台分发（GitHub Actions）与踩坑 |
 
 ---
 
@@ -74,7 +75,7 @@ obsidian/
 | `claude-code/` | Claude Code 配置、CLI、MCP | claude-code-p1、ecc、zhipu-mcp、stop-hook-design |
 | `dev/` | 编程语言、开发实践 | dev-practice、frontend、rust |
 | `learning/` | 学习方法论、思维模型 | charlie-munger-mental-models、learning |
-| `projects/` | 项目规划、进度记录 | email-assistant-journey、project-roadmap、publish-plan、mimocode-reading-guide |
+| `projects/` | 项目规划、进度记录 | email-assistant-journey、project-roadmap、publish-plan、mimocode-reading-guide、wiki-query-deploy-references |
 | `security/` | 安全实践、密钥管理 | feedback_git-token-security |
 | `tools/` | CLI 工具、编辑器配置 | obsidian、opencode、yazi-*、token-management |
 

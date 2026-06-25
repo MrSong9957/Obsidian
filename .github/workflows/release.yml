@@ -1,0 +1,73 @@
+# wiki-query 三平台预编译发布
+# 触发: 推送 v* 标签 → 自动在 windows/macos/linux 编译 → 挂到 GitHub Release
+name: Release wiki-query
+
+on:
+  push:
+    tags:
+      - "v*"
+
+# 同时只跑一个 release,避免重复产物冲突
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write   # 需要写权限才能创建 Release / 上传资产
+
+jobs:
+  build:
+    name: Build ${{ matrix.os-name }} (${{ matrix.target }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false   # 一个平台失败不影响其他平台继续
+      matrix:
+        include:
+          # Windows x86_64
+          - runner: windows-latest
+            target: x86_64-pc-windows-msvc
+            os-name: windows
+            artifact: wiki-query-windows-x86_64.exe
+            binary: wiki-query.exe
+          # macOS Intel
+          - runner: macos-13
+            target: x86_64-apple-darwin
+            os-name: macos
+            artifact: wiki-query-macos-x86_64
+            binary: wiki-query
+          # macOS Apple Silicon (M1/M2/M3)
+          - runner: macos-latest
+            target: aarch64-apple-darwin
+            os-name: macos
+            artifact: wiki-query-macos-aarch64
+            binary: wiki-query
+          # Linux x86_64
+          - runner: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            os-name: linux
+            artifact: wiki-query-linux-x86_64
+            binary: wiki-query
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Build release binary
+        working-directory: db/wiki-query
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Rename and stage artifact
+        shell: bash
+        run: |
+          mv "db/wiki-query/target/${{ matrix.target }}/release/${{ matrix.binary }}" "${{ matrix.artifact }}"
+          ls -lh "${{ matrix.artifact }}"
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.artifact }}
+          generate_release_notes: true

@@ -1,10 +1,10 @@
 ---
 name: Yazi 文本换行配置调试
 description: yazi 预览不换行问题的排查过程 — 从错误路径到 PowerShell 写入陷阱
-type: concept
+type: debugging-story
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: yazi, config, powershell, wrap, windows
+source: self
 ---
 
 # Yazi 文本换行配置调试

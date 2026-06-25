@@ -2,9 +2,9 @@
 name: 开发实践
 description: TDD/代码质量/调试方法论/代码讲解/提示词技巧/KV缓存设计/协作提示词 — 遇到开发质量、调试方法、提示词优化问题时参考
 type: concept
-updated: 2026-04-17
-tags: dev, tdd, debugging, prompt, code-quality
-source: https://example.com
+updated: 2026-06-22
+tags: dev, tdd, debugging, prompt, code-quality, karpathy, ai-workflow
+source: sources/dev/dev-practice.md
 ---
 # 开发实践
 
@@ -23,6 +23,10 @@ source: https://example.com
 - **先确认操作上下文，再假设代码 bug**：用户描述的"操作现场"是最关键线索
 
 > 详细内容见 sources/dev/dev-practice.md
+
+## Karpathy 拼贴工作流
+
+→ [[wiki/karpathy-methodology|Karpathy 方法论 — 拼贴工作流及其他 5 套方法论]]
 
 ## 代码质量约束
 

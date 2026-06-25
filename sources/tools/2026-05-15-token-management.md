@@ -1,10 +1,10 @@
 ---
-name: 2026-05-15-token-management
-description: 一句话说明
-type: concept
-updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+name: Token 获取与管理
+description: 各平台 API token 获取方式与集中管理方案 — 智谱/DeepSeek/GitHub/QQ/Gmail/163/Outlook/Docker Hub 的 key 申请流程与 D:\Files\.env 统一管理架构
+type: reference
+updated: 2026-05-15
+tags: token, credentials, env, security, api-key
+source: self
 ---
 # Token 获取与管理
 

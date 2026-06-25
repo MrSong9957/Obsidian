@@ -44,6 +44,7 @@
 - MiMo-Code 源码阅读：4 模块 19 章路线（参考 Learn ShareAI s01-s19），核心闭环→系统加固→任务运行时→多Agent → [[sources/projects/mimocode-reading-guide.md|详情]]([sources/projects/mimocode-reading-guide.md](sources/projects/mimocode-reading-guide.md))
 - cc switch 重置：切换 API KEY 时用过时模板重写 settings.json，通用配置已修正存入 → [[sources/claude-code/claude-code-setup-references.md#cc switch 通用配置模板|详情]](sources/claude-code/claude-code-setup-references.md)
 - 缓存优化：第三方 API 缓存命中率低，根因是 `cch` 哈希值变化；设置 `CLAUDE_CODE_ATTRIBUTION_HEADER=0` 可部分解决 → [[sources/claude-code/claude-code-setup-references.md#缓存优化（Prompt Caching）|详情]](sources/claude-code/claude-code-setup-references.md)
+- wiki-query MCP：exe 移出 target 解耦；ZCode 读 `~/.zcode/cli/config.json` 的 `mcp.servers`（非 .mcp.json）；跨平台用 GitHub Actions 推 tag 触发 → [[wiki/wiki-query-deploy.md|详情]](wiki/wiki-query-deploy.md)
 
 ## 知识库索引
 - 本文件未覆盖的内容 → [README.md](README.md)（冷数据，按领域导航）

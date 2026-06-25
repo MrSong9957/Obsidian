@@ -1,10 +1,10 @@
 ---
-name: publish-plan
-description: 一句话说明
-type: concept
+name: Email Assistant 多平台发布方案与一键发布工具
+description: Email Assistant 项目 10 平台发布策略（GitHub/Dev.to/知乎/小红书/X/Reddit/抖音/B站/YouTube）+ 统一内容模板 + publish.sh 一键分发脚本设计
+type: process
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: project, publish, email-assistant, release, automation
+source: self
 ---
 # Email Assistant 多平台发布方案与一键发布工具
 
