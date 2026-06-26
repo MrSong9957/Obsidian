@@ -321,3 +321,100 @@ if response.stop_reason != "tool_use":
 ## 一句话记住
 
 **Agent Loop 的本质，是把"模型的动作意图"变成"真实执行结果"，再把结果送回模型继续推理。**
+
+
+---
+
+# 新版 Agent 循环
+
+根据 [Learn Claude Code](https://learn.shareai.run/zh/s01/) 的核心架构设计，**Agent Loop（智能体循环）** 是整个系统最基础、最重要的内核。它的核心思想是 **“One Loop Is All You Need”**——只需一个核心循环，就能让静态的大模型具备持续在真实世界行动的能力。
+
+以下是关于 Agent Loop 的详细内容提炼：
+
+---
+
+## 1. 核心痛点与解决方案
+
+* **痛点：** 单纯调用大模型时，模型即使输出了正确的指令（如 Bash 命令），它也无法自己执行，更无法看到执行结果后继续推理。人类必须手动充当“中间层”（复制命令 $\rightarrow$ 运行 $\rightarrow$ 粘贴结果 $\rightarrow$ 再提问）。
+* **解决方案：** 用一个自动化的 `while True` 循环接管这个过程。模型负责**决策**（要不要用工具、用什么工具），而代码框架（Harness 层）负责**执行**（替模型跑命令、把结果喂回给模型）。
+
+---
+
+## 2. 最小运行内核（Minimal Harness）
+
+整个 Agent 循环的底层运转逻辑非常纯粹，只需要 5 个步骤：
+
+```mermaid
+graph TD
+    Start([开始: 用户提问]) --> API[1. 发送 messages + tools 给 LLM]
+    API --> Check{2. 检查模型是否调用工具?}
+    Check -- No (stop_reason != tool_use) --> End([3. 结束退出])
+    Check -- Yes (stop_reason == tool_use) --> Execute[4. 执行对应的工具命令]
+    Execute --> Append[5. 将工具结果作为 user 消息追加]
+    Append --> API
+
+```
+
+### 核心代码逻辑（约 30 行）
+
+```python
+def agent_loop(messages):
+    while True:
+        # 1. 投喂当前上下文与工具定义
+        response = client.messages.create(
+            model=MODEL, system=SYSTEM, messages=messages, tools=TOOLS
+        )
+        # 2. 记录 Assistant 的回答
+        messages.append({"role": "assistant", "content": response.content})
+        
+        # 3. 检查退出条件：模型说“做完了”（不再需要工具）就退出
+        if response.stop_reason != "tool_use":
+            return
+            
+        # 4. 遍历并执行工具（例如运行 Bash）
+        results = []
+        for block in response.content:
+            if block.type == "tool_use":
+                output = run_bash(block.input["command"])
+                results.append({
+                    "type": "tool_result",
+                    "tool_use_id": block.id,
+                    "content": output,
+                })
+        
+        # 5. 把工具结果塞回上下文，开启下一轮循环
+        messages.append({"role": "user", "content": results})
+
+```
+
+---
+
+## 3. 教学版 vs. Claude Code 生产级的差异
+
+虽然底层核心都是上述的 `while` 循环，但 Claude Code 源码（`src/query.ts`）为了应对复杂的工业级场景，做了大量的安全保护与升级：
+
+### ① 循环触发机制不同
+
+* **教学版：** 依赖 API 返回的 `stop_reason === "tool_use"` 来判断是否继续。
+* **生产级：** 在流式传输（Streaming）响应中，`stop_reason` 往往不可靠。Claude Code 采用了 `needsFollowUp` 标志位，**只要在流式文本中检测到 `tool_use` 块，就立刻将该标志设为 `true**`，确保循环继续。
+
+### ② 状态管理（State 对象）更加复杂
+
+教学版只维护了一个 `messages[]` 数组，而 Claude Code 的 State 包含了 **10 个核心字段**用于追踪状态，例如：
+
+* `toolUseContext`：处理工具权限与信号。
+* `autoCompactTracking` & `hasAttemptedReactiveCompact`：用于上下文爆满时的[自动压缩](https://learn.shareai.run/zh/s08)与重试。
+* `maxOutputTokensRecoveryCount` & `maxOutputTokensOverride`：处理 Token 超限时的恢复策略（如自动将 8K 限制升级至 64K 覆盖）。
+* `turnCount`：轮次计数，防止陷入死循环（`maxTurns` 保护）。
+
+### ③ 流式工具并行执行
+
+Claude Code 引入了 `StreamingToolExecutor`。当模型还在一行行流式输出命令时，只要该工具被评估为“并发安全（concurrency-safe）”，系统就会**在模型生成的同时开始异步并行执行工具**，无需等待整条消息生成完毕，极大提升了响应速度。
+
+### ④ 多路由退出与保护机制
+
+生产级循环不仅有“任务完成”这一条退出路径，还增加了诸如：费用超限（Budget Limit）、Prompt 过长、模型报错、用户强行中止（Abort）、钩子拦截（Hook Stop）以及结构化输出验证失败等多种兜底恢复策略。
+
+---
+
+> **核心总结：** > 无论上层扩展多么复杂（无论是多 Agent 协作、上下文压缩还是并发调度），整个 Agent 系统的基石始终是这个 **“大模型决策 $\rightarrow$ 框架执行工具 $\rightarrow$ 结果喂回上下文”** 的闭环。先理解了这个核心循环，后面的一切机制才能自然展开。
