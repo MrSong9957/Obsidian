@@ -29,3 +29,8 @@ updated: 2026-06-25
 | [[wiki/yazi\|Yazi 文件管理器]] | Yazi 配置经验——主题、配色、Windows 路径 | cli, yazi, config, theme |
 | [[wiki/zhipu-mcp\|智谱 MCP]] | 智谱 MCP 服务器配置速查/Web 抓取缓存问题 | zhipu, mcp, web-scraping |
 | [[wiki/wiki-query-deploy\|wiki-query MCP 部署]] | wiki-query MCP 安装/配置/跨平台分发（GitHub Actions）与踩坑 | wiki-query, mcp, deploy, github-actions, release |
+| [[wiki/mimocode-prompt-architecture\|MiMo Code 提示词注入架构]] | MiMo Code 系统提示词 4 层管道、权限系统、工具限制 | mimocode, prompt, architecture |
+| [[wiki/claude-code-prompt-architecture\|Claude Code 提示词架构]] | Claude Code 10 层治理架构、系统提示词构造、自动模式分类器 | claude-code, prompt, architecture |
+| [[wiki/mimocode-memory-system\|MiMo Code 记忆系统架构]] | 三层记忆文件结构、写入权限、搜索机制、提升逻辑 | mimocode, memory, architecture |
+| [[wiki/streaming-architecture\|流式架构模式]] | EventBus 模式、渲染器分离、压缩集成、4 层流式管道 | streaming, architecture, event-bus |
+| [[wiki/mimocode-ui-rendering\|MiMo Code UI 渲染管道]] | 屏幕缓冲区 + diff 系统、布局计算、光标定位 | mimocode, ui, rendering, terminal |
