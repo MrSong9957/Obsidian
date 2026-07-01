@@ -112,6 +112,7 @@ source: sources/claude-code/claude-code-setup-references.md
 - **per-segment 隔离**：每段独立 try/except
 - **状态栏只在 idle 刷新**
 - **文档须与源码同步**
+- **脚本部署检查**：`cc switch` 或环境重置后需验证 `~/.claude/scripts/statusline.py` 存在，必要时从 `/vault/sources/claude-code/statusline.py` 重新复制
 
 ---
 

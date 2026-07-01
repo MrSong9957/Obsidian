@@ -33,10 +33,18 @@ def cyan(t):    return _c(96, t)    # bright cyan   — billing/metrics
 # ============================================================
 def get_git_branch() -> str:
     try:
+        cwd = os.environ.get("CLAUDE_WORKING_DIR", ".")
+        # First try: git branch --show-current (works for normal repos)
         result = subprocess.run(
-            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
-            capture_output=True, text=True, timeout=3,
-            cwd=os.environ.get("CLAUDE_WORKING_DIR", "."),
+            ["git", "branch", "--show-current"],
+            capture_output=True, text=True, timeout=3, cwd=cwd,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            return result.stdout.strip()
+        # Fallback: git symbolic-ref HEAD (works for empty repos with no commits)
+        result = subprocess.run(
+            ["git", "symbolic-ref", "--short", "HEAD"],
+            capture_output=True, text=True, timeout=3, cwd=cwd,
         )
         if result.returncode == 0:
             return result.stdout.strip()
