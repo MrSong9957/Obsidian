@@ -49,3 +49,4 @@ db/wiki-query/wiki-query
 # SQLite 数据库（运行 wiki-query sync 可重建）
 db/wiki.db
 db/wiki-query/db/wiki.db
+.codex/
