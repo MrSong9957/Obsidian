@@ -157,17 +157,18 @@
 ---
 
 # 本地 Wiki 检索工具说明
-仓库内置了一个高性能的 Rust 查询工具,产物路径为 `./db/wiki-query/target/release/wiki-query.exe`。
+仓库内置了一个高性能的 Rust 查询工具,产物路径为 `./db/wiki-query/wiki-query.exe`。
 
 **v5 纯索引服务**:agent 用自己的文件工具读写 vault Markdown,wiki-query 只管 SQLite 索引。成品只保留两个 CLI 子命令:
 - `wiki-query sync` — 重建/更新 SQLite 索引(运维,git post-commit hook 用)
 - `wiki-query serve` — 启动 MCP server(agent 通过 stdio 交互)
 
-**4 个 MCP 工具**(agent 自动调用):
+**5 个 MCP 工具**(agent 自动调用):
 - `wiki_search "<关键词>"` — FTS5 全文检索,返回 top 10 元数据(用于找知识 / 写入前查重)
 - `wiki_list` — 按 tag/type/dir 结构化浏览
 - `wiki_sync` — 同步索引 + 查重报告(scope=incremental/full);agent 写完文件后调
 - `wiki_get_project_rules` — 返回可注入到项目根指令文件的规则文本(首次接入时用)
+- `wiki_check_scope` — 判断文件是否在 wiki 范围内(sources/wiki/templates);AI 提炼记忆前调用
 
 **读写 vault 正文** — agent 用自己的文件工具干,wiki-query 不碰正文。
 

@@ -6,7 +6,7 @@
 
 ```
 obsidian/
-├── .claude/CLAUDE.md                # Schema 层（LLM 行为规则 + 分类规则）
+├── CLAUDE.md / AGENTS.md            # Schema 层（LLM 行为规则 + 分类规则）
 ├── MEMORY.md                        # 记忆索引 + 管理规则（热数据）
 ├── README.md                        # 知识库导航索引（冷数据）
 ├── LLM-WIKI-ARCHITECTURE.md         # 三层架构设计文档
@@ -19,8 +19,8 @@ obsidian/
 │   ├── projects/                    # 项目规划、进度记录
 │   ├── security/                    # 安全实践、密钥管理
 │   └── tools/                       # CLI 工具、编辑器配置
-├── skills/                          # 技能定义（7 个）
-└── templates/                       # 页面模板（3 个）
+├── skills/                          # 技能定义（16 个）
+└── templates/                       # 页面模板（4 个）
 ```
 
 ---
@@ -87,11 +87,20 @@ obsidian/
 |------|------|
 | [[skills/agent-builder/SKILL.md\|agent-builder]] | 构建 AI Agent |
 | [[skills/auto-optimize/SKILL.md\|auto-optimize]] | 自动优化技能 |
+| [[skills/claude-code-config-health/SKILL.md\|claude-code-config-health]] | Claude Code 配置健康检查 |
+| [[skills/comprehensive-testing/SKILL.md\|comprehensive-testing]] | 系统性回归强化测试 |
 | [[skills/docker-dev-container/SKILL.md\|docker-dev-container]] | Docker 容器开发 |
+| [[skills/ecc-status-check/SKILL.md\|ecc-status-check]] | ECC 插件状态检查 |
+| [[skills/frontend-design/SKILL.md\|frontend-design]] | 前端视觉设计指导 |
+| [[skills/kimi-skills-finder/SKILL.md\|kimi-skills-finder]] | 搜索与发现技能 |
 | [[skills/mcp-builder/SKILL.md\|mcp-builder]] | MCP 服务器构建 |
 | [[skills/obsidian-link/SKILL.md\|obsidian-link]] | Obsidian 仓库链接 |
 | [[skills/obsidian-remember/SKILL.md\|obsidian-remember]] | 知识仓库管理 |
 | [[skills/pdf/SKILL.md\|pdf]] | PDF 处理 |
+| [[skills/playwright-cli/SKILL.md\|playwright-cli]] | 浏览器自动化测试 |
+| [[skills/project-artifact/SKILL.md\|project-artifact]] | 生成项目状态工件页 |
+| [[skills/skill-creator/SKILL.md\|skill-creator]] | 创建与优化技能 |
+| [[skills/wiki-mcp/SKILL.md\|wiki-mcp]] | wiki-query MCP 知识库操作 |
 
 ---
 
@@ -101,7 +110,7 @@ obsidian/
 
 1. **原始资料层** (`sources/`) — 外部仓库、原始材料，可读写，禁止删除
 2. **Wiki 层** (`wiki/`) — 结构化知识，LLM 可读写
-3. **Schema 层** (`.claude/CLAUDE.md`) — LLM 行为规则
+3. **Schema 层** (`CLAUDE.md` / `AGENTS.md`) — LLM 行为规则
 
 ### 记忆查找优先级
 

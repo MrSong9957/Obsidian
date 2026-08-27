@@ -157,7 +157,7 @@
 ---
 
 # 本地 Wiki 检索工具说明
-仓库内置了一个高性能的 Rust 查询工具,产物路径为 `./db/wiki-query/target/release/wiki-query.exe`。
+仓库内置了一个高性能的 Rust 查询工具,产物路径为 `./db/wiki-query/wiki-query.exe`。
 
 **v5 纯索引服务**:agent 用自己的文件工具读写 vault Markdown,wiki-query 只管 SQLite 索引。成品只保留两个 CLI 子命令:
 - `wiki-query sync` — 重建/更新 SQLite 索引(运维,git post-commit hook 用)

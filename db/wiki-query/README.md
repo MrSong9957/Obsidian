@@ -323,7 +323,7 @@ AI 会自动调 `wiki_get_project_rules`，拿到一份使用说明书，然后�
 
 ```bash
 cd E:\Files\Obsidian
-db/wiki-query/target/release/wiki-query.exe sync
+db/wiki-query/wiki-query.exe sync
 ```
 
 **方法 2：配 git hook 自动跑（推荐，重度编辑时用）**
@@ -333,7 +333,7 @@ db/wiki-query/target/release/wiki-query.exe sync
 ```sh
 #!/bin/sh
 cd "$(git rev-parse --show-toplevel)"
-./db/wiki-query/target/release/wiki-query.exe sync > /dev/null 2>&1
+./db/wiki-query/wiki-query.exe sync > /dev/null 2>&1
 ```
 
 以后每次 `git commit`，索引自动更新。
@@ -345,7 +345,7 @@ cd "$(git rev-parse --show-toplevel)"
 ```bash
 rm db/wiki.db
 cd E:\Files\Obsidian
-db/wiki-query/target/release/wiki-query.exe sync
+db/wiki-query/wiki-query.exe sync
 ```
 
 ---
