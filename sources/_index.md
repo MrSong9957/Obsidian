@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-06-25
+updated: 2026-08-30
 ---
 
 # 原始资料索引
@@ -11,6 +11,7 @@ updated: 2026-06-25
 |--------|------|
 | `agent/` | Agent 架构、多代理系统、ShareAI 系列 |
 | `claude-code/` | Claude Code 配置、CLI、MCP 集成、system-prompts |
+| `DeepSeek-Harness/` | DeepSeek Harness、AI IDE 设计资料 |
 | `dev/` | 编程语言、开发实践、前端/后端技术 |
 | `feedback/` | 用户反馈、使用经验、改进建议 |
 | `learning/` | 学习方法论、思维模型、认知科学 |
@@ -52,6 +53,16 @@ updated: 2026-06-25
 | [[sources/claude-code/ecc-references\|ECC Hooks 完整参考]] | 所有 Hook 作用、ECC_HOOK_PROFILE 档位对照 |
 | [[sources/claude-code/mimocode-mcp-config\|MiMoCode MCP 配置详解]] | MiMoCode 与 Claude Code 的 MCP 配置差异、wiki-query 接入完整流程 |
 | [[sources/claude-code/mimocode-mcp-config-references\|MiMoCode MCP 配置详细参考]] | 完整的 MiMoCode MCP 配置调试过程、配置文件位置对比、验证步骤 |
+
+## DeepSeek-Harness/
+
+| 文件 | 说明 |
+|------|------|
+| [[sources/DeepSeek-Harness/AI-IDE\|AI IDE 产品需求文档（PRD）]] | Rust 原生 AI IDE 设计：重构人/AI/代码/文档/插件协作方式，组件级动态插件架构 |
+| [[sources/DeepSeek-Harness/DeepSeek-Harness-Context-Essentials\|DeepSeek Harness Context Essentials]] | 经 deepseek-ai/deepseek-harness 源码核对的上下文保存/组装/压缩 5 机制 |
+| [[sources/DeepSeek-Harness/VS Code 插件\|VS Code 插件 MVP：结构化意图 → 代码]] | 验证"结构化意图描述比聊天 Prompt 更稳定生成代码"的插件 MVP 设计 |
+
+> 另含架构图 image.png。
 
 ## dev/
 

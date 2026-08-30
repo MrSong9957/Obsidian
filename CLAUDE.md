@@ -91,6 +91,7 @@
 |--------|------|--------|
 | `agent/` | Agent 架构、多代理系统、ShareAI 系列 | agent, proxy, team, workflow, harness |
 | `claude-code/` | Claude Code 配置、CLI、MCP 集成、system-prompts | claude, mcp, plugin, superpowers, hook |
+| `DeepSeek-Harness/` | DeepSeek Harness、AI IDE 设计资料 | deepseek, harness, context, ai-ide |
 | `dev/` | 编程语言、开发实践、前端/后端技术 | rust, frontend, tdd, debugging, code-quality |
 | `feedback/` | 用户反馈、使用经验、改进建议 | feedback, experience, suggestion |
 | `learning/` | 学习方法论、思维模型、认知科学 | learning, methodology, cognition, mental-model |

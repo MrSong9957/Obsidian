@@ -19,7 +19,7 @@ obsidian/
 │   ├── projects/                    # 项目规划、进度记录
 │   ├── security/                    # 安全实践、密钥管理
 │   └── tools/                       # CLI 工具、编辑器配置
-├── skills/                          # 技能定义（16 个）
+├── skills/                          # 技能定义（17 个）
 └── templates/                       # 页面模板（4 个）
 ```
 
@@ -73,6 +73,7 @@ obsidian/
 |--------|------|----------|
 | `agent/` | Agent 架构、多代理系统 | agent-arch-p1/p2、learn-shareai、openai-harness |
 | `claude-code/` | Claude Code 配置、CLI、MCP | claude-code-p1、ecc、zhipu-mcp、stop-hook-design |
+| `DeepSeek-Harness/` | DeepSeek Harness、AI IDE 设计资料 | deepseek-harness-context-essentials、ai-ide、vs-code-插件 |
 | `dev/` | 编程语言、开发实践 | dev-practice、frontend、rust |
 | `learning/` | 学习方法论、思维模型 | charlie-munger-mental-models、learning |
 | `projects/` | 项目规划、进度记录 | email-assistant-journey、project-roadmap、publish-plan、mimocode-reading-guide、wiki-query-deploy-references |
@@ -88,6 +89,7 @@ obsidian/
 | [[skills/agent-builder/SKILL.md\|agent-builder]] | 构建 AI Agent |
 | [[skills/auto-optimize/SKILL.md\|auto-optimize]] | 自动优化技能 |
 | [[skills/claude-code-config-health/SKILL.md\|claude-code-config-health]] | Claude Code 配置健康检查 |
+| [[skills/code-review/code-review.md\|code-review]] | PR 代码审查 |
 | [[skills/comprehensive-testing/SKILL.md\|comprehensive-testing]] | 系统性回归强化测试 |
 | [[skills/docker-dev-container/SKILL.md\|docker-dev-container]] | Docker 容器开发 |
 | [[skills/ecc-status-check/SKILL.md\|ecc-status-check]] | ECC 插件状态检查 |

@@ -14,7 +14,9 @@
 - `name`(必有):文档标题,检索展示用
 - `description`(必有):一句话说明,检索展示用
 - `type`(建议):如 `concept` / `reference` / `summary` / `guide` 等
+- `updated`(建议):最后更新日期,格式 YYYY-MM-DD
 - `tags`(建议):逗号分隔的标签
+- `source`(建议):溯源信息,指向记忆出处、sources/ 文件或外部 URL
 
 缺 `name`/`description` 的文档,检索时元数据不全(不致命,但影响展示)。`type` 不强制白名单。
 
@@ -27,7 +29,7 @@
    - Codex:`~/.codex/memories/*.md`
    - Cursor:`.cursor/rules/*.mdc`
    - OpenCode:`.opencode/memory/*`(格式依插件而定)
-2. **逐篇查重**(`wiki_search`):对每篇记忆内容,调 `wiki_search` 用关键词查,看 vault 里有没有相似的
+2. **逐篇查重**(`wiki_check_scope` + `wiki_search`):对每篇记忆文件,先调 `wiki_check_scope` 判断路径是否在 wiki 范围内(sources/wiki/templates)——在范围内说明已是 wiki 内容,跳过;不在范围内再调 `wiki_search` 用关键词查,看 vault 里有没有相似的
    - 相似:用文件工具读 vault 文档全文 → 决定合并/追加
    - 无相似:用文件工具新建 vault 文档
 3. **写 vault**(你自己的文件工具):用文件工具把提炼后的内容写入 vault(frontmatter 按上述约定)

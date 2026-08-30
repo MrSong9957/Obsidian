@@ -60,11 +60,11 @@ db/
 ## 构建
 
 ```bash
-cd db/wiki-query
-cargo build --release
+cd E:\Files\Obsidian
+bash db/wiki-query/build.sh
 ```
 
-编译产物位于 `target/release/wiki-query.exe`，已复制到 `db/wiki-query/wiki-query.exe`。
+脚本执行 `cargo build --release`，并把产物从 `target/release/` 拷贝到固定位置 `db/wiki-query/wiki-query[.exe]`（仅 `cargo build` 不会拷贝）。
 
 ## 依赖
 

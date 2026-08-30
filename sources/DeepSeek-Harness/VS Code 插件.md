@@ -1,3 +1,12 @@
+---
+name: VS Code 插件 MVP：结构化意图 → 代码
+description: VS Code 插件 MVP 设计——验证"用户以结构化方式描述函数是否比普通聊天 Prompt 更高效稳定地生成正确代码"，第一阶段仅 Extension + LLM HTTP API
+type: reference
+updated: 2026-08-25
+tags: [vscode, extension, llm, mvp]
+source: self
+---
+
 # VS Code 插件 MVP：结构化意图 → 代码
 
 ## 1. 核心目标

@@ -1,11 +1,11 @@
-```yaml
+---
 name: Obsidian AI Skill 实测清单：9大Agent联动工具与本地知识库安全实践
 description: 提供9个高星Obsidian AI Skill实测排名、安装命令及Git安全回滚策略，解决本地知识库AI自动化与安全管控问题。
 type: resource-list
-updated: 2024-07-08
+updated: 2026-08-25
 tags: [obsidian, ai-skill, agent, knowledge-management, tool-list, local-first, git-safety]
 source: https://mp.weixin.qq.com/s/SMLmwZ8jUUoqdL-LHnx4QQ
-```
+---
 
 ### 💡 核心价值
 本文并非泛泛的工具推荐，而是基于“本地知识库+AI Agent全链路”场景的**实测验证清单**。作者针对企业手册上云受限、本地检索效率低的痛点，按GitHub实时Stars重排了9个核心Skill，并补充了插件组合与安全兜底方案，直接解决了“AI操作Vault怕丢数据”和“Skill太多不知装哪个”两个关键阻碍。

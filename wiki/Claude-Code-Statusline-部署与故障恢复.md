@@ -1,3 +1,12 @@
+---
+name: Claude Code Statusline 部署与故障恢复
+description: 状态栏运维手册——在新 Claude Code 环境恢复状态栏或排障：settings.json/scripts 部署结构、test_statusline.py 回归测试与 CC Safety Net 恢复流程
+type: guide
+updated: 2026-08-25
+tags: [claude-code, statusline, safety-net, ops]
+source: self
+---
+
 # Claude Code Statusline 部署与故障恢复
 
 **唯一权威恢复手册** — 在新 Claude Code 环境中恢复状态栏，或状态栏异常时排障。

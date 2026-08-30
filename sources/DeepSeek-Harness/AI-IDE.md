@@ -1,3 +1,12 @@
+---
+name: AI IDE 产品需求文档（PRD）
+description: 面向 AI 时代的软件开发环境 PRD——以 Rust 原生编辑器重构人、AI、代码、文档与插件的协作方式，含组件级动态插件架构
+type: reference
+updated: 2026-08-25
+tags: [ai-ide, rust, vibe-coding, prd]
+source: self
+---
+
 # AI IDE 产品需求文档（PRD）
 
 ## 1. 产品定位

@@ -1,11 +1,11 @@
-```yaml
+---
 name: Agent驱动Rust学习：以Codex为地图构建Coding Agent Runtime能力
 description: 面向Agent/Coding Agent工程师的Codex源码学习路线，强调“用Codex学架构，让Rust被迫升级”
 type: learning-roadmap
 updated: 2026-08-17
 tags: [codex, rust, agent-runtime, coding-agent, just-in-time-learning, mini-codex, openai]
 source: 用户粘贴原文（关于选择B路线后如何学习Codex的深度建议）
-```
+---
 
 ## 💡 核心颠覆点：Codex是地图，mini-Codex才是作业
 

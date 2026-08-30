@@ -1,3 +1,12 @@
+---
+name: DeepSeek Harness Context Essentials
+description: 用 5 个关键机制讲解 DeepSeek Harness 如何保存、组装和压缩模型上下文，全部结论经 deepseek-ai/deepseek-harness 源码核对（master，2026-08-19）
+type: reference
+updated: 2026-08-25
+tags: [deepseek, harness, context, llm]
+source: https://github.com/deepseek-ai/deepseek-harness
+---
+
 # DeepSeek Harness Context Essentials
 
 > 用最关键的 5 个机制理解 DeepSeek Harness 如何保存、组装和压缩模型上下文。
