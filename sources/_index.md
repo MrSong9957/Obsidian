@@ -13,7 +13,6 @@ updated: 2026-08-30
 | `claude-code/` | Claude Code 配置、CLI、MCP 集成、system-prompts |
 | `DeepSeek-Harness/` | DeepSeek Harness、AI IDE 设计资料 |
 | `dev/` | 编程语言、开发实践、前端/后端技术 |
-| `feedback/` | 用户反馈、使用经验、改进建议 |
 | `learning/` | 学习方法论、思维模型、认知科学 |
 | `projects/` | 项目规划、进度记录、发布方案 |
 | `security/` | 安全实践、密钥管理、漏洞分析 |
@@ -71,10 +70,6 @@ updated: 2026-08-30
 | [[sources/dev/dev-practice\|开发实践]] | TDD/调试案例/代码讲解/提示词技巧 |
 | [[sources/dev/frontend\|前端与 UI]] | UI设计原则/终端UI测试/Playwright自动化/技术栈策略 |
 | [[sources/dev/rust\|Rust 学习]] | Rust 语言学习资料 |
-
-## feedback/
-
-（暂无独立文件，反馈内容归入 security/ 等对应目录）
 
 ## learning/
 
