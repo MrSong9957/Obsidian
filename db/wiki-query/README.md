@@ -40,6 +40,8 @@ bash db/wiki-query/build.sh
 
 它会 `cargo build --release`,然后把可执行文件拷到 `db/wiki-query/wiki-query[.exe]`。
 
+binary 是本地构建产物,Git 不携带;新 clone 需先执行本脚本完成构建,MCP 才能启动(Windows 需 Git Bash,WSL 未适配)。
+
 ---
 
 ### 建索引
@@ -54,19 +56,21 @@ db/wiki-query/wiki-query.exe sync
 
 ### 告诉 AI 怎么找它
 
-在你项目根目录创建 `.mcp.json`(如果没有的话),command 指向二进制位置:
+在仓库根目录创建 `.mcp.json`(仓库内已按此配置),经 `serve.sh` 启动器启动:
 
 ```json
 {
   "mcpServers": {
     "wiki": {
-      "command": "<你的 vault 根目录>/db/wiki-query/wiki-query.exe",
-      "args": ["serve"],
-      "cwd": "<你的 vault 根目录>"
+      "command": "bash",
+      "args": ["db/wiki-query/serve.sh"],
+      "cwd": "."
     }
   }
 }
 ```
+
+启动器从自身位置解析仓库根作为 vault root(显式设置的 `WIKI_VAULT_ROOT` 环境变量优先),不需要在任何配置里填写仓库的绝对路径。
 
 重启 AI agent(Claude Code / Cursor / MiMo-Code 等),它就能搜你的知识库了。
 
@@ -322,7 +326,7 @@ AI 会自动调 `wiki_get_project_rules`，拿到一份使用说明书，然后�
 **方法 1：手动跑（偶尔编辑时用）**
 
 ```bash
-cd E:\Files\Obsidian
+cd "$(git rev-parse --show-toplevel)"
 db/wiki-query/wiki-query.exe sync
 ```
 
@@ -344,7 +348,7 @@ cd "$(git rev-parse --show-toplevel)"
 
 ```bash
 rm db/wiki.db
-cd E:\Files\Obsidian
+cd "$(git rev-parse --show-toplevel)"
 db/wiki-query/wiki-query.exe sync
 ```
 
@@ -356,7 +360,7 @@ db/wiki-query/wiki-query.exe sync
 |------|------|------|
 | AI 说搜不到东西 | 索引是空的 | 跑一次 `wiki-query sync` |
 | AI 写了文档但搜不到 | 忘了更新索引 | 让 AI 调 `wiki_sync` |
-| 启动时警告"找不到 wiki/ 目录" | cwd 设错了 | 确认 `.mcp.json` 里的 `cwd` 指向知识库根目录 |
+| 启动时警告"找不到 wiki/ 目录" | 解析出的 vault root 不是仓库根 | 移除外部 `WIKI_VAULT_ROOT`(默认用仓库根)或将其设为 vault 根 |
 | 中文搜不到 | 分词问题 | 跑 sync，系统会用中文分词重建索引 |
 
 ---

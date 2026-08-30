@@ -60,11 +60,13 @@ db/
 ## 构建
 
 ```bash
-cd E:\Files\Obsidian
+cd "$(git rev-parse --show-toplevel)"
 bash db/wiki-query/build.sh
 ```
 
-脚本执行 `cargo build --release`，并把产物从 `target/release/` 拷贝到固定位置 `db/wiki-query/wiki-query[.exe]`（仅 `cargo build` 不会拷贝）。
+在任意 clone 中均可执行:`git rev-parse --show-toplevel` 输出当前仓库根目录，不依赖任何个人绝对路径。脚本执行 `cargo build --release`，并把产物从 `target/release/` 拷贝到固定位置 `db/wiki-query/wiki-query[.exe]`（仅 `cargo build` 不会拷贝）。
+
+二进制是本地构建产物，Git 不携带（已从跟踪中移除）。新 clone 需先执行本节命令完成构建，MCP（`.mcp.json` 经 `db/wiki-query/serve.sh` 启动器）才能启动。Windows 上需使用 Git Bash 执行上述命令与 MCP 启动（WSL 的 bash 未适配）。
 
 ## 依赖
 
@@ -80,7 +82,7 @@ bash db/wiki-query/build.sh
 
 ```markdown
 # 本地 Wiki 检索工具说明
-仓库内置了一个高性能的 Rust 查询工具,产物路径为 `./db/wiki-query/wiki-query.exe`。
+仓库内置了一个高性能的 Rust 查询工具,产物路径为 `./db/wiki-query/wiki-query.exe`。该二进制为本地构建产物,Git 不携带;新 clone 需先在仓库根执行 `bash db/wiki-query/build.sh` 构建,MCP 由 `.mcp.json` 通过 `db/wiki-query/serve.sh` 启动器拉起(见 `db/README.md`)。
 
 **v5 纯索引服务**:agent 用自己的文件工具读写 vault Markdown,wiki-query 只管 SQLite 索引。成品只保留两个 CLI 子命令:
 - `wiki-query sync` — 重建/更新 SQLite 索引(运维,git post-commit hook 用)

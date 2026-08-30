@@ -1,15 +1,15 @@
 # wiki-query MCP 接入指南
 
-把 Obsidian 知识库通过 wiki-query MCP server 暴露给 AI agent。**本地 stdio 传输，无云无服务器**——agent 拉起 wiki-query.exe 子进程，通过管道通信。
+把 Obsidian 知识库通过 wiki-query MCP server 暴露给 AI agent。**本地 stdio 传输，无云无服务器**——agent 经 `db/wiki-query/serve.sh` 启动器拉起 wiki-query 子进程，通过管道通信。
 
 ## 前置准备
 
 ### 1. 编译 release 二进制（首次）
 
 ```bash
-cd E:\Files\Obsidian
+cd "$(git rev-parse --show-toplevel)"
 bash db/wiki-query/build.sh
-# 产物:db/wiki-query/wiki-query.exe
+# 产物:db/wiki-query/wiki-query[.exe](Windows 带 .exe;本地构建产物,Git 不携带)
 ```
 
 > release 首次编译较慢（rmcp + tokio 优化）。日常开发可用 debug 版（`cargo build`，产物在 `target/debug/`）。
@@ -17,8 +17,8 @@ bash db/wiki-query/build.sh
 ### 2. 同步索引（首次 + 每次 git 操作后）
 
 ```bash
-cd E:\Files\Obsidian
-db/wiki-query/wiki-query.exe sync
+cd "$(git rev-parse --show-toplevel)"
+db/wiki-query/wiki-query.exe sync   # Unix/macOS/Linux 产物名无 .exe
 ```
 
 建立/更新 SQLite FTS5 索引（`db/wiki.db`）。建议配 git post-commit hook 自动跑（见下）。
@@ -37,21 +37,21 @@ db/wiki-query/wiki-query.exe sync
 
 ### Claude Code
 
-项目根 `.mcp.json`（仓库内，团队共享）或 `~/.claude/mcp.json`（个人）：
+项目根 `.mcp.json`（仓库内，团队共享，已按此配置）：
 
 ```json
 {
   "mcpServers": {
     "wiki": {
-      "command": "E:\\Files\\Obsidian\\db\\wiki-query\\wiki-query.exe",
-      "args": ["serve"],
-      "cwd": "E:\\Files\\Obsidian"
+      "command": "bash",
+      "args": ["db/wiki-query/serve.sh"],
+      "cwd": "."
     }
   }
 }
 ```
 
-> **关键**：`cwd` 必须是 Obsidian vault 根（含 wiki/ sources/ 目录）。wiki-query serve 以 cwd 作为 vault_root（也可用 `WIKI_VAULT_ROOT` 环境变量指定）。若 cwd 错误，启动时会有 stderr 警告。
+> **关键**：vault root 由 `serve.sh` 启动器解析为仓库根（默认值；如显式设置 `WIKI_VAULT_ROOT` 环境变量则外部值优先），不依赖任何个人绝对路径。若解析结果错误，启动时会有 stderr 警告。前提：Windows 需 Git Bash（`bash` 在 PATH 上）。
 
 配置后重启 Claude Code，`/mcp` 命令应显示 wiki server + 5 个工具。
 
@@ -64,17 +64,14 @@ db/wiki-query/wiki-query.exe sync
   "mcp": {
     "wiki": {
       "type": "local",
-      "command": ["E:\\Files\\Obsidian\\db\\wiki-query\\wiki-query.exe", "serve"],
-      "enabled": true,
-      "environment": {
-        "WIKI_VAULT_ROOT": "E:\\Files\\Obsidian"
-      }
+      "command": ["bash", "db/wiki-query/serve.sh"],
+      "enabled": true
     }
   }
 }
 ```
 
-> 用 `environment.WIKI_VAULT_ROOT` 指定 vault（比依赖 cwd 更可靠，不同 MCP 客户端默认 cwd 不一致）。
+> vault root 由 `serve.sh` 解析为仓库根，无需配置 `environment`。若该客户端不把工作目录设为项目根（相对路径解析失败），改用其支持的变量/绝对写法指向 `db/wiki-query/serve.sh`；确需非仓库根 vault 时才设 `environment.WIKI_VAULT_ROOT`。
 
 ### Cursor
 
@@ -84,29 +81,26 @@ db/wiki-query/wiki-query.exe sync
 {
   "mcpServers": {
     "wiki": {
-      "command": "E:\\Files\\Obsidian\\db\\wiki-query\\wiki-query.exe",
-      "args": ["serve"],
-      "env": {
-        "WIKI_VAULT_ROOT": "E:\\Files\\Obsidian"
-      }
+      "command": "bash",
+      "args": ["db/wiki-query/serve.sh"]
     }
   }
 }
 ```
 
+> vault root 由 `serve.sh` 解析为仓库根。若 Cursor 的工作目录不是项目根（启动失败提示找不到脚本），改用其支持的写法指向 `db/wiki-query/serve.sh`。
+
 ### ZCode
 
-ZCode 的 MCP 配置（参考其文档，格式类似）：
+仓库根 `.mcp.json` 已按此配置（ZCode stdio 支持 `command`/`args`/`cwd`/`env` 字段）：
 
 ```json
 {
   "mcpServers": {
     "wiki": {
-      "command": "E:\\Files\\Obsidian\\db\\wiki-query\\wiki-query.exe",
-      "args": ["serve"],
-      "env": {
-        "WIKI_VAULT_ROOT": "E:\\Files\\Obsidian"
-      }
+      "command": "bash",
+      "args": ["db/wiki-query/serve.sh"],
+      "cwd": "."
     }
   }
 }
@@ -119,7 +113,7 @@ ZCode 的 MCP 配置（参考其文档，格式类似）：
 ```sh
 #!/bin/sh
 cd "$(git rev-parse --show-toplevel)"
-./db/wiki-query/wiki-query.exe sync > /dev/null 2>&1
+./db/wiki-query/wiki-query.exe sync > /dev/null 2>&1   # Unix/macOS/Linux 产物名无 .exe
 ```
 
 ```bash
@@ -133,17 +127,17 @@ chmod +x .git/hooks/post-commit  # Unix;Windows 用 git bash 或直接运行
 ### 方法 1：MCP Inspector（推荐）
 
 ```bash
-npx @modelcontextprotocol/inspector E:\Files\Obsidian\db\wiki-query\wiki-query.exe serve
+npx @modelcontextprotocol/inspector bash db/wiki-query/serve.sh
 ```
 
-浏览器打开 Inspector，应看到 5 个 wiki_ 工具，可直接测试调用。
+在仓库根执行。浏览器打开 Inspector，应看到 5 个 wiki_ 工具，可直接测试调用。
 
 ### 方法 2：命令行手动验证
 
 ```bash
-# 发 initialize 握手
-cd E:\Files\Obsidian
-echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"test","version":"0.1"}}}' | db/wiki-query/wiki-query.exe serve
+# 发 initialize 握手（在仓库根执行）
+cd "$(git rev-parse --show-toplevel)"
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"test","version":"0.1"}}}' | bash db/wiki-query/serve.sh
 ```
 
 应返回含 serverInfo 的 JSON-RPC 响应。
@@ -152,6 +146,6 @@ echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":
 
 | 症状 | 原因 | 解决 |
 |------|------|------|
-| search 永远返回空 | DB 未 sync 或 cwd 错误 | 跑 `wiki-query sync`;确认 `WIKI_VAULT_ROOT` 指向 vault 根 |
-| 启动警告 "未找到 wiki/ 或 sources/" | cwd 不是 vault 根 | 设 `WIKI_VAULT_ROOT` 或确保 agent 在 vault 根启动 |
+| search 永远返回空 | DB 未 sync 或 vault root 错误 | 跑 `wiki-query sync`;确认 `WIKI_VAULT_ROOT`（如设置过）指向 vault 根 |
+| 启动警告 "未找到 wiki/ 或 sources/" | 解析出的 vault root 不是仓库根 | 移除外部 `WIKI_VAULT_ROOT`（默认用仓库根）或将其设为 vault 根 |
 | 中文搜不到 | jieba 分词 + sync 未跑 | 确认 sync 过;FTS5 用 cut_for_search 细分，单字也应命中 |
