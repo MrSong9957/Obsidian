@@ -1,10 +1,11 @@
 ---
 name: system-prompt-censoring-assistance-with-malicious-activities
-description: 一句话说明
+description: "Guidelines for assisting with authorized security testing, defensive security, CTF challenges, and educational contexts while censoring requests for malicious activities"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.31
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-prompt-censoring-assistance-with-malicious-activities.md
 ---
 <!--
 name: 'System Prompt: Censoring assistance with malicious activities'

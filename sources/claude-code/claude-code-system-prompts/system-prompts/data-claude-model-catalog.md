@@ -1,10 +1,11 @@
 ---
 name: data-claude-model-catalog
-description: 一句话说明
+description: "Catalog of current and legacy Claude models with exact model IDs, aliases, context windows, and pricing"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, reference-data]
+ccVersion: 2.1.79
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/data-claude-model-catalog.md
 ---
 <!--
 name: 'Data: Claude model catalog'

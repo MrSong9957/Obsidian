@@ -1,10 +1,11 @@
 ---
 name: agent-prompt-session-memory-update-instructions
-description: 一句话说明
+description: "Instructions for updating session memory files during conversations"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, subagent]
+ccVersion: 2.0.58
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/agent-prompt-session-memory-update-instructions.md
 ---
 <!--
 name: 'Agent Prompt: Session memory update instructions'

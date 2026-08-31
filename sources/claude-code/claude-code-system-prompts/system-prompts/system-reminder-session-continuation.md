@@ -1,10 +1,11 @@
 ---
 name: system-reminder-session-continuation
-description: 一句话说明
+description: "Notification that session continues from another machine"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.18
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-reminder-session-continuation.md
 ---
 <!--
 name: 'System Reminder: Session continuation'

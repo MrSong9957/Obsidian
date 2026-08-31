@@ -1,10 +1,11 @@
 ---
 name: system-prompt-parallel-tool-call-note-part-of-tool-usage-policy
-description: 一句话说明
+description: "System prompt for telling Claude to using parallel tool calls"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.30
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-prompt-parallel-tool-call-note-part-of-tool-usage-policy.md
 ---
 <!--
 name: 'System Prompt: Parallel tool call note (part of "Tool usage policy")'

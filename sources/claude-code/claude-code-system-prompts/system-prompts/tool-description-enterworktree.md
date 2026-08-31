@@ -1,10 +1,11 @@
 ---
 name: tool-description-enterworktree
-description: 一句话说明
+description: "Tool description for the EnterWorktree tool."
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, tool-description]
+ccVersion: 2.1.72
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/tool-description-enterworktree.md
 ---
 <!--
 name: 'Tool Description: EnterWorktree'

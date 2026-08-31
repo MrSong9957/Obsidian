@@ -1,10 +1,11 @@
 ---
 name: system-prompt-how-to-use-the-sendusermessage-tool
-description: 一句话说明
+description: "Instructions for using the SendUserMessage tool"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.73
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-prompt-how-to-use-the-sendusermessage-tool.md
 ---
 <!--
 name: 'System Prompt: How to use the SendUserMessage tool'

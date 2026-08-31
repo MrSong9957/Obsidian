@@ -1,10 +1,11 @@
 ---
 name: system-prompt-worker-instructions
-description: 一句话说明
+description: "Instructions for workers to follow when implementing a change"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.63
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-prompt-worker-instructions.md
 ---
 <!--
 name: 'System Prompt: Worker instructions'

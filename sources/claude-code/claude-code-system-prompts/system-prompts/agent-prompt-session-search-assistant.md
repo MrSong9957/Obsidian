@@ -1,10 +1,11 @@
 ---
 name: agent-prompt-session-search-assistant
-description: 一句话说明
+description: "Agent prompt for the session search assistant that finds relevant sessions based on user queries and metadata"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, subagent]
+ccVersion: 2.1.6
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/agent-prompt-session-search-assistant.md
 ---
 <!--
 name: 'Agent Prompt: Session Search Assistant'

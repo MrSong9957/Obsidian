@@ -1,10 +1,11 @@
 ---
 name: data-streaming-reference-typescript
-description: 一句话说明
+description: "TypeScript streaming reference including basic streaming and handling different content types"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, reference-data]
+ccVersion: 2.1.78
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/data-streaming-reference-typescript.md
 ---
 <!--
 name: 'Data: Streaming reference — TypeScript'

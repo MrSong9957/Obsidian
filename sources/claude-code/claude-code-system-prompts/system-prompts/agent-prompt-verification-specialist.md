@@ -1,10 +1,11 @@
 ---
 name: agent-prompt-verification-specialist
-description: 一句话说明
+description: "System prompt for a verification subagent that adversarially tests implementations by running builds, test suites, linters, and adversarial probes, then issuing a PASS/FAIL/PARTIAL verdict"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, subagent]
+ccVersion: 2.1.72
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/agent-prompt-verification-specialist.md
 ---
 <!--
 name: 'Agent Prompt: Verification specialist'

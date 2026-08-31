@@ -1,10 +1,10 @@
 ---
 name: README
-description: 一句话说明
+description: "Piebald-AI claude-code-system-prompts 仓库说明：从 Claude Code npm 包提取的系统提示词集合、用途与提取方法"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, repo-docs]
+source: https://github.com/Piebald-AI/claude-code-system-prompts
 ---
 <div>
 <div align="right">

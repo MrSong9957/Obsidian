@@ -1,10 +1,11 @@
 ---
 name: data-session-memory-template
-description: 一句话说明
+description: "Template structure for session memory `summary.md` files"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, reference-data]
+ccVersion: 2.0.58
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/data-session-memory-template.md
 ---
 <!--
 name: 'Data: Session memory template'

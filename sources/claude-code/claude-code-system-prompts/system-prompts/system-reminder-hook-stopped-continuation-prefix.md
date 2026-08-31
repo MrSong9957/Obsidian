@@ -1,10 +1,11 @@
 ---
 name: system-reminder-hook-stopped-continuation-prefix
-description: 一句话说明
+description: "Prefix for hook stopped continuation messages"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.31
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-reminder-hook-stopped-continuation-prefix.md
 ---
 <!--
 name: 'System Reminder: Hook stopped continuation prefix'

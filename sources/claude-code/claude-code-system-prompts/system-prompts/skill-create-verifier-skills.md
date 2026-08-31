@@ -1,10 +1,11 @@
 ---
 name: skill-create-verifier-skills
-description: 一句话说明
+description: "Prompt for creating verifier skills for the Verify agent to automatically verify code changes"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, skill]
+ccVersion: 2.1.69
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/skill-create-verifier-skills.md
 ---
 <!--
 name: 'Skill: Create verifier skills'

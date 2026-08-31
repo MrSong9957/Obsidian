@@ -1,10 +1,11 @@
 ---
 name: data-agent-sdk-reference-python
-description: 一句话说明
+description: "Python Agent SDK reference including installation, quick start, custom tools via MCP, and hooks"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, reference-data]
+ccVersion: 2.1.83
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/data-agent-sdk-reference-python.md
 ---
 <!--
 name: 'Data: Agent SDK reference — Python'

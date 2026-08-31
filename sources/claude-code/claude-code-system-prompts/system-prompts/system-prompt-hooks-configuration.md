@@ -1,10 +1,11 @@
 ---
 name: system-prompt-hooks-configuration
-description: 一句话说明
+description: "System prompt for hooks configuration.  Used for above Claude Code config skill."
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.77
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-prompt-hooks-configuration.md
 ---
 <!--
 name: 'System Prompt: Hooks Configuration'

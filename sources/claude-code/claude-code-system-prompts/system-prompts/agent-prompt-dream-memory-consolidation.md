@@ -1,10 +1,11 @@
 ---
 name: agent-prompt-dream-memory-consolidation
-description: 一句话说明
+description: "Instructs an agent to perform a multi-phase memory consolidation pass — orienting on existing memories, gathering recent signal from logs and transcripts, merging updates into topic files, and pruning the index"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, subagent]
+ccVersion: 2.1.83
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/agent-prompt-dream-memory-consolidation.md
 ---
 <!--
 name: 'Agent Prompt: Dream memory consolidation'

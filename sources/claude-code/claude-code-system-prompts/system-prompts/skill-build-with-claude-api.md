@@ -1,10 +1,11 @@
 ---
 name: skill-build-with-claude-api
-description: 一句话说明
+description: "Main routing guide for building LLM-powered applications with Claude, including language detection, surface selection, and architecture overview"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, skill]
+ccVersion: 2.1.83
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/skill-build-with-claude-api.md
 ---
 <!--
 name: 'Skill: Build with Claude API'

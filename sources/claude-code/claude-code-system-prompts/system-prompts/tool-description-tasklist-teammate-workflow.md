@@ -1,10 +1,11 @@
 ---
 name: tool-description-tasklist-teammate-workflow
-description: 一句话说明
+description: "Conditional section appended to TaskList tool description"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, tool-description]
+ccVersion: 2.1.38
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/tool-description-tasklist-teammate-workflow.md
 ---
 <!--
 name: 'Tool Description: TaskList (teammate workflow)'

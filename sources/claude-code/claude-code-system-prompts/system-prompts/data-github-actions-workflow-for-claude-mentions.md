@@ -1,10 +1,11 @@
 ---
 name: data-github-actions-workflow-for-claude-mentions
-description: 一句话说明
+description: "GitHub Actions workflow template for triggering Claude Code via @claude mentions"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, reference-data]
+ccVersion: 2.0.58
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/data-github-actions-workflow-for-claude-mentions.md
 ---
 <!--
 name: 'Data: GitHub Actions workflow for @claude mentions'

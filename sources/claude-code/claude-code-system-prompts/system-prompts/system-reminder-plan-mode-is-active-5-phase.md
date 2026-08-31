@@ -1,10 +1,11 @@
 ---
 name: system-reminder-plan-mode-is-active-5-phase
-description: 一句话说明
+description: "Enhanced plan mode system reminder with parallel exploration and multi-agent planning"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.73
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-reminder-plan-mode-is-active-5-phase.md
 ---
 <!--
 name: 'System Reminder: Plan mode is active (5-phase)'

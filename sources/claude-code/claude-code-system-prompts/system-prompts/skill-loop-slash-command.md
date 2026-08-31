@@ -1,10 +1,11 @@
 ---
 name: skill-loop-slash-command
-description: 一句话说明
+description: "Parses user input into an interval and prompt, converts the interval to a cron expression, and schedules a recurring task"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, skill]
+ccVersion: 2.1.79
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/skill-loop-slash-command.md
 ---
 <!--
 name: 'Skill: /loop slash command'

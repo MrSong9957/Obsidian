@@ -1,10 +1,11 @@
 ---
 name: agent-prompt-explore
-description: 一句话说明
+description: "System prompt for the Explore subagent"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, subagent]
+ccVersion: 2.1.84
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/agent-prompt-explore.md
 ---
 <!--
 name: 'Agent Prompt: Explore'

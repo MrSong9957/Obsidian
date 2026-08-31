@@ -1,10 +1,11 @@
 ---
 name: system-prompt-description-part-of-memory-instructions
-description: 一句话说明
+description: "Field for describing _what_ the memory is.  Part of a bigger effort to instruct Claude how to create memories."
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.69
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-prompt-description-part-of-memory-instructions.md
 ---
 <!--
 name: 'System Prompt: Description part of memory instructions'

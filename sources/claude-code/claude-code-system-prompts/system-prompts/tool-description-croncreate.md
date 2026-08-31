@@ -1,10 +1,11 @@
 ---
 name: tool-description-croncreate
-description: 一句话说明
+description: "Describes the CronCreate tool for enqueuing one-shot or recurring cron-based jobs with jitter and off-minute scheduling guidance"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, tool-description]
+ccVersion: 2.1.83
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/tool-description-croncreate.md
 ---
 <!--
 name: 'Tool Description: CronCreate'

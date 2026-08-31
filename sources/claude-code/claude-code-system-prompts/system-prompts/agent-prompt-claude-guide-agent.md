@@ -1,10 +1,11 @@
 ---
 name: agent-prompt-claude-guide-agent
-description: 一句话说明
+description: "System prompt for the claude-guide agent that helps users understand and use Claude Code, the Claude Agent SDK and the Claude API effectively."
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, subagent]
+ccVersion: 2.1.84
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/agent-prompt-claude-guide-agent.md
 ---
 <!--
 name: 'Agent Prompt: Claude guide agent'

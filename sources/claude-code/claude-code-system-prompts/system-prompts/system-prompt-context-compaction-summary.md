@@ -1,10 +1,11 @@
 ---
 name: system-prompt-context-compaction-summary
-description: 一句话说明
+description: "Prompt used for context compaction summary (for the SDK)"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.38
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-prompt-context-compaction-summary.md
 ---
 <!--
 name: 'System Prompt: Context compaction summary'

@@ -1,10 +1,11 @@
 ---
 name: skill-update-config-7-step-verification-flow
-description: 一句话说明
+description: "A skill that guides Claude through a 7-step process to construct and verify hooks for Claude Code, ensuring they work correctly in the user's specific project environment."
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, skill]
+ccVersion: 2.1.77
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/skill-update-config-7-step-verification-flow.md
 ---
 <!--
 name: 'Skill: update-config (7-step verification flow)'

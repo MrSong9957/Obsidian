@@ -1,10 +1,11 @@
 ---
 name: system-prompt-team-memory-content-display
-description: 一句话说明
+description: "Renders shared team memory file contents with path and content for injection into the conversation context"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.79
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-prompt-team-memory-content-display.md
 ---
 <!--
 name: 'System Prompt: Team memory content display'

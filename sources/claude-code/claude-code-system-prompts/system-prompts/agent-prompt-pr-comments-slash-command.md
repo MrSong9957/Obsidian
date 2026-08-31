@@ -1,10 +1,11 @@
 ---
 name: agent-prompt-pr-comments-slash-command
-description: 一句话说明
+description: "System prompt for fetching and displaying GitHub PR comments"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, subagent]
+ccVersion: 2.1.69
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/agent-prompt-pr-comments-slash-command.md
 ---
 <!--
 name: 'Agent Prompt: /pr-comments slash command'

@@ -1,10 +1,11 @@
 ---
 name: data-claude-api-reference-c
-description: 一句话说明
+description: "C# SDK reference including installation, client initialization, basic requests, streaming, and tool use"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, reference-data]
+ccVersion: 2.1.83
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/data-claude-api-reference-c.md
 ---
 <!--
 name: 'Data: Claude API reference — C#'

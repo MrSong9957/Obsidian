@@ -1,10 +1,11 @@
 ---
 name: system-prompt-insights-at-a-glance-summary
-description: 一句话说明
+description: "Generates a concise 4-part summary (what's working, hindrances, quick wins, ambitious workflows) for the insights report"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.30
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-prompt-insights-at-a-glance-summary.md
 ---
 <!--
 name: 'System Prompt: Insights at a glance summary'

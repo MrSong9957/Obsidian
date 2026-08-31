@@ -1,10 +1,11 @@
 ---
 name: agent-prompt-prompt-suggestion-generator-v2
-description: 一句话说明
+description: "V2 instructions for generating prompt suggestions for Claude Code"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, subagent]
+ccVersion: 2.1.26
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/agent-prompt-prompt-suggestion-generator-v2.md
 ---
 <!--
 name: 'Agent Prompt: Prompt Suggestion Generator v2'

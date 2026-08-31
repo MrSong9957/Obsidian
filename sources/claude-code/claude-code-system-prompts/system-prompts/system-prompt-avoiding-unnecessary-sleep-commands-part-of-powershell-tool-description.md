@@ -1,10 +1,11 @@
 ---
 name: system-prompt-avoiding-unnecessary-sleep-commands-part-of-powershell-tool-description
-description: 一句话说明
+description: "Guidelines for avoiding unnecessary sleep commands in PowerShell scripts, including alternatives for waiting and notification"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.84
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-prompt-avoiding-unnecessary-sleep-commands-part-of-powershell-tool-description.md
 ---
 <!--
 name: 'System Prompt: Avoiding Unnecessary Sleep Commands (part of PowerShell tool description)'

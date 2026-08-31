@@ -1,10 +1,11 @@
 ---
 name: data-files-api-reference-typescript
-description: 一句话说明
+description: "TypeScript Files API reference including file upload, listing, deletion, and usage in messages"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, reference-data]
+ccVersion: 2.1.78
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/data-files-api-reference-typescript.md
 ---
 <!--
 name: 'Data: Files API reference — TypeScript'

@@ -1,10 +1,11 @@
 ---
 name: data-github-app-installation-pr-description
-description: 一句话说明
+description: "Template for PR description when installing Claude Code GitHub App integration"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, reference-data]
+ccVersion: 2.0.14
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/data-github-app-installation-pr-description.md
 ---
 <!--
 name: 'Data: GitHub App installation PR description'

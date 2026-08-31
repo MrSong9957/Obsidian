@@ -1,10 +1,11 @@
 ---
 name: data-live-documentation-sources
-description: 一句话说明
+description: "WebFetch URLs for fetching current Claude API and Agent SDK documentation from official sources"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, reference-data]
+ccVersion: 2.1.63
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/data-live-documentation-sources.md
 ---
 <!--
 name: 'Data: Live documentation sources'

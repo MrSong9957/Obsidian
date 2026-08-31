@@ -1,10 +1,11 @@
 ---
 name: system-prompt-doing-tasks-ambitious-tasks
-description: 一句话说明
+description: "Allow users to complete ambitious tasks; defer to user judgement on scope"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.53
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-prompt-doing-tasks-ambitious-tasks.md
 ---
 <!--
 name: 'System Prompt: Doing tasks (ambitious tasks)'

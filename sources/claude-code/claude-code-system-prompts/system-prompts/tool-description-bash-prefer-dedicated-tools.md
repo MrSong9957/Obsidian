@@ -1,10 +1,11 @@
 ---
 name: tool-description-bash-prefer-dedicated-tools
-description: 一句话说明
+description: "Warning to prefer dedicated tools over Bash for find, grep, cat, etc."
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, tool-description]
+ccVersion: 2.1.71
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/tool-description-bash-prefer-dedicated-tools.md
 ---
 <!--
 name: 'Tool Description: Bash (prefer dedicated tools)'

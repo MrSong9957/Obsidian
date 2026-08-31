@@ -1,10 +1,10 @@
 ---
 name: CHANGELOG
-description: 一句话说明
+description: "Claude Code 系统提示词的版本变更日志，跟踪各版本提示词的新增与修改"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, changelog, repo-docs]
+source: https://github.com/Piebald-AI/claude-code-system-prompts
 ---
 <!--
 Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sections within existing prompts.

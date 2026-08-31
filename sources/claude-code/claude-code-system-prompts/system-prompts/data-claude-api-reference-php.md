@@ -1,10 +1,11 @@
 ---
 name: data-claude-api-reference-php
-description: 一句话说明
+description: "PHP SDK reference"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, reference-data]
+ccVersion: 2.1.83
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/data-claude-api-reference-php.md
 ---
 <!--
 name: 'Data: Claude API reference — PHP'

@@ -1,10 +1,11 @@
 ---
 name: system-reminder-task-tools-reminder
-description: 一句话说明
+description: "Reminder to use task tracking tools"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.18
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-reminder-task-tools-reminder.md
 ---
 <!--
 name: 'System Reminder: Task tools reminder'

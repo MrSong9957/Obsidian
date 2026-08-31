@@ -1,10 +1,11 @@
 ---
 name: system-reminder-plan-mode-re-entry
-description: 一句话说明
+description: "System reminder sent when the user enters Plan mode after having previously exited it either via shift+tab or by approving Claude's plan."
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.0.52
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-reminder-plan-mode-re-entry.md
 ---
 <!--
 name: 'System Reminder: Plan mode re-entry'

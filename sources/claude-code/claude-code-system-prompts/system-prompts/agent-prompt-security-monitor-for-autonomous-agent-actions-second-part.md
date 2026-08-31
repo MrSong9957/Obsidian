@@ -1,10 +1,11 @@
 ---
 name: agent-prompt-security-monitor-for-autonomous-agent-actions-second-part
-description: 一句话说明
+description: "Defines the environment context, block rules, and allow exceptions that govern which tool actions the agent may or may not perform"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, subagent]
+ccVersion: 2.1.85
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/agent-prompt-security-monitor-for-autonomous-agent-actions-second-part.md
 ---
 <!--
 name: 'Agent Prompt: Security monitor for autonomous agent actions (second part)'

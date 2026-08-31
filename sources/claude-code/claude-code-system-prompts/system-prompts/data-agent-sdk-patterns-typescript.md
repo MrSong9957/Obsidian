@@ -1,10 +1,11 @@
 ---
 name: data-agent-sdk-patterns-typescript
-description: 一句话说明
+description: "TypeScript Agent SDK patterns including basic agents, hooks, subagents, and MCP integration"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, reference-data]
+ccVersion: 2.1.78
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/data-agent-sdk-patterns-typescript.md
 ---
 <!--
 name: 'Data: Agent SDK patterns — TypeScript'

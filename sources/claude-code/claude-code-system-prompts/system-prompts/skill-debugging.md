@@ -1,10 +1,11 @@
 ---
 name: skill-debugging
-description: 一句话说明
+description: "Instructions for debugging an issue that the user is encountering in the Claude Code session"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, skill]
+ccVersion: 2.1.71
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/skill-debugging.md
 ---
 <!--
 name: 'Skill: Debugging'

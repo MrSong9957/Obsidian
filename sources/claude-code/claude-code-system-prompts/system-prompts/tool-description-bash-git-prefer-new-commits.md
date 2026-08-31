@@ -1,10 +1,11 @@
 ---
 name: tool-description-bash-git-prefer-new-commits
-description: 一句话说明
+description: "Bash tool git instruction: prefer new commits over amending"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, tool-description]
+ccVersion: 2.1.53
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/tool-description-bash-git-prefer-new-commits.md
 ---
 <!--
 name: 'Tool Description: Bash (git — prefer new commits)'

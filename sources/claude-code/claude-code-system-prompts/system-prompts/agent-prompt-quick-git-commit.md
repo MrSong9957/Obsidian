@@ -1,10 +1,11 @@
 ---
 name: agent-prompt-quick-git-commit
-description: 一句话说明
+description: "Streamlined prompt for creating a single git commit with pre-populated context"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, subagent]
+ccVersion: 2.1.69
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/agent-prompt-quick-git-commit.md
 ---
 <!--
 name: 'Agent Prompt: Quick git commit'

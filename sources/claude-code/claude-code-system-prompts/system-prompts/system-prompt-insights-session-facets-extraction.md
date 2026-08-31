@@ -1,10 +1,11 @@
 ---
 name: system-prompt-insights-session-facets-extraction
-description: 一句话说明
+description: "Extracts structured facets (goal categories, satisfaction, friction) from a single Claude Code session transcript"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.30
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-prompt-insights-session-facets-extraction.md
 ---
 <!--
 name: 'System Prompt: Insights session facets extraction'

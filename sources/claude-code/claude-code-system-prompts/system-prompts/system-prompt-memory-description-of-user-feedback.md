@@ -1,10 +1,11 @@
 ---
 name: system-prompt-memory-description-of-user-feedback
-description: 一句话说明
+description: "Describes the user feedback memory type that stores guidance about work approaches, emphasizing recording both successes and failures and checking for contradictions with team memories"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.78
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-prompt-memory-description-of-user-feedback.md
 ---
 <!--
 name: 'System Prompt: Memory description of user feedback'

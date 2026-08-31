@@ -1,10 +1,11 @@
 ---
 name: agent-prompt-security-monitor-for-autonomous-agent-actions-first-part
-description: 一句话说明
+description: "Instructs Claude to act as a security monitor that evaluates autonomous coding agent actions against block/allow rules to prevent prompt injection, scope creep, and accidental damage"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, subagent]
+ccVersion: 2.1.81
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/agent-prompt-security-monitor-for-autonomous-agent-actions-first-part.md
 ---
 <!--
 name: 'Agent Prompt: Security monitor for autonomous agent actions (first part)'

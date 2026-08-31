@@ -1,10 +1,11 @@
 ---
 name: data-message-batches-api-reference-python
-description: 一句话说明
+description: "Python Batches API reference including batch creation, status polling, and result retrieval at 50% cost"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, reference-data]
+ccVersion: 2.1.78
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/data-message-batches-api-reference-python.md
 ---
 <!--
 name: 'Data: Message Batches API reference — Python'

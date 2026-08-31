@@ -1,10 +1,11 @@
 ---
 name: system-reminder-mcp-resource-no-content
-description: 一句话说明
+description: "Shown when MCP resource has no content"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.18
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-reminder-mcp-resource-no-content.md
 ---
 <!--
 name: 'System Reminder: MCP resource no content'

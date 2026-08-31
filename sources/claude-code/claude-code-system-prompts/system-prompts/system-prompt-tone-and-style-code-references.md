@@ -1,10 +1,11 @@
 ---
 name: system-prompt-tone-and-style-code-references
-description: 一句话说明
+description: "Instruction to include file_path:line_number when referencing code"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.53
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-prompt-tone-and-style-code-references.md
 ---
 <!--
 name: 'System Prompt: Tone and style (code references)'

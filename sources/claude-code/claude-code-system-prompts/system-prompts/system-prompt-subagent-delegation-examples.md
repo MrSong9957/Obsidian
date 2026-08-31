@@ -1,10 +1,11 @@
 ---
 name: system-prompt-subagent-delegation-examples
-description: 一句话说明
+description: "Provides example interactions showing how a coordinator agent should delegate tasks to subagents, handle waiting states, and report results"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.85
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-prompt-subagent-delegation-examples.md
 ---
 <!--
 name: 'System Prompt: Subagent delegation examples'

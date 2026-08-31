@@ -1,10 +1,11 @@
 ---
 name: system-prompt-tool-usage-search-content
-description: 一句话说明
+description: "Prefer Grep tool instead of grep or rg"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.53
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-prompt-tool-usage-search-content.md
 ---
 <!--
 name: 'System Prompt: Tool usage (search content)'

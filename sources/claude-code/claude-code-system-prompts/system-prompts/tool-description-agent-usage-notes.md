@@ -1,10 +1,11 @@
 ---
 name: tool-description-agent-usage-notes
-description: 一句话说明
+description: "Usage notes and instructions for the Task/Agent tool, including guidance on launching subagents, background execution, resumption, and worktree isolation"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, tool-description]
+ccVersion: 2.1.84
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/tool-description-agent-usage-notes.md
 ---
 <!--
 name: 'Tool Description: Agent (usage notes)'

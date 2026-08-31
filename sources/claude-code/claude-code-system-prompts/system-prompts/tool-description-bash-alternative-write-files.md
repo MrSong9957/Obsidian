@@ -1,10 +1,11 @@
 ---
 name: tool-description-bash-alternative-write-files
-description: 一句话说明
+description: "Bash tool alternative: use Write for file writing instead of echo/cat"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, tool-description]
+ccVersion: 2.1.53
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/tool-description-bash-alternative-write-files.md
 ---
 <!--
 name: 'Tool Description: Bash (alternative — write files)'

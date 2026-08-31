@@ -1,10 +1,11 @@
 ---
 name: system-prompt-learning-mode
-description: 一句话说明
+description: "Main system prompt for learning mode with human collaboration instructions"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.0.14
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-prompt-learning-mode.md
 ---
 <!--
 name: 'System Prompt: Learning mode'

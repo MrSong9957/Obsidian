@@ -1,10 +1,10 @@
 ---
 name: CLAUDE
-description: 一句话说明
+description: "上游仓库的 AI 协作说明：本目录为提取的参考材料，非可修改源码"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, repo-docs]
+source: https://github.com/Piebald-AI/claude-code-system-prompts
 ---
 # Claude Code System Prompts
 

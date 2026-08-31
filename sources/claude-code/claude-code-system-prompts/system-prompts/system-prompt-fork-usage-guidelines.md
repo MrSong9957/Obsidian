@@ -1,10 +1,11 @@
 ---
 name: system-prompt-fork-usage-guidelines
-description: 一句话说明
+description: "Instructions for when to fork subagents and rules against reading fork output mid-flight or fabricating fork results"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.85
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-prompt-fork-usage-guidelines.md
 ---
 <!--
 name: 'System Prompt: Fork usage guidelines'

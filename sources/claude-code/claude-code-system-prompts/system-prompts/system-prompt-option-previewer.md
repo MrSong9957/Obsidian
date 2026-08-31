@@ -1,10 +1,11 @@
 ---
 name: system-prompt-option-previewer
-description: 一句话说明
+description: "System prompt for previewing UI options in a side-by-side layout"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.69
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-prompt-option-previewer.md
 ---
 <!--
 name: 'System Prompt: Option previewer'

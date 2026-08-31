@@ -1,10 +1,11 @@
 ---
 name: agent-prompt-session-title-and-branch-generation
-description: 一句话说明
+description: "Agent for generating succinct session titles and git branch names"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, subagent]
+ccVersion: 2.1.20
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/agent-prompt-session-title-and-branch-generation.md
 ---
 <!--
 name: 'Agent Prompt: Session title and branch generation'

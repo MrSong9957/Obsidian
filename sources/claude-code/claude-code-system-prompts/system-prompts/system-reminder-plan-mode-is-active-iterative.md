@@ -1,10 +1,11 @@
 ---
 name: system-reminder-plan-mode-is-active-iterative
-description: 一句话说明
+description: "Iterative plan mode system reminder for main agent with user interviewing workflow"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.81
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-reminder-plan-mode-is-active-iterative.md
 ---
 <!--
 name: 'System Reminder: Plan mode is active (iterative)'

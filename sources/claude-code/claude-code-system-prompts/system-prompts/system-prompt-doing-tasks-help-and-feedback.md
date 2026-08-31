@@ -1,10 +1,11 @@
 ---
 name: system-prompt-doing-tasks-help-and-feedback
-description: 一句话说明
+description: "How to inform users about help and feedback channels"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt]
+ccVersion: 2.1.53
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/system-prompt-doing-tasks-help-and-feedback.md
 ---
 <!--
 name: 'System Prompt: Doing tasks (help and feedback)'

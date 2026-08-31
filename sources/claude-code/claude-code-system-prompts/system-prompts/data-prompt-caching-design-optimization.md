@@ -1,10 +1,11 @@
 ---
 name: data-prompt-caching-design-optimization
-description: 一句话说明
+description: "Document on how to design prompt-building code for effective caching, including placement patterns and anti-patterns."
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, reference-data]
+ccVersion: 2.1.83
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/data-prompt-caching-design-optimization.md
 ---
 <!--
 name: 'Data: Prompt Caching — Design & Optimization'

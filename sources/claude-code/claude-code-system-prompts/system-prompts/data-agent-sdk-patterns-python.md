@@ -1,10 +1,11 @@
 ---
 name: data-agent-sdk-patterns-python
-description: 一句话说明
+description: "Python Agent SDK patterns including custom tools, hooks, subagents, MCP integration, and session resumption"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, reference-data]
+ccVersion: 2.1.78
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/data-agent-sdk-patterns-python.md
 ---
 <!--
 name: 'Data: Agent SDK patterns — Python'

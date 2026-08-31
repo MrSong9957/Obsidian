@@ -1,10 +1,11 @@
 ---
 name: tool-description-bash-sandbox-evidence-network-failures
-description: 一句话说明
+description: "Sandbox evidence: network connection failures to non-whitelisted hosts"
 type: concept
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [claude-code, system-prompt, tool-description]
+ccVersion: 2.1.53
+source: https://github.com/Piebald-AI/claude-code-system-prompts/blob/main/system-prompts/tool-description-bash-sandbox-evidence-network-failures.md
 ---
 <!--
 name: 'Tool Description: Bash (sandbox — evidence: network failures)'
