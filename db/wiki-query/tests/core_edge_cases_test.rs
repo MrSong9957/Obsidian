@@ -56,6 +56,14 @@ fn build_fts_query_or_with_chinese() {
     assert!(q.contains(" OR "), "中文 OR 应保持: {}", q);
 }
 
+#[test]
+fn build_fts_query_lowercase_or_is_not_operator() {
+    // 小写 or 是普通词,不当操作符 → 仍默认 AND
+    let q = core::build_fts_query("this or that");
+    assert!(q.contains("AND"), "小写 or 不应触发 OR 语义,实际: {}", q);
+    assert!(!q.contains(" OR "), "小写 or 不应使用 OR 连接,实际: {}", q);
+}
+
 // ============================================================
 // find_similar 边界测试
 // ============================================================

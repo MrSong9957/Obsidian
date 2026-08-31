@@ -8,6 +8,7 @@
 
 use rusqlite::Connection;
 use std::fs;
+use wiki_query::core;
 use wiki_query::frontmatter;
 use wiki_query::fts;
 
@@ -123,4 +124,96 @@ fn uses_real_frontmatter_parse() {
     );
     assert_eq!(fm.name, "测试");
     assert!(body.contains("正文"));
+}
+
+// ---- search 多 token 语义:默认 AND + 显式 OR(见 core::build_fts_query)----
+
+/// 集成测试:AND 语义在真 FTS5 上只返回全部 token 命中的文档。
+#[test]
+fn search_and_only_matches_docs_with_all_tokens() {
+    let docs = [
+        // doc1: 同时含 mimo + provider
+        ("wiki/mimo-provider.md",
+         "---\nname: MiMo Provider\ndescription: mimo provider 调试\ntype: concept\nupdated: 2026-06-20\ntags: mimo\n---\n\nmimo provider 配置"),
+        // doc2: 只含 mimo,不含 provider
+        ("wiki/mimo-only.md",
+         "---\nname: MiMo 简介\ndescription: mimo 说明\ntype: concept\nupdated: 2026-06-20\ntags: mimo\n---\n\nmimo 是小米的模型"),
+    ];
+    let (_dir, db_path) = setup_vault_with_docs(&docs);
+    let conn = Connection::open(&db_path).unwrap();
+    let fts_query = core::build_fts_query("mimo provider");
+    let mut stmt = conn
+        .prepare("SELECT path FROM documents_fts WHERE documents_fts MATCH ?1")
+        .unwrap();
+    let paths: Vec<String> = stmt
+        .query_map(rusqlite::params![fts_query], |r| r.get::<_, String>(0))
+        .unwrap()
+        .filter_map(|r| r.ok())
+        .collect();
+    assert!(
+        paths.iter().any(|p| p.contains("mimo-provider")),
+        "AND 查询应命中同时含两词的文档,实际: {:?}",
+        paths
+    );
+    assert!(
+        !paths.iter().any(|p| p.contains("mimo-only")),
+        "AND 查询不应命中只含单 token 的文档,实际: {:?}",
+        paths
+    );
+}
+
+/// 集成测试:显式 OR 返回任一 token 命中的文档(真结果集断言,非仅请求不报错)。
+#[test]
+fn search_or_matches_docs_with_any_token() {
+    let docs = [
+        ("wiki/mimo-provider.md",
+         "---\nname: MiMo Provider\ndescription: mimo provider 调试\ntype: concept\nupdated: 2026-06-20\ntags: mimo\n---\n\nmimo provider 配置"),
+        ("wiki/mimo-only.md",
+         "---\nname: MiMo 简介\ndescription: mimo 说明\ntype: concept\nupdated: 2026-06-20\ntags: mimo\n---\n\nmimo 是小米的模型"),
+    ];
+    let (_dir, db_path) = setup_vault_with_docs(&docs);
+    let conn = Connection::open(&db_path).unwrap();
+    let fts_query = core::build_fts_query("mimo OR provider");
+    let mut stmt = conn
+        .prepare("SELECT path FROM documents_fts WHERE documents_fts MATCH ?1")
+        .unwrap();
+    let paths: Vec<String> = stmt
+        .query_map(rusqlite::params![fts_query], |r| r.get::<_, String>(0))
+        .unwrap()
+        .filter_map(|r| r.ok())
+        .collect();
+    // OR 语义:两文档都含 mimo,都应命中
+    assert_eq!(
+        paths.len(),
+        2,
+        "OR 查询应命中两文档(都含 mimo),实际: {:?}",
+        paths
+    );
+}
+
+/// 集成测试:中文多词 AND 仍能命中(jieba cut_for_search 双发保证)。
+#[test]
+fn search_chinese_multi_token_and_still_matches() {
+    let docs = [
+        ("wiki/yazi-theme.md",
+         "---\nname: Yazi 主题\ndescription: yazi 主题配置\ntype: concept\nupdated: 2026-06-20\ntags: yazi\n---\n\nyazi 主题安装"),
+    ];
+    let (_dir, db_path) = setup_vault_with_docs(&docs);
+    let conn = Connection::open(&db_path).unwrap();
+    let fts_query = core::build_fts_query("yazi 主题");
+    assert!(
+        fts_query.contains("AND"),
+        "中文多词也应默认 AND,实际: {}",
+        fts_query
+    );
+    let mut stmt = conn
+        .prepare("SELECT count(*) FROM documents_fts WHERE documents_fts MATCH ?1")
+        .unwrap();
+    let n: i64 = stmt.query_row(rusqlite::params![fts_query], |r| r.get(0)).unwrap();
+    assert!(
+        n >= 1,
+        "中文多词 AND 应仍命中(双发保证),fts_query={},命中 {}",
+        fts_query,
+        n
+    );
 }
