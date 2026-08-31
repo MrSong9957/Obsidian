@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-06-25
+updated: 2026-08-31
 ---
 
 # Wiki 索引
@@ -10,7 +10,8 @@ updated: 2026-06-25
 | [[wiki/agent-arch\|Agent 架构]] | Agent 循环、多智能体框架、Harness 工程方法论 | agent, architecture, multi-agent, harness |
 | [[wiki/claude-code\|Claude Code 配置与工作流]] | settings.json/CLAUDE.md/rules/记忆系统/插件/Hooks/子代理/MCP | claude-code, settings, claudemd, memory, rules, hooks, subagents, mcp |
 | [[wiki/claude-code-setup\|Claude Code 当前配置清单]] | 本机完整配置 + 自检清单（插件/Hooks/状态栏/MCP/技能/代理/规则） | claude-code, setup, plugins, hooks, mcp, config |
-| [[wiki/claude-md-base\|CLAUDE.md 双层架构模板]] | 全局（karpathy 行为准则）+ 项目级（superpowers 工作流）双层 CLAUDE.md | claude-md, template, karpathy, superpowers |
+| [[wiki/claude-md-base\|CLAUDE.md 双层架构模板]] | 全局（karpathy 行为准则）+ 项目级（开发规范与测试实现标准）双层 CLAUDE.md，编排职责已迁出 | claude-md, template, karpathy |
+| [[wiki/大脑模型-决策控制\|大脑模型决策控制]] | Agent 编排与决策控制——S/A/B/C 任务分级、Skill 调度、L1/L2/L3 测试证据、Review/verify:full 门禁、Security Testing Gate、返回门禁 | agent, orchestration, decision-control, superpowers, testing |
 | [[wiki/cli-tools-productivity\|十个提升生产力的 CLI 工具]] | 10 个提升开发生产力的 CLI 工具推荐 | cli, productivity |
 | [[wiki/container-python-setup\|Docker 容器内安装 Python 版本]] | 容器网络受限环境下安装 Python 版本的经验路线图 | docker, python, networking |
 | [[wiki/dev-practice\|开发实践]] | TDD/代码质量/调试方法论/提示词技巧/协作提示词 | dev, tdd, debugging, prompt, code-quality |

@@ -268,7 +268,9 @@ git config user.email "<邮箱>"
 
 ### 5.2 项目级 CLAUDE.md
 
-按 [[wiki/claude-md-base.md|CLAUDE.md 双层架构模板]] 第二层创建（含 Superpowers 七阶段工作流、技能库触发表、设计原则与铁律、ECC 补强模块、项目信息）。核心内容从该模板复制，仅「项目信息」（技术栈/架构/文件约定/项目描述）按项目实际填写。
+按 [[wiki/claude-md-base.md|CLAUDE.md 双层架构模板]] 第二层创建：放置**项目自身**的开发规则（项目原则、日志约定、测试实现规范、工具可用性等），核心内容从该模板复制，仅「项目信息」（技术栈/架构/文件约定/项目描述）按项目实际填写。
+
+Agent 编排与决策控制不在项目模板内，遵循 [[wiki/大脑模型-决策控制.md|大脑模型决策控制]]：S/A/B/C 任务分级、Superpowers Skill 调度、Agent 自治阶段、L1/L2/L3 测试证据、Review 与 verify:full 门禁、Security Testing Gate、返回门禁和交付决策。
 
 ### 5.3 项目级 ECC rules
 
@@ -328,7 +330,7 @@ mkdir -p docs/superpowers/plans
 - [ ] `cat ~/.claude/CLAUDE.md` 包含全局指令
 - [ ] 状态栏脚本可用
 - [ ] `git status` 显示干净初始仓库
-- [ ] `CLAUDE.md` 包含 Superpowers 七阶段工作流
+- [ ] `CLAUDE.md` 为项目级开发规范（编排职责见 [[wiki/大脑模型-决策控制.md|大脑模型决策控制]]）
 - [ ] `.claude/rules/ecc/` 包含 common + 对应语言 rules
 - [ ] `docs/superpowers/specs/` 和 `plans/` 目录存在
 - [ ] `/home/app/obsidian/MEMORY.md` 可读（Obsidian 仓库已挂载）
