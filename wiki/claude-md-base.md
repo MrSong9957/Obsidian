@@ -1,13 +1,15 @@
 ---
 name: claude-md
-description: 全局（karpathy 行为准则）+ 项目级（superpowers 工作流）双层 CLAUDE.md 创建方法
+description: 全局（karpathy 行为准则）+ 项目级（开发规范与测试实现标准）双层 CLAUDE.md 创建方法；编排工作流已迁出，见大脑模型文档
 type: reference
-updated: 2026-05-10
+updated: 2026-08-31
 tags: claude-md, template, karpathy, superpowers, kv-cache, two-tier
 source: self
 ---
 
 # CLAUDE.md 双层架构模板
+
+> **编排职责迁移说明**：任务分级（S/A/B/C）、Skill 调度、测试证据分层（L1/L2/L3）等编排规范已迁出本模板，统一见 [[大脑模型-决策控制]]。
 
 > 来源：
 > - 全局层：[andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) — Karpathy 四条行为准则

@@ -148,7 +148,7 @@ fn search_and_only_matches_docs_with_all_tokens() {
     let paths: Vec<String> = stmt
         .query_map(rusqlite::params![fts_query], |r| r.get::<_, String>(0))
         .unwrap()
-        .filter_map(|r| r.ok())
+        .map(|r| r.unwrap())
         .collect();
     assert!(
         paths.iter().any(|p| p.contains("mimo-provider")),
@@ -170,6 +170,9 @@ fn search_or_matches_docs_with_any_token() {
          "---\nname: MiMo Provider\ndescription: mimo provider 调试\ntype: concept\nupdated: 2026-06-20\ntags: mimo\n---\n\nmimo provider 配置"),
         ("wiki/mimo-only.md",
          "---\nname: MiMo 简介\ndescription: mimo 说明\ntype: concept\nupdated: 2026-06-20\ntags: mimo\n---\n\nmimo 是小米的模型"),
+        // doc3: 只含 provider,不含 mimo —— 验证 OR 的 provider 分支真实参与匹配
+        ("wiki/provider-only.md",
+         "---\nname: Provider\ndescription: provider 说明\ntype: concept\nupdated: 2026-06-20\ntags: provider\n---\n\nprovider 是独立概念"),
     ];
     let (_dir, db_path) = setup_vault_with_docs(&docs);
     let conn = Connection::open(&db_path).unwrap();
@@ -180,13 +183,15 @@ fn search_or_matches_docs_with_any_token() {
     let paths: Vec<String> = stmt
         .query_map(rusqlite::params![fts_query], |r| r.get::<_, String>(0))
         .unwrap()
-        .filter_map(|r| r.ok())
+        .map(|r| r.unwrap())
         .collect();
-    // OR 语义:两文档都含 mimo,都应命中
+    // OR 语义:三个文档各含至少一个 token,都应命中
+    // (若 OR 退化为只匹配 mimo,provider-only 缺席 → len==2 RED;
+    //  若退化为 AND,无文档同时含两词 → len==0 RED)
     assert_eq!(
         paths.len(),
-        2,
-        "OR 查询应命中两文档(都含 mimo),实际: {:?}",
+        3,
+        "OR 查询应命中全部三文档(任一 token 命中即可),实际: {:?}",
         paths
     );
 }
@@ -197,6 +202,9 @@ fn search_chinese_multi_token_and_still_matches() {
     let docs = [
         ("wiki/yazi-theme.md",
          "---\nname: Yazi 主题\ndescription: yazi 主题配置\ntype: concept\nupdated: 2026-06-20\ntags: yazi\n---\n\nyazi 主题安装"),
+        // doc2: 只含 yazi,不含主题 —— FTS 层负例:AND 退化时不得命中
+        ("wiki/yazi-only.md",
+         "---\nname: Yazi\ndescription: yazi 说明\ntype: concept\nupdated: 2026-06-20\ntags: yazi\n---\n\nyazi 是一个文件管理器"),
     ];
     let (_dir, db_path) = setup_vault_with_docs(&docs);
     let conn = Connection::open(&db_path).unwrap();
@@ -207,13 +215,22 @@ fn search_chinese_multi_token_and_still_matches() {
         fts_query
     );
     let mut stmt = conn
-        .prepare("SELECT count(*) FROM documents_fts WHERE documents_fts MATCH ?1")
+        .prepare("SELECT path FROM documents_fts WHERE documents_fts MATCH ?1")
         .unwrap();
-    let n: i64 = stmt.query_row(rusqlite::params![fts_query], |r| r.get(0)).unwrap();
+    let paths: Vec<String> = stmt
+        .query_map(rusqlite::params![fts_query], |r| r.get::<_, String>(0))
+        .unwrap()
+        .map(|r| r.unwrap())
+        .collect();
     assert!(
-        n >= 1,
-        "中文多词 AND 应仍命中(双发保证),fts_query={},命中 {}",
+        paths.iter().any(|p| p.contains("yazi-theme")),
+        "中文多词 AND 应命中同时含两词的文档(jieba 双发保证),fts_query={},实际: {:?}",
         fts_query,
-        n
+        paths
+    );
+    assert!(
+        !paths.iter().any(|p| p.contains("yazi-only")),
+        "中文 AND 查询不应命中只含单 token 的文档,实际: {:?}",
+        paths
     );
 }
