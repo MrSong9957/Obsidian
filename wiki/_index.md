@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-08-31
+updated: 2026-09-02
 ---
 
 # Wiki 索引
@@ -35,3 +35,4 @@ updated: 2026-08-31
 | [[wiki/mimocode-memory-system\|MiMo Code 记忆系统架构]] | 三层记忆文件结构、写入权限、搜索机制、提升逻辑 | mimocode, memory, architecture |
 | [[wiki/streaming-architecture\|流式架构模式]] | EventBus 模式、渲染器分离、压缩集成、4 层流式管道 | streaming, architecture, event-bus |
 | [[wiki/mimocode-ui-rendering\|MiMo Code UI 渲染管道]] | 屏幕缓冲区 + diff 系统、布局计算、光标定位 | mimocode, ui, rendering, terminal |
+| [[wiki/AI时代编程的深层能力\|AI 时代编程的深层能力]] | 自己设计、AI 查零件——五步核心训练法（拆流程→写骨架→查 API→看懂生成→空白重写） | learning, training, coding-ability, deliberate-practice |
