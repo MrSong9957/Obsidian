@@ -1,11 +1,11 @@
-```yaml
+---
 name: 构建有效 Agent：简单、透明、工具友好，并按真实任务选模型
 description: 理解 Agent 设计的三个核心原则，以及模型选型真正该看哪些指标。
 type: hybrid
 updated: 2026-09-07
 tags: [agent, harness, aci, model-selection, reasoning, tool-calling]
-source: 用户提供原文
-```
+source: self
+---
 
 ## 构建 Agent 的三个核心原则
 

@@ -1,11 +1,11 @@
-```yaml
+---
 name: Harness 工程：让 Agent 从“能做”变成“可靠地做”
 description: 理解 Harness 如何通过上下文、工具、约束、验证和纠正，让 Agent 在生产环境中可靠运行。
 type: tech-concept
 updated: 2026-09-07
 tags: [agent, harness, context, tools, reliability, verification]
-source: 用户提供原文
-```
+source: self
+---
 
 ## 一句话理解
 

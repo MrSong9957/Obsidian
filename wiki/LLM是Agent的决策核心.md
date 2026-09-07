@@ -1,11 +1,11 @@
-```yaml
+---
 name: LLM 是 Agent 的决策核心，能力通过三条路径持续更新
 description: 理解模型如何驱动 Agent 决策，以及能力如何从临场适应逐步沉淀为持久能力。
 type: hybrid
 updated: 2026-09-07
 tags: [agent, llm, harness, model-as-agent, learning, reinforcement-learning]
-source: 用户提供原文
-```
+source: self
+---
 
 ## 一句话理解
 

@@ -1,11 +1,11 @@
-```yaml
+---
 name: AI Agent 的最小结构：Model、Context、Tools 与 Environment
 description: 理解现代 Agent 由什么组成，以及 Agent 与外部环境之间如何形成行动闭环。
 type: tech-concept
 updated: 2026-09-07
 tags: [agent, llm, context, tools, harness, environment]
-source: 用户提供原文
-```
+source: self
+---
 
 ## 一句话理解
 

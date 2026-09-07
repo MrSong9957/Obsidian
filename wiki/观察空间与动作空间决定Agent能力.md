@@ -1,11 +1,11 @@
-```yaml
+---
 name: 观察空间与动作空间决定 Agent 能看什么、能做什么
 description: 理解 Agent 如何通过观察和行动接口连接外部世界，以及为什么扩展接口能直接提升任务能力。
 type: tech-concept
 updated: 2026-09-07
 tags: [agent, observation-space, action-space, harness, tools, context]
-source: 用户提供原文
-```
+source: self
+---
 
 ## 一句话理解
 

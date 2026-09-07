@@ -1,11 +1,11 @@
-```yaml
+---
 name: ReAct 循环：Agent 如何通过轨迹持续思考和行动
 description: 理解 Agent 如何把模型、上下文和工具串成“想→做→看”的执行闭环。
 type: hybrid
 updated: 2026-09-06
 tags: [agent, react, trajectory, harness, tool-calling, context]
-source: 用户提供原文
-```
+source: self
+---
 
 ## 一句话理解
 

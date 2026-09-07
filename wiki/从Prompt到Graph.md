@@ -1,11 +1,11 @@
-```yaml
+---
 name: 从 Prompt 到 Graph：Agent 工程关注范围如何逐层扩大
 description: 理解 AI 工程如何从优化提示词，演进到管理 Agent 循环、长期自治和执行图。
 type: insight
 updated: 2026-09-07
 tags: [agent, prompt-engineering, context-engineering, harness, loop-engineering, graph-engineering]
-source: 用户提供原文
-```
+source: self
+---
 
 ## 一句话理解
 

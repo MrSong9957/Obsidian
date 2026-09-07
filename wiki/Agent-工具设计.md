@@ -1,11 +1,12 @@
-```yaml id="4b9qd7"
+---
+id: "4b9qd7"
 name: Agent 工具设计：连接世界、扩大能力，也扩大风险
 description: 理解 Agent 工具的类型、调用流程，以及通用工具和专用工具该怎么选。
 type: tech-concept
 updated: 2026-09-07
 tags: [agent, tools, tool-calling, mcp, sandbox, aci]
-source: 用户提供原文
-```
+source: self
+---
 
 ## 一句话理解
 

@@ -1,11 +1,11 @@
-```yaml
+---
 name: Agent 上下文决定它能看到什么
 description: 理解 Agent 每次决策依赖哪些信息，以及上下文缺失为什么会导致错误行动。
 type: tech-concept
 updated: 2026-09-06
 tags: [agent, context, llm, tool-calling, reasoning, memory]
-source: 用户提供原文
-```
+source: self
+---
 
 ## 一句话理解
 
