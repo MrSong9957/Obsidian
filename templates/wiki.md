@@ -4,7 +4,7 @@ description: 一句话说明 — 使用场景
 type: concept  # concept | contradiction
 updated: {date}
 tags: [tag1, tag2]
-source: "[[在此填入原始资料]]"
+source: "[[sources/在此填入原始资料]]"  # 无独立原始资料时用 self；有库外原始资料可用 URL
 ---
 
 # {名称}

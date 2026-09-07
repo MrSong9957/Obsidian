@@ -66,7 +66,7 @@
 3. 原始资料直接复制到 `sources/`；若为 md 文件，在开头添加 frontmatter 元数据
 4. 每个页面的 frontmatter 必须完整填写
 5. 每个 `[[wikilink]]` 必须指向已存在的页面，如果目标页面不存在，先创建再链接
-6. `source` 字段必须溯源到 `sources/` 中的文件
+6. `source` 字段必须真实溯源：从 `sources/` 资料提炼 → `[[sources/文件名]]`；有库外原始资料 → URL；无独立原始资料（自身整理、用户原创沉淀、多上下文综合且无法对应唯一 Source）→ `self`，含义是"该 Wiki 没有需要存入 `sources/` 的独立原始资料"。存在真实 Source 时必须优先链接，`self` 不是绕过溯源的兜底；禁止为满足字段要求捏造 Source、创建空壳 Source、把 Wiki 正文复制到 `sources/` 或捏造不存在的 wikilink
 
 
 ## 质量规则
