@@ -53,3 +53,5 @@ db/wiki-query/db/wiki.db
 
 # 临时技能测试工件（comprehensive-testing 行为测试 fixture，不提交）
 .skill-test/
+
+.zcode/
