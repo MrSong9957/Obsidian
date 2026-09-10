@@ -1,6 +1,6 @@
 # wiki-query MCP 接入指南
 
-把 Obsidian 知识库通过 wiki-query MCP server 暴露给 AI agent。**本地 stdio 传输，无云无服务器**——agent 经 `db/wiki-query/serve.sh` 启动器拉起 wiki-query 子进程，通过管道通信。
+把 Obsidian 知识库通过 wiki-query MCP server 暴露给 AI agent。**本地 stdio 传输，无云无服务器**——agent 经 `mcp/wiki-query/serve.sh` 启动器拉起 wiki-query 子进程，通过管道通信。
 
 ## 前置准备
 
@@ -8,8 +8,8 @@
 
 ```bash
 cd "$(git rev-parse --show-toplevel)"
-bash db/wiki-query/build.sh
-# 产物:db/wiki-query/wiki-query[.exe](Windows 带 .exe;本地构建产物,Git 不携带)
+bash mcp/wiki-query/build.sh
+# 产物:mcp/wiki-query/wiki-query[.exe](Windows 带 .exe;本地构建产物,Git 不携带)
 ```
 
 > release 首次编译较慢（rmcp + tokio 优化）。日常开发可用 debug 版（`cargo build`，产物在 `target/debug/`）。
@@ -18,7 +18,7 @@ bash db/wiki-query/build.sh
 
 ```bash
 cd "$(git rev-parse --show-toplevel)"
-db/wiki-query/wiki-query.exe sync   # Unix/macOS/Linux 产物名无 .exe
+mcp/wiki-query/wiki-query.exe sync   # Unix/macOS/Linux 产物名无 .exe
 ```
 
 建立/更新 SQLite FTS5 索引（`db/wiki.db`）。建议配 git post-commit hook 自动跑（见下）。
@@ -44,7 +44,7 @@ db/wiki-query/wiki-query.exe sync   # Unix/macOS/Linux 产物名无 .exe
   "mcpServers": {
     "wiki": {
       "command": "bash",
-      "args": ["db/wiki-query/serve.sh"],
+      "args": ["mcp/wiki-query/serve.sh"],
       "cwd": "."
     }
   }
@@ -64,14 +64,14 @@ db/wiki-query/wiki-query.exe sync   # Unix/macOS/Linux 产物名无 .exe
   "mcp": {
     "wiki": {
       "type": "local",
-      "command": ["bash", "db/wiki-query/serve.sh"],
+      "command": ["bash", "mcp/wiki-query/serve.sh"],
       "enabled": true
     }
   }
 }
 ```
 
-> vault root 由 `serve.sh` 解析为仓库根，无需配置 `environment`。若该客户端不把工作目录设为项目根（相对路径解析失败），改用其支持的变量/绝对写法指向 `db/wiki-query/serve.sh`；确需非仓库根 vault 时才设 `environment.WIKI_VAULT_ROOT`。
+> vault root 由 `serve.sh` 解析为仓库根，无需配置 `environment`。若该客户端不把工作目录设为项目根（相对路径解析失败），改用其支持的变量/绝对写法指向 `mcp/wiki-query/serve.sh`；确需非仓库根 vault 时才设 `environment.WIKI_VAULT_ROOT`。
 
 ### Cursor
 
@@ -82,13 +82,13 @@ db/wiki-query/wiki-query.exe sync   # Unix/macOS/Linux 产物名无 .exe
   "mcpServers": {
     "wiki": {
       "command": "bash",
-      "args": ["db/wiki-query/serve.sh"]
+      "args": ["mcp/wiki-query/serve.sh"]
     }
   }
 }
 ```
 
-> vault root 由 `serve.sh` 解析为仓库根。若 Cursor 的工作目录不是项目根（启动失败提示找不到脚本），改用其支持的写法指向 `db/wiki-query/serve.sh`。
+> vault root 由 `serve.sh` 解析为仓库根。若 Cursor 的工作目录不是项目根（启动失败提示找不到脚本），改用其支持的写法指向 `mcp/wiki-query/serve.sh`。
 
 ### ZCode
 
@@ -99,7 +99,7 @@ db/wiki-query/wiki-query.exe sync   # Unix/macOS/Linux 产物名无 .exe
   "mcpServers": {
     "wiki": {
       "command": "bash",
-      "args": ["db/wiki-query/serve.sh"],
+      "args": ["mcp/wiki-query/serve.sh"],
       "cwd": "."
     }
   }
@@ -113,7 +113,7 @@ db/wiki-query/wiki-query.exe sync   # Unix/macOS/Linux 产物名无 .exe
 ```sh
 #!/bin/sh
 cd "$(git rev-parse --show-toplevel)"
-./db/wiki-query/wiki-query.exe sync > /dev/null 2>&1   # Unix/macOS/Linux 产物名无 .exe
+./mcp/wiki-query/wiki-query.exe sync > /dev/null 2>&1   # Unix/macOS/Linux 产物名无 .exe
 ```
 
 ```bash
@@ -127,7 +127,7 @@ chmod +x .git/hooks/post-commit  # Unix;Windows 用 git bash 或直接运行
 ### 方法 1：MCP Inspector（推荐）
 
 ```bash
-npx @modelcontextprotocol/inspector bash db/wiki-query/serve.sh
+npx @modelcontextprotocol/inspector bash mcp/wiki-query/serve.sh
 ```
 
 在仓库根执行。浏览器打开 Inspector，应看到 5 个 wiki_ 工具，可直接测试调用。
@@ -137,7 +137,7 @@ npx @modelcontextprotocol/inspector bash db/wiki-query/serve.sh
 ```bash
 # 发 initialize 握手（在仓库根执行）
 cd "$(git rev-parse --show-toplevel)"
-echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"test","version":"0.1"}}}' | bash db/wiki-query/serve.sh
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"test","version":"0.1"}}}' | bash mcp/wiki-query/serve.sh
 ```
 
 应返回含 serverInfo 的 JSON-RPC 响应。

@@ -2,7 +2,7 @@
   "mcpServers": {
     "wiki": {
       "command": "bash",
-      "args": ["db/wiki-query/serve.sh"],
+      "args": ["mcp/wiki-query/serve.sh"],
       "cwd": "."
     }
   }

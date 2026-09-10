@@ -74,7 +74,7 @@ Sources 层（原始资料）     ← sources/，详细资料归档
 | 协作规则、权限矩阵、页面规范、行号索引 | [[AGENTS.md]] |
 | 页面与详细文档模板 | [[templates/wiki.md]]、[[templates/sources-reference.md]] |
 | 记忆提炼工作流（六步） | [[templates/project-rules.md]] |
-| wiki-query 检索工具：构建、部署、MCP 接入 | [[db/README.md]]、[[db/wiki-query/README.md]] |
+| wiki-query 检索工具：构建、部署、MCP 接入 | [[mcp/wiki-query/README.md]]、[[mcp/wiki-query/mcp-integration.md]] |
 | 资料索引 / 知识导航 | [[sources/_index.md]]、[[wiki/_index.md]] |
 | 安全测试子代理 | [[agents/security-testing-gate.md]] |
 

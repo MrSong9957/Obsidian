@@ -2,12 +2,12 @@
 # L1 回归测试:wiki MCP 新环境可用性(R1)
 # 覆盖:.mcp.json 合法性、无个人绝对路径、启动链路不依赖 CWD、缺二进制报错、
 #       serve 真实路径(env 优先 + 无警告)、构建入口与 ignore 规则、文档一致性。
-# 用法: bash db/wiki-query/tests/mcp-config.test.sh   (任意 CWD 可运行)
+# 用法: bash mcp/wiki-query/tests/mcp-config.test.sh   (任意 CWD 可运行)
 set -u
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 MCP_JSON="$REPO/.mcp.json"
-SERVE_SH="$REPO/db/wiki-query/serve.sh"
+SERVE_SH="$REPO/mcp/wiki-query/serve.sh"
 
 # 优先 GNU/BSD 常驻路径,缺失时回退 PATH(避免裸 grep 在本机命中 ugrep 的转义差异)
 if [ -x /usr/bin/grep ]; then GREP=/usr/bin/grep; else GREP=grep; fi
@@ -44,7 +44,7 @@ if node -e '
   const repo = process.argv[2];
   const okShape =
     c.command === "bash" &&
-    Array.isArray(c.args) && c.args.length === 1 && c.args[0] === "db/wiki-query/serve.sh" &&
+    Array.isArray(c.args) && c.args.length === 1 && c.args[0] === "mcp/wiki-query/serve.sh" &&
     typeof c.cwd === "string" &&
     !(c.env && c.env.WIKI_VAULT_ROOT) &&
     fs.existsSync(path.join(repo, c.args[0]));
@@ -86,9 +86,9 @@ rm -rf "$tmp5_root"
 # T6 构建入口存在,且 .gitignore 忽略两种平台产物名
 # (用 -f 而非 -x:Windows 上提交的文件模式为 100644,Unix checkout 后无 exec 位,
 #  而文档用法是 `bash build.sh`,不需要执行位)
-if [ -f "$REPO/db/wiki-query/build.sh" ] \
-   && git -C "$REPO" check-ignore -q db/wiki-query/wiki-query.exe \
-   && git -C "$REPO" check-ignore -q db/wiki-query/wiki-query; then
+if [ -f "$REPO/mcp/wiki-query/build.sh" ] \
+   && git -C "$REPO" check-ignore -q mcp/wiki-query/wiki-query.exe \
+   && git -C "$REPO" check-ignore -q mcp/wiki-query/wiki-query; then
   ok "T6 build.sh 存在且 .gitignore 忽略两种产物名"
 else
   bad "T6 build.sh 存在且 .gitignore 忽略两种产物名"
@@ -96,19 +96,18 @@ fi
 
 # T7a wiki MCP 配置/使用文档集合不含盘符绝对路径(防开发者个人路径回归)
 t7a_ok=1
-for f in db/README.md AGENTS.md CLAUDE.md docs/mcp-integration.md db/wiki-query/README.md; do
+for f in AGENTS.md CLAUDE.md mcp/wiki-query/README.md mcp/wiki-query/mcp-integration.md; do
   if [ ! -f "$REPO/$f" ]; then bad "T7a $f 文件不存在"; t7a_ok=0; break; fi
   if scan_drive_path "$REPO/$f" > /dev/null; then t7a_ok=0; fi
 done
 if [ "$t7a_ok" = "1" ]; then ok "T7a 文档无盘符绝对路径"; else bad "T7a 文档无盘符绝对路径"; fi
 
-# T7b AGENTS/CLAUDE 双写新 clone 构建说明
-t7b_ok=1
-for f in AGENTS.md CLAUDE.md; do
-  if [ ! -f "$REPO/$f" ]; then bad "T7b $f 文件不存在"; t7b_ok=0; break; fi
-  "$GREP" -q 'bash db/wiki-query/build.sh' "$REPO/$f" || t7b_ok=0
-done
-if [ "$t7b_ok" = "1" ]; then ok "T7b AGENTS/CLAUDE 双写构建说明"; else bad "T7b AGENTS/CLAUDE 双写构建说明"; fi
+# T7b AGENTS.md 含新 clone 构建说明(CLAUDE.md 自 8e0d959 起为指针文件,规则单一权威在 AGENTS.md)
+if [ -f "$REPO/AGENTS.md" ] && "$GREP" -q 'bash mcp/wiki-query/build.sh' "$REPO/AGENTS.md"; then
+  ok "T7b AGENTS.md 构建说明"
+else
+  bad "T7b AGENTS.md 构建说明"
+fi
 
 # T8a serve 真实路径:任意 CWD 经 launcher 启动,默认 vault root 正确(不出现 vault 警告)。
 # 依赖二进制在读到 stdin EOF 后即退出的契约(与 mcp_server.rs 的 serve 循环一致)。

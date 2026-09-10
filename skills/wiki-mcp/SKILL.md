@@ -292,7 +292,7 @@ wiki 文件有新增内容
 {
   "mcpServers": {
     "wiki": {
-      "command": "<vault 根目录>/db/wiki-query/wiki-query.exe",
+      "command": "<vault 根目录>/mcp/wiki-query/wiki-query.exe",
       "args": ["serve"],
       "cwd": "<vault 根目录>"
     }

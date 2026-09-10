@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # wiki-query 一键构建脚本（Git Bash / macOS / Linux 通用）
-# 用法: bash db/wiki-query/build.sh
+# 用法: bash mcp/wiki-query/build.sh
 # 做三件事: cargo build -> 拷贝 exe 到固定位置 -> 打印 MCP 配置提示
 set -euo pipefail
 
@@ -21,16 +21,16 @@ else
   exit 1
 fi
 
-echo "[2/3] 拷贝到固定位置 db/wiki-query/$BIN_NAME ..."
+echo "[2/3] 拷贝到固定位置 mcp/wiki-query/$BIN_NAME ..."
 cp "target/release/$BIN_NAME" "$BIN_NAME"
 
 echo "[3/3] 完成。下一步:"
 echo ""
 echo "  # 建索引(在 vault 根目录执行)"
-echo "  cd \"$(cd "$SCRIPT_DIR/.." && pwd)\""
-echo "  ./db/wiki-query/$BIN_NAME sync"
+echo "  cd \"$(cd "$SCRIPT_DIR/../.." && pwd)\""
+echo "  ./mcp/wiki-query/$BIN_NAME sync"
 echo ""
 echo "  # MCP 配置(仓库相对路径 + serve.sh 启动器,不依赖个人绝对路径)"
-echo "  {\"command\": \"bash\", \"args\": [\"db/wiki-query/serve.sh\"], \"cwd\": \".\"}"
+echo "  {\"command\": \"bash\", \"args\": [\"mcp/wiki-query/serve.sh\"], \"cwd\": \".\"}"
 echo ""
 echo "完成。把上面的 wiki 配置粘贴到仓库根的 .mcp.json(或 ZCode MCP 配置)即可。"

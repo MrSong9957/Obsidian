@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # wiki-query MCP 启动器(Git Bash / macOS / Linux 通用)
-# .mcp.json 用法: {"command": "bash", "args": ["db/wiki-query/serve.sh"], "cwd": "."}
+# .mcp.json 用法: {"command": "bash", "args": ["mcp/wiki-query/serve.sh"], "cwd": "."}
 # 从脚本自身位置解析仓库根,不依赖启动时的工作目录;二进制缺失时报错并指引 build.sh。
 set -euo pipefail
 
@@ -15,7 +15,7 @@ elif [[ -f "$SCRIPT_DIR/wiki-query" ]]; then
   BIN_NAME="wiki-query"
 else
   echo "[wiki-mcp] 错误: 未找到二进制 $SCRIPT_DIR/wiki-query[.exe]" >&2
-  echo "[wiki-mcp] 请先在仓库根执行: bash db/wiki-query/build.sh" >&2
+  echo "[wiki-mcp] 请先在仓库根执行: bash mcp/wiki-query/build.sh" >&2
   exit 1
 fi
 

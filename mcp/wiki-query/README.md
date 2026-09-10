@@ -27,7 +27,7 @@
 | macOS (Apple Silicon M1/M2/M3) | `wiki-query-macos-aarch64` |
 | Linux | `wiki-query-linux-x86_64` |
 
-下载后放到 `<vault 根目录>/db/wiki-query/`,改名为 `wiki-query`(Windows 加 `.exe`)。
+下载后放到 `<vault 根目录>/mcp/wiki-query/`,改名为 `wiki-query`(Windows 加 `.exe`)。
 
 ### 方式 B:自己编译
 
@@ -35,10 +35,10 @@
 
 ```bash
 cd <你的 vault 根目录>
-bash db/wiki-query/build.sh
+bash mcp/wiki-query/build.sh
 ```
 
-它会 `cargo build --release`,然后把可执行文件拷到 `db/wiki-query/wiki-query[.exe]`。
+它会 `cargo build --release`,然后把可执行文件拷到 `mcp/wiki-query/wiki-query[.exe]`。
 
 binary 是本地构建产物,Git 不携带;新 clone 需先执行本脚本完成构建,MCP 才能启动(Windows 需 Git Bash,WSL 未适配)。
 
@@ -49,7 +49,7 @@ binary 是本地构建产物,Git 不携带;新 clone 需先执行本脚本完成
 二进制就位后,在 vault 根目录执行:
 
 ```bash
-db/wiki-query/wiki-query.exe sync
+mcp/wiki-query/wiki-query.exe sync
 ```
 
 它会扫描知识库里所有 `.md` 文件,建一个搜索索引。以后新加了文档,再跑一次就行。
@@ -63,7 +63,7 @@ db/wiki-query/wiki-query.exe sync
   "mcpServers": {
     "wiki": {
       "command": "bash",
-      "args": ["db/wiki-query/serve.sh"],
+      "args": ["mcp/wiki-query/serve.sh"],
       "cwd": "."
     }
   }
@@ -327,7 +327,7 @@ AI 会自动调 `wiki_get_project_rules`，拿到一份使用说明书，然后�
 
 ```bash
 cd "$(git rev-parse --show-toplevel)"
-db/wiki-query/wiki-query.exe sync
+mcp/wiki-query/wiki-query.exe sync
 ```
 
 **方法 2：配 git hook 自动跑（推荐，重度编辑时用）**
@@ -337,7 +337,7 @@ db/wiki-query/wiki-query.exe sync
 ```sh
 #!/bin/sh
 cd "$(git rev-parse --show-toplevel)"
-./db/wiki-query/wiki-query.exe sync > /dev/null 2>&1
+./mcp/wiki-query/wiki-query.exe sync > /dev/null 2>&1
 ```
 
 以后每次 `git commit`，索引自动更新。
@@ -349,7 +349,7 @@ cd "$(git rev-parse --show-toplevel)"
 ```bash
 rm db/wiki.db
 cd "$(git rev-parse --show-toplevel)"
-db/wiki-query/wiki-query.exe sync
+mcp/wiki-query/wiki-query.exe sync
 ```
 
 ---
