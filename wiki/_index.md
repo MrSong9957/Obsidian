@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-09-02
+updated: 2026-09-11
 ---
 
 # Wiki 索引
@@ -11,7 +11,8 @@ updated: 2026-09-02
 | [[wiki/claude-code\|Claude Code 配置与工作流]] | settings.json/CLAUDE.md/rules/记忆系统/插件/Hooks/子代理/MCP | claude-code, settings, claudemd, memory, rules, hooks, subagents, mcp |
 | [[wiki/claude-code-setup\|Claude Code 当前配置清单]] | 本机完整配置 + 自检清单（插件/Hooks/状态栏/MCP/技能/代理/规则） | claude-code, setup, plugins, hooks, mcp, config |
 | [[wiki/claude-md-base\|CLAUDE.md 双层架构模板]] | 全局（karpathy 行为准则）+ 项目级（开发规范与测试实现标准）双层 CLAUDE.md，编排职责已迁出 | claude-md, template, karpathy |
-| [[wiki/大脑模型-决策控制\|大脑模型决策控制]] | Agent 编排与决策控制——S/A/B/C 任务分级、Skill 调度、L1/L2/L3 测试证据、Review/verify:full 门禁、Security Testing Gate、返回门禁 | agent, orchestration, decision-control, superpowers, testing |
+| [[wiki/大脑模型-v3\|大脑模型 v3]] | Superpowers + goal 版——S/A/B/C 任务分级、Skill 调度、返回门禁、L1/L2/L3 测试证据、Security Testing Gate、verify:full | agent, orchestration, decision-control, superpowers, testing-gates, goal |
+| [[wiki/大脑模型-v4\|大脑模型 v4]] | grill-me + goal 版——Supervisor 职责边界、Matt Skills 地图、/goal 自治交付、返回门禁与 delivery decision | agent, orchestration, decision-control, grill-me, goal, matt-skills |
 | [[wiki/cli-tools-productivity\|十个提升生产力的 CLI 工具]] | 10 个提升开发生产力的 CLI 工具推荐 | cli, productivity |
 | [[wiki/container-python-setup\|Docker 容器内安装 Python 版本]] | 容器网络受限环境下安装 Python 版本的经验路线图 | docker, python, networking |
 | [[wiki/dev-practice\|开发实践]] | TDD/代码质量/调试方法论/提示词技巧/协作提示词 | dev, tdd, debugging, prompt, code-quality |
@@ -25,7 +26,6 @@ updated: 2026-09-02
 | [[wiki/new-project-setup\|新项目开发环境初始化]] | Docker 容器启动、镜像配置、首次配置、Obsidian 记忆链接 | docker, setup, claude-md, configuration |
 | [[wiki/obsidian\|Obsidian]] | Obsidian CLI 工具使用/知识仓库管理 | obsidian, knowledge-management |
 | [[wiki/opencode-bridge\|OpenCode 桥接与 MiMo-Code]] | OpenCode plugin 行为/ECC 桥接/MiMo-Code 架构 | opencode, mimocode, claude-code, hooks, bridge |
-| [[wiki/todos\|待办]] | 待处理事项 | todo |
 | [[wiki/token-management\|Token 管理]] | Token 使用与成本优化 | token, cost, optimization |
 | [[wiki/yazi\|Yazi 文件管理器]] | Yazi 配置经验——主题、配色、Windows 路径 | cli, yazi, config, theme |
 | [[wiki/zhipu-mcp\|智谱 MCP]] | 智谱 MCP 服务器配置速查/Web 抓取缓存问题 | zhipu, mcp, web-scraping |
