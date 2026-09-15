@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-09-11
+updated: 2026-09-16
 ---
 
 # Wiki 索引
@@ -36,3 +36,13 @@ updated: 2026-09-11
 | [[wiki/streaming-architecture\|流式架构模式]] | EventBus 模式、渲染器分离、压缩集成、4 层流式管道 | streaming, architecture, event-bus |
 | [[wiki/mimocode-ui-rendering\|MiMo Code UI 渲染管道]] | 屏幕缓冲区 + diff 系统、布局计算、光标定位 | mimocode, ui, rendering, terminal |
 | [[wiki/AI时代编程的深层能力\|AI 时代编程的深层能力]] | 自己设计、AI 查零件——五步核心训练法（拆流程→写骨架→查 API→看懂生成→空白重写） | learning, training, coding-ability, deliberate-practice |
+| [[wiki/how-openai-uses-codex\|How OpenAI uses Codex]] | OpenAI 7 类 Codex 用法 + 6 条最佳实践入口；细节见 sources 全量中译 | codex, openai, coding-agent, workflow, best-practices |
+| [[wiki/how-anthropic-teams-use-claude-code\|How Anthropic teams use Claude Code]] | Anthropic 10 团队案例入口——含非技术岗；细节见 sources 全量中译 | claude-code, anthropic, case-study, workflow |
+| [[wiki/大模型API上下文结构\|大模型 API 上下文结构]] | 四种消息角色 + tools 字段、API 无状态原理与 Harness 状态保存 | ai-agent, context-engineering, llm-api, messages, tool-calling |
+| [[wiki/Agent核心循环\|Agent 核心循环]] | 组装请求、提取模型消息、执行工具并回传结果的 Python 完整循环 | ai-agent, context-engineering, tool-calling, python |
+| [[wiki/Agent工具调用的API循环\|Agent 工具调用的 API 循环]] | 模型决策与 Harness 执行的职责边界、tool_call_id 配对、串并行判断 | ai-agent, tool-calling, react, context-engineering, llm-api |
+| [[wiki/Agent上下文布局与本地模型工具调用\|Agent 上下文布局与本地模型工具调用]] | 稳定前缀 + 动态轨迹、预算压缩伪代码、本地模型工具调用与首 token 延迟测量 | ai-agent, context-engineering, kv-cache, tool-calling, local-llm |
+| [[wiki/API消息如何变成模型输入\|Chat Template：API 消息如何变成模型输入]] | 消息到 token 的排列规则；工具结果回传格式、思考内容保留与缓存前缀影响 | llm, chat-template, tokenization, tool-calling, kv-cache |
+| [[wiki/KV-Cache友好的上下文设计与注意力机制\|KV Cache 友好的上下文设计与注意力机制]] | Q/K/V 与因果遮罩、缓存复用原理、三条上下文布局原则、注意力可视化 | context-engineering, kv-cache, attention, transformer, prompt-cache |
+| [[wiki/KV Cache、Prompt Cache 与缓存友好的 Agent 架构\|KV Cache、Prompt Cache 与缓存友好的 Agent 架构]] | 两层缓存区分、缓存边界与子 Agent 前缀对齐、可编辑/可组合 KV 研究边界 | context-engineering, kv-cache, prompt-cache, agent, architecture |
+| [[wiki/Obsidian仓库大脑模型\|Obsidian 仓库大脑模型]] | 网页 ChatGPT 仓库管理大脑提示词：三层管理、ADD/UPDATE/NOOP/CONTRADICT 裁决、/goal 与 CONTINUE/DONE 状态机 | brain-model, decision-control, agent-orchestration, obsidian, wiki-management, goal |

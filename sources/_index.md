@@ -26,6 +26,7 @@ updated: 2026-08-30
 | [[sources/agent/agent-arch-p1\|Agent 架构（上）]] | Agent循环/多智能体框架/系统提示词/教学脚本（详细内容） |
 | [[sources/agent/agent-arch-p2\|Agent 架构（下）]] | Harness工程方法论/人话编程规范（详细内容） |
 | [[sources/agent/openai-harness-engineering\|Harness Engineering]] | OpenAI 团队用 0 行人工代码构建产品的实验总结 |
+| [[sources/agent/how-openai-uses-codex\|How OpenAI uses Codex]] | OpenAI 内部 7 类 Codex 用法与 6 条最佳实践全量中译（官方手册 PDF） |
 
 ## claude-code/
 
@@ -52,6 +53,7 @@ updated: 2026-08-30
 | [[sources/claude-code/ecc-references\|ECC Hooks 完整参考]] | 所有 Hook 作用、ECC_HOOK_PROFILE 档位对照 |
 | [[sources/claude-code/mimocode-mcp-config\|MiMoCode MCP 配置详解]] | MiMoCode 与 Claude Code 的 MCP 配置差异、wiki-query 接入完整流程 |
 | [[sources/claude-code/mimocode-mcp-config-references\|MiMoCode MCP 配置详细参考]] | 完整的 MiMoCode MCP 配置调试过程、配置文件位置对比、验证步骤 |
+| [[sources/claude-code/how-anthropic-teams-use-claude-code\|How Anthropic teams use Claude Code]] | Anthropic 10 团队使用案例全量中译（官方手册 PDF） |
 
 ## DeepSeek-Harness/
 
