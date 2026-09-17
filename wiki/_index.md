@@ -54,6 +54,9 @@ updated: 2026-09-17
 | [[wiki/工作流编排\|工作流编排：用确定性流程控制 LLM 与工具]] | 判断什么时候该用单次调用、固定工作流，什么时候才需要自主 Agent。 | agent, workflow, orchestration, harness, llm, adaptation-layer |
 | [[wiki/构建有效Agent\|构建有效 Agent：简单、透明、工具友好，并按真实任务选模型]] | 理解 Agent 设计的三个核心原则，以及模型选型真正该看哪些指标。 | agent, harness, aci, model-selection, reasoning, tool-calling |
 | [[wiki/观察空间与动作空间决定Agent能力\|观察空间与动作空间决定 Agent 能看什么、能做什么]] | 理解 Agent 如何通过观察和行动接口连接外部世界，以及为什么扩展接口能直接提升任务能力。 | agent, observation-space, action-space, harness, tools, context |
+| [[wiki/Skill 编写方法、上下文位置与缓存成本\|Skill 编写方法、上下文位置与缓存成本]] | 把经验写成可执行 Skill 的四部分结构、真实任务迭代法、各框架加载位置与 emit-once 缓存辨析 | agent-skills, prompt-engineering, context-engineering, prompt-caching |
+| [[wiki/Skills 与工具的协作方式及实验设计\|Skills 与工具的协作方式及实验设计]] | Skill/工具/脚本职责划分、通用执行器思路，及论文转 PPT 与个人写作两个实验方案 | agent-skills, tool-use, progressive-disclosure, skill-evaluation |
+| [[wiki/上下文压缩：减少信息负担，让已有知识更容易使用\|上下文压缩：减少信息负担，让已有知识更容易使用]] | 压缩三动机（容量/Context Rot/提前收尾）、提炼保留原则与上下文学习不等于长期记忆 | ai-agent, context-engineering, context-compression, context-rot, in-context-learning |
 | [[wiki/上下文工程\|上下文工程：决定 Agent 每一步能看到什么]] | 解释为什么 Agent 能力高度依赖上下文，以及 Harness 如何为每次模型调用重建有效信息。 | agent, context-engineering, harness, react, llm |
 | [[wiki/十二种深度思考训练法\|十二种深度思考训练法：从表象到本质的认知工具集]] | 提供12套可刻意练习的本质思考工具，涵盖溯源、拆解、模式识别等，助用户建立结构化洞察力。 | deep-thinking, cognitive-tools, problem-solving, mental-models, decision-making |
 | [[wiki/时空可组合性\|时空可组合性：让动态系统安全地变化]] | 提炼 Cordis 如何用可撤销副作用和响应式依赖，让组件能够安全加入、移除、替换和重新组合。 | cordis, composability, runtime, hmr, agent-harness |
@@ -64,6 +67,9 @@ updated: 2026-09-17
 | [[wiki/自主-Agent\|自主 Agent：用 ReAct 循环动态决定下一步]] | 理解自主 Agent 如何规划、使用工具、处理失败，以及什么时候该和工作流混合使用。 | agent, autonomous-agent, react, workflow, harness, orchestration |
 | [[wiki/Agent-工具设计\|Agent 工具设计：连接世界、扩大能力，也扩大风险]] | 理解 Agent 工具的类型、调用流程，以及通用工具和专用工具该怎么选。 | agent, tools, tool-calling, mcp, sandbox, aci |
 | [[wiki/Agent Skills\|Agent Skills：按任务加载操作说明]] | Skills 三层渐进式加载、description 触发边界、用户指定与模型选择两种触发方式，及其与提示缓存的配合 | agent-skills, prompt-engineering, progressive-disclosure, context-engineering, prompt-caching |
+| [[wiki/Agent 状态栏：让模型直接掌握任务进度和调用次数\|Agent 状态栏：让模型直接掌握任务进度和调用次数]] | 为什么完整历史仍不够、框架怎样维护状态摘要，以及状态栏减少重复统计与超限操作的作用 | ai-agent, context-engineering, state-tracking, tool-use |
+| [[wiki/Agent 状态栏：信息构成、消息位置与缓存复用\|Agent 状态栏：信息构成、消息位置与缓存复用]] | 状态栏三类信息构成、user 消息承载方式，以及末尾追加对 KV Cache 复用的意义 | ai-agent, context-engineering, state-tracking, kv-cache |
+| [[wiki/Agent 状态栏：更新策略、缓存成本与可靠维护\|Agent 状态栏：更新策略、缓存成本与可靠维护]] | 替换与追加两种状态更新的费用权衡、五种实用状态信息与维护准则 | ai-agent, context-engineering, prompt-cache, state-tracking, error-recovery |
 | [[wiki/Agent-护栏\|Agent 护栏：把安全控制下沉到模型之外]] | 用上下文、执行、数据三层护栏限制 Agent 的可见信息、可执行动作和最终数据权限。 | agent, guardrails, security, prompt-injection, human-in-the-loop, access-control |
 | [[wiki/Agent-上下文\|Agent 上下文决定它能看到什么]] | 理解 Agent 每次决策依赖哪些信息，以及上下文缺失为什么会导致错误行动。 | agent, context, llm, tool-calling, reasoning, memory |
 | [[wiki/Agent的5个通用设计模式与第一章总框架\|Agent 的 5 个通用设计模式与第一章总框架]] | 用 5 个可复用模式理解 Agent 如何审查、加载信息、保存状态、验证修改和安全演进。 | agent, harness, design-patterns, react, guardrails, context-engineering |
