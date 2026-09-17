@@ -4,7 +4,7 @@ description: wiki-query MCP server 安装/配置/跨平台分发速查与踩坑 
 type: concept
 updated: 2026-06-25
 tags: wiki-query, mcp, deploy, github-actions, rust, cross-platform, release
-source: sources/projects/wiki-query-deploy-references.md
+source: "[[sources/projects/wiki-query-deploy-references]]"
 ---
 
 # wiki-query MCP 部署

@@ -4,7 +4,7 @@ description: Docker Desktop WSL2 后端 VHDX 虚拟磁盘清理与压缩指南
 type: concept
 updated: 2026-06-08
 tags: [docker, wsl2, disk-cleanup, vhdx, windows]
-source: 实际操作经验
+source: self
 ---
 
 # Docker Desktop WSL2 VHDX 清理与压缩

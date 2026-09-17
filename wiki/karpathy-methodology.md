@@ -4,7 +4,7 @@ description: Andrej Karpathy 的 5 套核心方法论 — 痛苦驱动学习、�
 type: concept
 updated: 2026-06-22
 tags: karpathy, learning, methodology, ai-workflow, programming, prompt
-source: sources/learning/karpathy-methodology.md
+source: "[[sources/learning/karpathy-methodology]]"
 ---
 
 # Karpathy 方法论

@@ -4,7 +4,7 @@ description: 从零构建 Claude Code-like Agent——19 章学习笔记
 type: concept
 updated: 2026-05-07
 tags: agent, learn-shareai
-source: sources/agent/learn-shareai/s01-Agent循环.md
+source: "[[sources/agent/learn-claude-code/s01-Agent循环]]"
 ---
 
 # Learn ShareAI（s01-s19）

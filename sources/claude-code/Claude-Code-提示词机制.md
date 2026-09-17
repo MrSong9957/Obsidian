@@ -1,3 +1,12 @@
+---
+name: Claude Code 系统提示词动态注入机制
+description: Claude Code 源码分析——system prompt 三层组装调用链、CLAUDE.md 注入与 effective prompt 选择逻辑
+type: reference
+updated: 2026-07-26
+tags: [claude-code, system-prompt, source-analysis, context]
+source: self
+---
+
 Now I have all the source code evidence. Here's the detailed answer to Question 1:
 
 ---

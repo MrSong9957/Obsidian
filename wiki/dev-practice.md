@@ -4,7 +4,7 @@ description: TDD/代码质量/调试方法论/代码讲解/提示词技巧/KV缓
 type: concept
 updated: 2026-06-22
 tags: dev, tdd, debugging, prompt, code-quality, karpathy, ai-workflow
-source: sources/dev/dev-practice.md
+source: "[[sources/dev/dev-practice]]"
 ---
 # 开发实践
 

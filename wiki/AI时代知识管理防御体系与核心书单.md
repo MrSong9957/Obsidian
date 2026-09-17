@@ -4,7 +4,7 @@ description: 构建“信源过滤-深度加工-输出验证”三层防线抵�
 type: resource-and-methodology
 updated: 2026-08-21
 tags: [pkm, ai-era, information-defense, book-list, cognitive-framework, anti-algorithm-bias, engineering-thinking]
-source: 未确认（原始出处未入库，待补）
+source: self
 ---
 
 ### 📝 知识笔记：AI时代守住脑子的三层防线 + 6本底层认知书单

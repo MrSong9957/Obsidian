@@ -1,3 +1,12 @@
+---
+name: MiCode TUI 开发经验汇总
+description: mi-code 项目从 Ink/React 迁移到自研差量渲染引擎的实战记录——架构演进、渲染优化与踩坑经验
+type: concept
+updated: 2026-06-26
+tags: [tui, mimocode, renderer, ink, migration, experience]
+source: self
+---
+
 # MiCode TUI 开发经验汇总
 
 > 来源：mi-code 项目实战经验，从 Ink/React 迁移到自研差量渲染引擎的完整记录。

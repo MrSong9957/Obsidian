@@ -1,3 +1,12 @@
+---
+name: Claude Code 源码技术栈约束（源码验证版）
+description: 基于 Claude Code v2.1.88 源码逐条验证的运行时、渲染架构与依赖约束清单
+type: reference
+updated: 2026-07-10
+tags: [claude-code, tech-stack, source-analysis, terminal]
+source: self
+---
+
 # Claude Code 源码技术栈约束（源码验证版）
 
 > 基于 v2.1.88 源码逐条验证

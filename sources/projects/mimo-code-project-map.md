@@ -1,3 +1,12 @@
+---
+name: MiMo-Code 项目地图
+description: MiMo-Code 源码结构导航——Monorepo 结构、核心包、模块导航与推荐阅读顺序
+type: reference
+updated: 2026-06-27
+tags: [mimocode, source-map, navigation, monorepo]
+source: self
+---
+
 # MiMo-Code 项目地图
 
 > 这是一份帮助你快速理解 MiMo-Code 源码结构的导航文档。无论你是想了解某个功能的实现，还是想贡献代码，都可以从这里开始。

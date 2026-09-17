@@ -4,7 +4,7 @@ description: Token 集中管理架构、各服务 token 获取方式、Docker �
 type: concept
 updated: 2026-05-29
 tags: credentials, tokens, docker, management, security, mimo, provider
-source: [sources/tools/2026-05-15-token-management.md]], [[sources/tools/mimo-provider-debug.md]
+source: "[[sources/tools/2026-05-15-token-management]]"
 ---
 
 # Token 管理

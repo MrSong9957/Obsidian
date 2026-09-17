@@ -4,6 +4,7 @@ description: 完整的 MiMoCode MCP 配置调试过程、配置文件位置对�
 type: reference
 updated: 2026-06-27
 tags: mimocode, mcp, wiki-query, configuration, troubleshooting, debugging
+source: self
 ---
 
 # MiMoCode MCP 配置详细参考

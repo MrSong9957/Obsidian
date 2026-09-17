@@ -1,11 +1,11 @@
-```yaml
+---
 name: Harness 五要素：Agent 构建阶段的工程视角
 description: 理清 Agent 总公式与 Harness 五要素的关系，以及各要素在全书中的位置。
 type: insight
 updated: 2026-09-09
 tags: [agent, harness, context-engineering, tools, validation, security]
-source: [[sources/1.2.6-Harness五要素与构建部分的对应]]
-```
+source: self
+---
 
 # 核心关系
 
@@ -36,7 +36,7 @@ Harness
 
 所以可以理解成：
 
-> **第一套公式告诉你 Agent 由什么组成；Harness 五要素告诉你工程上具体要负责什么。**
+> **第一套公式告诉你 Agent 由什么组成；Harness 五要素告诉你工程上具体要负责什么。**[^1]
 
 # 五要素对应什么
 
@@ -151,3 +151,7 @@ Harness =
 一句话：
 
 > **LLM 决定“想什么、下一步做什么”；Harness 负责让它长期有信息可用、有工具可做事，同时不能乱做，并且做错后能被发现和纠正。**
+
+## 引用索引
+
+[^1]: 用户提供原文：1.2.6 Harness五要素与构建部分的对应（原文未入库）。

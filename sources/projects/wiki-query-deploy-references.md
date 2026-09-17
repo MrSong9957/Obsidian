@@ -4,6 +4,7 @@ description: wiki-query MCP server 从单机配置到 GitHub Actions 三平台�
 type: reference
 updated: 2026-06-25
 tags: wiki-query, mcp, deploy, github-actions, rust, cross-platform
+source: self
 ---
 
 # wiki-query 跨平台部署详细记录

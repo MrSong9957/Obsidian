@@ -4,7 +4,7 @@ description: settings.json/CLAUDE.md/rules/记忆系统/插件/Hooks/子代理/M
 type: concept
 updated: 2026-06-17
 tags: claude-code, settings, claudemd, memory, rules, hooks, subagents, mcp, workflow, plugins
-source: [sources/claude-code/claude-code-references.md, wiki/ecc.md]
+source: "[[sources/claude-code/claude-code-references]]"
 ---
 
 # Claude Code 配置与工作流
@@ -85,7 +85,7 @@ using-superpowers / writing-plans / executing-plans / systematic-debugging / tes
 
 ## ECC
 
-ECC（Everything Claude Code）是独立插件，提供基础设施层（编码规范、上下文管理、安全审查、持续学习），补充 Superpowers 不覆盖的领域。
+ECC（Everything Claude Code）是独立插件，提供基础设施层（编码规范、上下文管理、安全审查、持续学习），补充 Superpowers 不覆盖的领域。[^1]
 
 ## 上下文窗口管理（最重要）
 
@@ -174,3 +174,7 @@ ECC（Everything Claude Code）是独立插件，提供基础设施层（编码�
 - **Evaluations**：Checkpoint-Based（线性验证）vs Continuous（持续测试）；pass@k vs pass^k
 
 详细内容见 [[sources/claude-code/claude-code-references.md|Claude Code 配置详细参考]]
+
+## 引用索引
+
+[^1]: 次要来源：[[wiki/ecc]] — ECC 插件安装、Hooks 档位与组件说明。

@@ -4,7 +4,7 @@ description: OpenCode plugin 平台行为限制、input.tool 契约、ECC 桥接
 type: concept
 updated: 2026-06-12
 tags: opencode, mimocode, claude-code, hooks, plugin, bridge, deploy, agent, monorepo, typescript, architecture
-source: [sources/claude-code/opencode-bridge-v2.md, sources/projects/mimocode-reading-guide.md]
+source: "[[sources/claude-code/opencode-bridge-v2]]"
 ---
 
 # OpenCode 桥接

@@ -4,7 +4,7 @@ description: AI 协同编程时代的自动化测试体系——以测试作为�
 type: concept
 updated: 2026-08-13
 tags: vibe-coding, testing, tdd, mutation-testing, code-quality, agent
-source: 原创整理
+source: self
 ---
 
 # Vibe Coding 时代的自动化测试体系

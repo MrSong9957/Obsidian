@@ -1,3 +1,12 @@
+---
+name: OpenCode Auto Mode 实现过程
+description: 在 OpenCode 中实现长时间无人监管 auto 模式的完整过程——两阶段 LLM 判断、安全操作自动放行与危险操作确认
+type: reference
+updated: 2026-06-04
+tags: [opencode, auto-mode, agent, permission, llm]
+source: self
+---
+
 # OpenCode Auto Mode 实现过程
 
 ## 背景

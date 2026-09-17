@@ -4,6 +4,7 @@ description: mi-code 从 ANSI renderer 迁移到 message-store + Ink <Static> �
 type: debugging-story
 updated: 2026-07-23
 tags: [mi-code, tui, message-store, ink, static, renderer-migration, ansi, architecture-boundary]
+source: self
 ---
 
 # Message Store 语义边界——两个同源 bug 的调试故事

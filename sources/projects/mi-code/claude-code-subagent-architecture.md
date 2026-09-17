@@ -1,9 +1,10 @@
 ---
-title: Claude Code 子代理架构分析
+name: Claude Code 子代理架构分析
+description: 基于 Claude Code 源码的子代理架构分析——预设角色体系、工具策略与模型选择，作为 mi-code 子代理系统的对标参考
 type: concept
+updated: 2026-07-22
 tags: [claude-code, subagent, agent-architecture, mi-code]
-created: 2026-07-22
-source: AUTO-0025 worktree 验证 + CC 源码分析
+source: self
 ---
 
 # Claude Code 子代理架构分析

@@ -3,6 +3,7 @@ name: Inline 渲染管线统一修复
 description: mi-code inline 模式从"两个 stdout 写入者冲突"到"统一单次 write 管线"的完整修复过程，结合 Claude Code 源码的架构决策
 type: concept
 tags: [mi-code, inline-render, terminal, ansi, claude-code]
+source: self
 created: 2026-07-14
 updated: 2026-07-15
 project: mi-code

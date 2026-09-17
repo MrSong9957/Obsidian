@@ -1,3 +1,12 @@
+---
+name: MiMo Code 的 @ 引用机制
+description: MiMo Code 对 @ 引用语法的支持方式——核心正则实现与和 Claude Code @include 机制的区别
+type: concept
+updated: 2026-06-27
+tags: [mimocode, include, markdown, config]
+source: self
+---
+
 **是的，MiMo Code 支持 `@` 引用语法**，但和 Claude Code 的 `@include` 有重要区别。
 
 ---

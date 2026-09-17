@@ -4,6 +4,7 @@ description: MiMo-Code（OpenCode fork）源码阅读路线，参考 Learn Share
 type: reference
 updated: 2026-06-13
 tags: [mimocode, opencode, typescript, monorepo, architecture, agent-loop]
+source: self
 ---
 
 # MiMo-Code 源码阅读指南

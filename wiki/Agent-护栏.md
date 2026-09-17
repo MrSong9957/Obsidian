@@ -1,15 +1,15 @@
-```yaml
+---
 name: Agent 护栏：把安全控制下沉到模型之外
 description: 用上下文、执行、数据三层护栏限制 Agent 的可见信息、可执行动作和最终数据权限。
 type: hybrid
 updated: 2026-09-08
 tags: [agent, guardrails, security, prompt-injection, human-in-the-loop, access-control]
-source: [[sources/1.2.5-护栏与安全性]]
-```
+source: self
+---
 
 # 核心思路
 
-Agent 安全不能只靠一句“不要做危险操作”。
+Agent 安全不能只靠一句“不要做危险操作”。[^1]
 
 真正可靠的做法是：
 
@@ -201,3 +201,7 @@ Prompt 告诉 Agent：应该怎么做
 > **越重要的安全规则，越不能只依赖模型自己记住和遵守。**
 
 真正可靠的 Agent 安全，不是让模型“更听话”，而是让模型即使犯错，也没有能力造成不可接受的后果。
+
+## 引用索引
+
+[^1]: 用户提供原文：1.2.5 护栏与安全性（原文未入库）。

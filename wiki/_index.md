@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-09-16
+updated: 2026-09-17
 ---
 
 # Wiki 索引
@@ -46,3 +46,40 @@ updated: 2026-09-16
 | [[wiki/KV-Cache友好的上下文设计与注意力机制\|KV Cache 友好的上下文设计与注意力机制]] | Q/K/V 与因果遮罩、缓存复用原理、三条上下文布局原则、注意力可视化 | context-engineering, kv-cache, attention, transformer, prompt-cache |
 | [[wiki/KV Cache、Prompt Cache 与缓存友好的 Agent 架构\|KV Cache、Prompt Cache 与缓存友好的 Agent 架构]] | 两层缓存区分、缓存边界与子 Agent 前缀对齐、可编辑/可组合 KV 研究边界 | context-engineering, kv-cache, prompt-cache, agent, architecture |
 | [[wiki/Obsidian仓库大脑模型\|Obsidian 仓库大脑模型]] | 网页 ChatGPT 仓库管理大脑提示词：三层管理、ADD/UPDATE/NOOP/CONTRADICT 裁决、/goal 与 CONTINUE/DONE 状态机 | brain-model, decision-control, agent-orchestration, obsidian, wiki-management, goal |
+| [[wiki/1个月把技能练到前1%\|1个月技能精通3-2-1法则]] | Dan Koe提出的技能快速精通框架，通过3种资源输入、2个输出出口、1个月验证周期，帮助区分真兴趣与伪需求，实现从学习到实践的闭环 | skill-mastery, learning-framework, output-driven, deliberate-practice, personal-growth |
+| [[wiki/从Prompt到Graph\|从 Prompt 到 Graph：Agent 工程关注范围如何逐层扩大]] | 理解 AI 工程如何从优化提示词，演进到管理 Agent 循环、长期自治和执行图。 | agent, prompt-engineering, context-engineering, harness, loop-engineering, graph-engineering |
+| [[wiki/第一性原理\|第一性原理：从底层事实重新构建解决方案]] | 通过事实拆解、假设验证和重新推导，突破经验限制，解决复杂问题。 | first-principles, thinking, decision-making, problem-solving |
+| [[wiki/工程化训练\|工程化训练]] | 工程化流程训练图——brainstorming 到 finishing 的全链路（含 Security Testing Gate 分支）、软件工程生命周期与测试需求文档（Test Spec）四要素写法 | engineering, test-design, test-spec, brainstorming, workflow |
+| [[wiki/工具定义、按需加载与提示工程消融实验\|工具定义、按需加载与提示工程消融实验]] | 设计易于正确使用的工具说明，理解按需加载如何保留缓存，并通过对照实验检验提示词效果。 | tool-use, tool-search, context-engineering, prompt-caching, ablation-study, tau-bench |
+| [[wiki/工作流编排\|工作流编排：用确定性流程控制 LLM 与工具]] | 判断什么时候该用单次调用、固定工作流，什么时候才需要自主 Agent。 | agent, workflow, orchestration, harness, llm, adaptation-layer |
+| [[wiki/构建有效Agent\|构建有效 Agent：简单、透明、工具友好，并按真实任务选模型]] | 理解 Agent 设计的三个核心原则，以及模型选型真正该看哪些指标。 | agent, harness, aci, model-selection, reasoning, tool-calling |
+| [[wiki/观察空间与动作空间决定Agent能力\|观察空间与动作空间决定 Agent 能看什么、能做什么]] | 理解 Agent 如何通过观察和行动接口连接外部世界，以及为什么扩展接口能直接提升任务能力。 | agent, observation-space, action-space, harness, tools, context |
+| [[wiki/上下文工程\|上下文工程：决定 Agent 每一步能看到什么]] | 解释为什么 Agent 能力高度依赖上下文，以及 Harness 如何为每次模型调用重建有效信息。 | agent, context-engineering, harness, react, llm |
+| [[wiki/十二种深度思考训练法\|十二种深度思考训练法：从表象到本质的认知工具集]] | 提供12套可刻意练习的本质思考工具，涵盖溯源、拆解、模式识别等，助用户建立结构化洞察力。 | deep-thinking, cognitive-tools, problem-solving, mental-models, decision-making |
+| [[wiki/时空可组合性\|时空可组合性：让动态系统安全地变化]] | 提炼 Cordis 如何用可撤销副作用和响应式依赖，让组件能够安全加入、移除、替换和重新组合。 | cordis, composability, runtime, hmr, agent-harness |
+| [[wiki/提示词注入威胁\|提示注入：上下文安全的核心威胁]] | 理解恶意文字怎样诱使 Agent 越权，怎样分层防御，以及如何设计实验检查效果。 | prompt-injection, agent-security, context-engineering, tool-use, memory-poisoning |
+| [[wiki/系统提示词设计\|系统提示词设计：明确要求、组织结构与执行流程]] | 写清 Agent 的职责、表达方式和工作步骤，减少理解歧义与执行遗漏。 | prompt-engineering, system-prompt, agent, workflow, xml |
+| [[wiki/系统提示词中的业务规则、示例与缓存设计\|系统提示词中的业务规则、Few-shot 示例与缓存设计]] | 把业务判断写成可执行规则，用少量示例说明边界，并兼顾跨请求缓存复用。 | prompt-engineering, business-rules, few-shot, prompt-caching, agent |
+| [[wiki/知识复利三阶跃迁模型\|知识复利三阶跃迁模型]] | 将碎片信息转化为个人资产的三级加工框架：从原文摘录到概念转译再到体系缝合，解决“收藏即遗忘”的知识管理失效问题 | knowledge-compound-interest, zettelkasten, second-brain, anti-collection-fallacy, personal-knowledge-base, note-taking |
+| [[wiki/自主-Agent\|自主 Agent：用 ReAct 循环动态决定下一步]] | 理解自主 Agent 如何规划、使用工具、处理失败，以及什么时候该和工作流混合使用。 | agent, autonomous-agent, react, workflow, harness, orchestration |
+| [[wiki/Agent-工具设计\|Agent 工具设计：连接世界、扩大能力，也扩大风险]] | 理解 Agent 工具的类型、调用流程，以及通用工具和专用工具该怎么选。 | agent, tools, tool-calling, mcp, sandbox, aci |
+| [[wiki/Agent Skills\|Agent Skills：按任务加载操作说明]] | Skills 三层渐进式加载、description 触发边界、用户指定与模型选择两种触发方式，及其与提示缓存的配合 | agent-skills, prompt-engineering, progressive-disclosure, context-engineering, prompt-caching |
+| [[wiki/Agent-护栏\|Agent 护栏：把安全控制下沉到模型之外]] | 用上下文、执行、数据三层护栏限制 Agent 的可见信息、可执行动作和最终数据权限。 | agent, guardrails, security, prompt-injection, human-in-the-loop, access-control |
+| [[wiki/Agent-上下文\|Agent 上下文决定它能看到什么]] | 理解 Agent 每次决策依赖哪些信息，以及上下文缺失为什么会导致错误行动。 | agent, context, llm, tool-calling, reasoning, memory |
+| [[wiki/Agent的5个通用设计模式与第一章总框架\|Agent 的 5 个通用设计模式与第一章总框架]] | 用 5 个可复用模式理解 Agent 如何审查、加载信息、保存状态、验证修改和安全演进。 | agent, harness, design-patterns, react, guardrails, context-engineering |
+| [[wiki/Agent驱动Rust学习\|Agent驱动Rust学习：以Codex为地图构建Coding Agent Runtime能力]] | 面向Agent/Coding Agent工程师的Codex源码学习路线，强调“用Codex学架构，让Rust被迫升级” | codex, rust, agent-runtime, coding-agent, just-in-time-learning, mini-codex, openai |
+| [[wiki/AI-Agent-的最小结构\|AI Agent 的最小结构：Model、Context、Tools 与 Environment]] | 理解现代 Agent 由什么组成，以及 Agent 与外部环境之间如何形成行动闭环。 | agent, llm, context, tools, harness, environment |
+| [[wiki/AI时代知识管理防御体系与核心书单\|AI时代知识管理防御体系与核心书单]] | 构建“信源过滤-深度加工-输出验证”三层防线抵御AI噪声，并附6本搭建底层认知结构的必读书单及适用场景 | pkm, ai-era, information-defense, book-list, cognitive-framework, anti-algorithm-bias, engineering-thinking |
+| [[wiki/architecture-migration-semantic-boundary\|架构迁移语义边界准则]] | 从"renderer 控制视觉"迁移到"message store 控制语义"时,必须区分视觉控制指令与真实数据,否则旧时代的视觉指令会污染新时代的语义数据 | architecture, migration, semantic-boundary, tui, message-store, renderer, anti-pattern |
+| [[wiki/Claude-Code-Statusline-部署与故障恢复\|Claude Code Statusline 部署与故障恢复]] | 状态栏运维手册——在新 Claude Code 环境恢复状态栏或排障：settings.json/scripts 部署结构、test_statusline.py 回归测试与 CC Safety Net 恢复流程 | claude-code, statusline, safety-net, ops |
+| [[wiki/Harness-工程\|Harness 工程：让 Agent 从“能做”变成“可靠地做”]] | 理解 Harness 如何通过上下文、工具、约束、验证和纠正，让 Agent 在生产环境中可靠运行。 | agent, harness, context, tools, reliability, verification |
+| [[wiki/Harness五要素\|Harness 五要素：Agent 构建阶段的工程视角]] | 理清 Agent 总公式与 Harness 五要素的关系，以及各要素在全书中的位置。 | agent, harness, context-engineering, tools, validation, security |
+| [[wiki/inline-grid-footer-render\|Inline Grid Footer 渲染架构]] | cell 级双缓冲 + 绝对坐标定位彻底解决 inline 模式 resize 堆叠——footerTopRow 计算、resize 链路、emit yBias、InlineGridRenderer 组件职责 | tui, inline-renderer, grid, double-buffer, resize, footer, conhost, reflow, absolute-positioning |
+| [[wiki/karpathy-methodology\|Karpathy 方法论]] | Andrej Karpathy 的 5 套核心方法论 — 痛苦驱动学习、解释倒逼输入、代码至上、极小闭环、提示词优化法 | karpathy, learning, methodology, ai-workflow, programming, prompt |
+| [[wiki/LLM是Agent的决策核心\|LLM 是 Agent 的决策核心，能力通过三条路径持续更新]] | 理解模型如何驱动 Agent 决策，以及能力如何从临场适应逐步沉淀为持久能力。 | agent, llm, harness, model-as-agent, learning, reinforcement-learning |
+| [[wiki/mi-code-tui-experience\|MiCode TUI 开发经验汇总]] | mi-code 项目从 Ink/React 迁移到自研差量渲染引擎的实战记录——架构演进、渲染优化与踩坑经验 | tui, mimocode, renderer, ink, migration, experience |
+| [[wiki/mimocode-mcp-config\|MiMoCode MCP 配置指南]] | MiMoCode 与 Claude Code 的 MCP 配置差异、wiki-query 接入流程、常见问题排查 | mimocode, mcp, wiki-query, configuration, troubleshooting |
+| [[wiki/Obsidian-AI-Skill-实测清单\|Obsidian AI Skill 实测清单：9大Agent联动工具与本地知识库安全实践]] | 提供9个高星Obsidian AI Skill实测排名、安装命令及Git安全回滚策略，解决本地知识库AI自动化与安全管控问题。 | obsidian, ai-skill, agent, knowledge-management, tool-list, local-first, git-safety |
+| [[wiki/pr-merge-local-sync\|PR merge 后本地分支的安全同步]] | 本地 master 有未推送提交 + 工作区有脏文件时,PR squash merge 后不能机械用 pull/reset --hard;先看拓扑和最终树内容,再做最小受控同步——保住脏文件、对齐到 merge commit | git, pr-merge, squash-merge, local-sync, dirty-worktree, safe-reset |
+| [[wiki/ReAct-循环\|ReAct 循环：Agent 如何通过轨迹持续思考和行动]] | 理解 Agent 如何把模型、上下文和工具串成“想→做→看”的执行闭环。 | agent, react, trajectory, harness, tool-calling, context |
+| [[wiki/terminal-inline-renderer-principles\|Terminal Inline Renderer 架构原则]] | Application-driven Layout 底层约束——DECAWM、wordWrap、宽度计算、ANSI 处理等不变原则 + 架构演进记录（cursorUp 覆写 → cell 级双缓冲） | tui, inline-renderer, decawm, wordwrap, ansi, cursor, layout-engine, terminal, architecture-principles, grid, double-buffer |

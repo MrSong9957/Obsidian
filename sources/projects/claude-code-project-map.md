@@ -1,3 +1,12 @@
+---
+name: Claude Code 项目地图
+description: Claude Code 源码结构导航——目录总览、核心入口、按功能模块导航与推荐阅读顺序
+type: reference
+updated: 2026-06-27
+tags: [claude-code, source-map, navigation]
+source: self
+---
+
 # Claude Code 项目地图
 
 > 这是一份帮助你快速理解 Claude Code 源码结构的导航文档。无论你是想了解某个功能的实现，还是想贡献代码，都可以从这里开始。

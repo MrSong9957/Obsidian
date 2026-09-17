@@ -1,13 +1,13 @@
-```yaml
+---
 name: Agent 的 5 个通用设计模式与第一章总框架
 description: 用 5 个可复用模式理解 Agent 如何审查、加载信息、保存状态、验证修改和安全演进。
 type: methodology
 updated: 2026-09-09
 tags: [agent, harness, design-patterns, react, guardrails, context-engineering]
-source: [[sources/1.3-贯穿全书的设计模式]]
-```
+source: self
+---
 
-# 五个最重要的设计模式
+# 五个最重要的设计模式[^1]
 
 ## 1. 提议者—审核者
 
@@ -512,3 +512,7 @@ Prompt：
 一句话总结：
 
 > **好的 Agent 不是单纯让模型更聪明，而是通过 Harness 给模型合适的信息、合适的工具、明确的边界和可靠的反馈，让一个会犯错的模型仍然能够稳定完成复杂任务。**
+
+## 引用索引
+
+[^1]: 用户提供原文：1.3 贯穿全书的设计模式（原文未入库）。

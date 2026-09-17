@@ -4,7 +4,7 @@ description: UI设计原则/终端UI测试/Playwright自动化/技术栈策略 �
 type: concept
 updated: 2026-04-17
 tags: frontend, ui, testing, playwright, tech-stack
-source: sources/dev/frontend.md
+source: "[[sources/dev/frontend]]"
 ---
 # 前端与 UI
 

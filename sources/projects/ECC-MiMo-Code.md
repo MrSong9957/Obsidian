@@ -1,3 +1,12 @@
+---
+name: MiMoCode Project Memory
+description: mi-code 项目级持久记忆——项目上下文、ECC 路径约定、插件导出格式等硬性规则与架构决策
+type: reference
+updated: 2026-06-27
+tags: [mimocode, ecc, project-memory, rules, architecture]
+source: self
+---
+
 # Project memory
 _Durable project-level knowledge. Persists across all sessions in this project. Edit only content under italic instructions._
 

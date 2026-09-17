@@ -1,17 +1,17 @@
-```yaml
+---
 name: 自主 Agent：用 ReAct 循环动态决定下一步
 description: 理解自主 Agent 如何规划、使用工具、处理失败，以及什么时候该和工作流混合使用。
 type: hybrid
 updated: 2026-09-08
 tags: [agent, autonomous-agent, react, workflow, harness, orchestration]
-source: [[sources/1.2.4-编排模式-工作流与自主]]
-```
+source: self
+---
 
 # 一句话理解
 
 自主 Agent 解决的是：
 
-> **任务下一步无法提前写死时，让模型根据当前环境自己决定接下来做什么。**
+> **任务下一步无法提前写死时，让模型根据当前环境自己决定接下来做什么。**[^1]
 
 工作流是“代码决定路线”，自主 Agent 是“模型边走边决定路线”。
 
@@ -261,3 +261,7 @@ Workflow + Agent 混合
 核心原则：
 
 > **Agent 的价值不是“自主”本身，而是在无法提前写死执行路径时，仍能根据反馈继续完成任务。**
+
+## 引用索引
+
+[^1]: 用户提供原文：1.2.4 编排模式-工作流与自主（原文未入库）。
