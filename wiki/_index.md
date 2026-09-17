@@ -57,7 +57,10 @@ updated: 2026-09-17
 | [[wiki/Skill 编写方法、上下文位置与缓存成本\|Skill 编写方法、上下文位置与缓存成本]] | 把经验写成可执行 Skill 的四部分结构、真实任务迭代法、各框架加载位置与 emit-once 缓存辨析 | agent-skills, prompt-engineering, context-engineering, prompt-caching |
 | [[wiki/Skills 与工具的协作方式及实验设计\|Skills 与工具的协作方式及实验设计]] | Skill/工具/脚本职责划分、通用执行器思路，及论文转 PPT 与个人写作两个实验方案 | agent-skills, tool-use, progressive-disclosure, skill-evaluation |
 | [[wiki/上下文压缩：减少信息负担，让已有知识更容易使用\|上下文压缩：减少信息负担，让已有知识更容易使用]] | 压缩三动机（容量/Context Rot/提前收尾）、提炼保留原则与上下文学习不等于长期记忆 | ai-agent, context-engineering, context-compression, context-rot, in-context-learning |
+| [[wiki/上下文压缩与缓存复用\|上下文压缩与缓存复用：六种策略及其取舍]] | 压缩对缓存的影响、六种压缩策略取舍、实验统计口径辨析与自适应窗口三机制 | ai-agent, context-compression, kv-cache, prompt-cache, context-engineering |
+| [[wiki/上下文管理：分层压缩、信息保留与子 Agent 隔离\|上下文管理：分层压缩、信息保留与子 Agent 隔离]] | 五种可组合处理方式、压缩保住关键知识的四原则、进度记录与子 Agent 隔离的收益边界 | ai-agent, context-engineering, context-compression, subagents, information-management |
 | [[wiki/上下文工程\|上下文工程：决定 Agent 每一步能看到什么]] | 解释为什么 Agent 能力高度依赖上下文，以及 Harness 如何为每次模型调用重建有效信息。 | agent, context-engineering, harness, react, llm |
+| [[wiki/第二章：上下文工程 章节结束的深度思考题\|第二章：上下文工程 章节结束的深度思考题]] | 九道章末思考题与解答——缓存友好压缩、思维链保留、元信息可靠性、提示词防熵增、Skills 元认知与上下文布局 | context-engineering, kv-cache, prompt-cache, agent-skills, reasoning, exercises |
 | [[wiki/十二种深度思考训练法\|十二种深度思考训练法：从表象到本质的认知工具集]] | 提供12套可刻意练习的本质思考工具，涵盖溯源、拆解、模式识别等，助用户建立结构化洞察力。 | deep-thinking, cognitive-tools, problem-solving, mental-models, decision-making |
 | [[wiki/时空可组合性\|时空可组合性：让动态系统安全地变化]] | 提炼 Cordis 如何用可撤销副作用和响应式依赖，让组件能够安全加入、移除、替换和重新组合。 | cordis, composability, runtime, hmr, agent-harness |
 | [[wiki/提示词注入威胁\|提示注入：上下文安全的核心威胁]] | 理解恶意文字怎样诱使 Agent 越权，怎样分层防御，以及如何设计实验检查效果。 | prompt-injection, agent-security, context-engineering, tool-use, memory-poisoning |
