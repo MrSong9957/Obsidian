@@ -4,7 +4,7 @@ description: 理解如何按信息价值选择处理方式，保住关键决策�
 type: methodology
 updated: 2026-09-17
 tags: [ai-agent, context-engineering, context-compression, subagents, information-management]
-source: self
+source: "https://bojieli.github.io/ai-agent-book/book/chapter2/"
 ---
 
 **管理上下文，要先判断信息是否值得进入、需要保留多久，再决定保存原文、生成摘要还是直接移除。** 对于过程很长、结论很短的任务，还可以让子 Agent 独立处理，减少主上下文需要接收的材料。[^1]
@@ -93,4 +93,4 @@ source: self
 
 ## 引用索引
 
-[^1]: 用户提供原文：2.7.4 生产级的分层压缩机制；2.7.5 压缩策略的设计原则；2.7.6 子 Agent 上下文隔离；2.8 本章小结与思考题（原文未入库）。
+[^1]: 原文：《AI Agent Book》第二章 2.7.4「生产级的分层压缩机制」、2.7.5「压缩策略的设计原则」、2.7.6「隔离优于压缩：子 Agent 上下文隔离」及 2.8 本章小结与思考题

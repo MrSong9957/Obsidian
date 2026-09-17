@@ -4,12 +4,13 @@ description: Anthropic 内部 10 个团队使用 Claude Code 的完整案例中�
 type: article
 updated: 2026-08-30
 tags: [claude-code, anthropic, case-study, workflow, non-technical, agents-md]
-source: E:\迅雷下载\How-Anthropic-teams-use-Claude-Code_v2.pdf
+source: "https://claude.com/blog/how-anthropic-teams-use-claude-code"
 ---
 
 # How Anthropic teams use Claude Code
 
-> 原始文件：`E:\迅雷下载\How-Anthropic-teams-use-Claude-Code_v2.pdf`（23 页，第 23 页空；扫描 OCR 件）
+> 原文：Anthropic 官方博客 https://claude.com/blog/how-anthropic-teams-use-claude-code（官方 PDF：https://www-cdn.anthropic.com/58284b19e702b49db9302d5b6f135ad8871e7658.pdf）
+> 翻译底稿：`E:\迅雷下载\How-Anthropic-teams-use-Claude-Code_v2.pdf`（23 页，第 23 页空；扫描 OCR 件）
 > 性质：Anthropic 官方手册，基于内部 Claude Code 重度用户访谈
 > 定位：**按团队的使用案例中译**，尽量保留原文细节与口吻，不是配置手册
 > 姊妹篇：[[sources/agent/how-openai-uses-codex|How OpenAI uses Codex]]（Codex 日常用法）

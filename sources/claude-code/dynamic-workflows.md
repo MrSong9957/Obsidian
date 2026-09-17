@@ -4,7 +4,7 @@ description: 2.1.154 引入的多代理并行执行功能 — 触发方式、使
 type: guide
 updated: 2026-06-08
 tags: [claude-code, workflow, ultracode, agents, parallel]
-source: "~/.claude/cache/changelog.md"
+source: "https://github.com/anthropics/claude-code/releases/tag/v2.1.154"
 ---
 
 # Claude Code 动态工作流（Dynamic Workflows）

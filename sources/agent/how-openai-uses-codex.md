@@ -4,12 +4,13 @@ description: OpenAI 内部 7 类 Codex 用法与 6 条最佳实践全量中译 �
 type: article
 updated: 2026-08-30
 tags: [codex, openai, coding-agent, workflow, best-practices, agents-md]
-source: E:\迅雷下载\how-openai-uses-codex.pdf
+source: "https://openai.com/business/guides-and-resources/how-openai-uses-codex/"
 ---
 
 # How OpenAI uses Codex
 
-> 原始文件：`E:\迅雷下载\how-openai-uses-codex.pdf`（13 页，第 13 页空）
+> 原文：OpenAI 官方手册 https://openai.com/business/guides-and-resources/how-openai-uses-codex/（官方 PDF：https://cdn.openai.com/pdf/6a2631dc-783e-479b-b1a4-af0cfbd38630/how-openai-uses-codex.pdf）
+> 翻译底稿：`E:\迅雷下载\how-openai-uses-codex.pdf`（13 页，第 13 页空）
 > 性质：OpenAI 官方手册，基于工程师访谈与内部使用数据
 > 定位：**按用法类型组织的精简中译**，保留正文说明、工程师原话与示例 prompt
 > 姊妹篇：[[sources/claude-code/how-anthropic-teams-use-claude-code|How Anthropic teams use Claude Code]]（按团队组织的案例）
