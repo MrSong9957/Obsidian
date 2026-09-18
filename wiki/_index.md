@@ -81,8 +81,8 @@ updated: 2026-09-19
 | [[wiki/AI时代知识管理防御体系与核心书单\|AI时代知识管理防御体系与核心书单]] | 构建“信源过滤-深度加工-输出验证”三层防线抵御AI噪声，并附6本搭建底层认知结构的必读书单及适用场景 | pkm, ai-era, information-defense, book-list, cognitive-framework, anti-algorithm-bias, engineering-thinking |
 | [[wiki/architecture-migration-semantic-boundary\|架构迁移语义边界准则]] | 从"renderer 控制视觉"迁移到"message store 控制语义"时,必须区分视觉控制指令与真实数据,否则旧时代的视觉指令会污染新时代的语义数据 | architecture, migration, semantic-boundary, tui, message-store, renderer, anti-pattern |
 | [[wiki/Claude-Code-Statusline-部署与故障恢复\|Claude Code Statusline 部署与故障恢复]] | 状态栏运维手册——在新 Claude Code 环境恢复状态栏或排障：settings.json/scripts 部署结构、test_statusline.py 回归测试与 CC Safety Net 恢复流程 | claude-code, statusline, safety-net, ops |
-| [[wiki/CLI渲染方案A-备用屏\|CLI 渲染方案 A：备用屏与应用内历史浏览]] | DeepSeek Harness CLI 已选定的全屏渲染方案——交互独占备用屏、应用内滚动浏览历史，数据与画面分离、缩放重建流程与验收要点 | cli, terminal, alternate-screen, ink, rendering, deepseek-harness, design |
-| [[wiki/CLI渲染方案B-主屏混合\|CLI 渲染方案 B：主屏聊天与备用屏查看器]] | 参考 Codex CLI 的混合渲染备选方案——完成内容进主屏原生历史、查看器独占备用屏、位置账本与缩放确定性重建，接受清除 shell 历史的代价 | cli, terminal, alternate-screen, codex, rendering, deepseek-harness, design |
+| [[wiki/CLI 备用屏架构设计\|CLI 备用屏架构设计]] | DeepSeek Harness CLI 备用屏架构设计——启动即备用屏、职责划分与受限布局、聊天数据与画面分离、缩放重建七步流程、/trace 与退出恢复、三层验收门禁 | cli, terminal, alternate-screen, ink, rendering, deepseek-harness, design |
+| [[wiki/终端重复绘制：原因与备用屏方案\|终端重复绘制：原因与备用屏方案]] | 终端重复绘制的根因与备用屏方案——旧画面擦除位置判断错误、全时备用屏、缩放清屏完整重画与真实终端验收要点 | cli, terminal, alternate-screen, ink, rendering, deepseek-harness, design |
 | [[wiki/Harness-工程\|Harness 工程：让 Agent 从“能做”变成“可靠地做”]] | 理解 Harness 如何通过上下文、工具、约束、验证和纠正，让 Agent 在生产环境中可靠运行。 | agent, harness, context, tools, reliability, verification |
 | [[wiki/Harness五要素\|Harness 五要素：Agent 构建阶段的工程视角]] | 理清 Agent 总公式与 Harness 五要素的关系，以及各要素在全书中的位置。 | agent, harness, context-engineering, tools, validation, security |
 | [[wiki/inline-grid-footer-render\|Inline Grid Footer 渲染架构]] | cell 级双缓冲 + 绝对坐标定位彻底解决 inline 模式 resize 堆叠——footerTopRow 计算、resize 链路、emit yBias、InlineGridRenderer 组件职责 | tui, inline-renderer, grid, double-buffer, resize, footer, conhost, reflow, absolute-positioning |
