@@ -1,15 +1,15 @@
 # Obsidian 知识库
 
-> 本文档是知识库的**冷数据导航索引**。当 MEMORY.md（热数据）中未找到相关信息时，在此处按领域浏览查找。
+> 本文档是知识库的**导航索引**。检索优先使用 wiki MCP（`wiki_search`）；无 MCP 时在此按领域浏览查找。根目录 [MEMORY.md](MEMORY.md) 是文件记忆入口，仅服务 Junction/链接方式使用本 vault 的外部项目会话。
 
 ## 仓库概览
 
 ```
 obsidian/
 ├── CLAUDE.md / AGENTS.md            # Schema 层（LLM 行为规则 + 分类规则）
-├── MEMORY.md                        # 记忆索引 + 管理规则（热数据）
-├── README.md                        # 知识库导航索引（冷数据）
-├── LLM-WIKI-ARCHITECTURE.md         # 三层架构设计文档
+├── MEMORY.md                        # 文件记忆入口（少量偏好与知识指针）
+├── README.md                        # 知识库导航索引
+├── LLM-WIKI-ARCHITECTURE.md         # 架构决策记录（ADR）
 ├── wiki/                            # Wiki 层（按领域组织）
 ├── sources/                         # 原始资料层（按子目录分类）
 │   ├── agent/                       # Agent 架构、多代理系统
@@ -114,10 +114,12 @@ obsidian/
 2. **Wiki 层** (`wiki/`) — 结构化知识，LLM 可读写
 3. **Schema 层** (`CLAUDE.md` / `AGENTS.md`) — LLM 行为规则
 
-### 记忆查找优先级
+### 检索方式
 
-1. **MEMORY.md**（热数据）— 始终在上下文中，优先查找
-2. **README.md**（冷数据）— MEMORY.md 未命中时，按领域导航查找
-3. **wiki/**（详情层）— 通过 MEMORY.md 或 README.md 的索引定位
+1. **wiki MCP**（可用时）— `wiki_search` 全文检索 wiki/ 与 sources/
+2. **README.md** — 无 MCP 时按领域导航定位 wiki/ 文件
+3. **文件搜索** — 必要时 rg / glob 兜底
 
-详见 [[LLM-WIKI-ARCHITECTURE.md|架构设计文档]]
+根目录 [MEMORY.md](MEMORY.md) 是**文件记忆入口**：仅服务通过 Junction/链接把本 vault 用作项目记忆的场景，维护少量长期有效的偏好与知识指针，不承担全库检索。
+
+详见 [[LLM-WIKI-ARCHITECTURE.md|架构决策记录]]

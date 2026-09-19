@@ -2,6 +2,8 @@
 
 本文件由 wiki-query MCP 的 `wiki_get_project_rules` 工具读取,内容会注入到你当前项目根的 `CLAUDE.md` / `AGENTS.md`,让你在该项目里知道如何使用 wiki-query 沉淀记忆。
 
+本文件是外部项目接入说明;vault 内的现行操作规范以 vault 根 `AGENTS.md` 为准。两者存在共同规则(写入约定、范围检查、清理边界),修改这些共同规则时两边同步检查。
+
 ## vault 信息
 
 - **vault 根**:见你的 MCP 配置(`WIKI_VAULT_ROOT` 环境变量或启动 cwd)

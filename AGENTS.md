@@ -79,6 +79,8 @@
 - 不支持安全的条目级删除时，保留原文件。
 - 仅一次性、独立、已完整提炼的临时记忆文件，才可按其系统规则整体删除。
 
+本文件是知识库的现行操作规范；[templates/project-rules.md](templates/project-rules.md) 是注入外部项目的接入说明，两者存在共同规则（写入约定、范围检查、清理边界）。涉及知识库的共同规则以本文件为准；修改这些共同规则时，同步检查该模板是否需要更新。
+
 ## 工具入口
 
 正文由 Agent 的文件工具读写；wiki-query 读取 Markdown 并维护派生的 SQLite 索引。查重报告只提示相似文档，不自动合并。
@@ -86,3 +88,4 @@
 - 知识检索使用 `wiki_search`；代码片段、具体文本、文件名模式和非 Markdown 文件检索使用 `rg` / glob。
 - 使用 wiki-query 时读取 [wiki-mcp Skill](skills/wiki-mcp/SKILL.md)，获取工具调用与首次接入流程。
 - 构建、启动和 CLI 运维按需查阅 [wiki-query README](mcp/wiki-query/README.md)。
+- 根目录 [MEMORY.md](MEMORY.md) 是文件记忆入口：服务通过 Junction/链接把本 vault 用作项目记忆的场景，仅维护少量长期有效的偏好与知识指针。涉及入口或引用的变更、发现失效引用时检查更新该文件；知识库操作以本文件为准，该入口不替代外部项目自身的规则。

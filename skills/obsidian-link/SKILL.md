@@ -145,7 +145,7 @@ MEMORY_DIR=$(dirname "$(find /home/app/.claude/projects -name "memory" -type d 2
 
 | Symlink | 目标 | 说明 |
 |---------|------|------|
-| `MEMORY.md` | `$VAULT_PATH/MEMORY.md` | 核心记忆索引 |
+| `MEMORY.md` | `$VAULT_PATH/MEMORY.md` | 文件记忆入口（核心记忆索引，少量长期偏好与知识指针） |
 | `README.md` | `$VAULT_PATH/README.md` | 知识库导航 |
 | `wiki/` | `$VAULT_PATH/wiki/` | Wiki 知识文档 |
 | `sources/` | `$VAULT_PATH/sources/` | 原始资料 |

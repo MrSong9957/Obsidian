@@ -11,6 +11,12 @@ depends: [obsidian-link]
 
 你是一个 Obsidian 知识仓库的管理员。你的职责是确保知识被正确写入、维护，并且不会因为长期积累而退化（重复、冗余、膨胀）。
 
+**定位与规则归属：**
+
+- **MEMORY.md 是文件记忆入口**：仅服务通过 Junction/链接把 vault 用作项目记忆的场景，维护少量长期有效的偏好与知识指针（入门门槛见 §1），不是全库索引。
+- **规则归属**：vault 的现行操作规范（目录权限、建页格式、溯源与引用、通用写入流程）以 vault 根 `AGENTS.md` 为准；本技能与 AGENTS.md 冲突时以 AGENTS.md 为准。本技能保留 MEMORY.md 条目管理与 wiki/sources 组织的职责流程。
+- **检索方式**：环境有可用 wiki MCP 时，查重与检索优先用 `wiki_search`（AGENTS.md 通用写入流程）；无 MCP 时按本技能的 tags 扫描与语义去重流程执行。写入完成后按 AGENTS.md 通用写入流程调用 `wiki_sync` 同步索引。
+
 ## 0. 前置检查：Obsidian 链接验证
 
 在执行任何 obsidian-remember 操作之前，必须先验证项目记忆目录与 Obsidian 仓库之间的 symlink 是否完好。
@@ -74,7 +80,7 @@ vault/
 - 每个模块一个入口文档，足以独立完成任务
 - 覆盖所有关键配置项和操作，但不展开详细过程
 - 结论摘要：成功经验、失败教训、方法论原则
-- 每条摘要必须标注来源索引：`← [[sources/xxx.md]] L起始-结束`
+- 每条摘要按 vault `AGENTS.md`「溯源与引用」标注来源（正文脚注 + 底部引用索引）
 
 **sources/（详细文档，可读写，禁止删除）**：完整过程、调试记录、代码示例
 - 完整操作步骤（安装指南、配置流程）
@@ -140,11 +146,7 @@ Wiki 文件靠 YAML `tags` 集中分类。同类摘要写入同一个文件，�
 3. 无 tags 重叠 → 新建 wiki 文件，打上合适的 tags
 4. wiki 文件超 600 行 → 拆分为 P1/P2
 
-**来源索引格式（强制）：** wiki 中的每条摘要必须标注来源：
-```
-- 结论内容 ← [[sources/xxx.md]] L起始-结束
-```
-这样 wiki 文件既是分类摘要，又能通过索引直接跳回详细文档。
+**来源标注（强制）：** 按 vault 根 `AGENTS.md`「溯源与引用」执行——正文用脚注 `[^n]` 标注，底部「引用索引」定义，指向 sources/ 文件及实际行号。这样 wiki 文件既是分类摘要，又能通过索引直接跳回详细文档。
 
 ## 2. 写入流程
 
@@ -158,25 +160,14 @@ Wiki 文件靠 YAML `tags` 集中分类。同类摘要写入同一个文件，�
        ▼
   1. 精简全面足以完成任务 → 写入 wiki/ 入口文档
   2. 详细过程/调试记录 → 写入 sources/ 详细文档（-references.md）
-  3. 入口文档中追加摘要时，标注来源索引：← [[sources/xxx.md]] L起始-结束
+  3. 入口文档中追加摘要时，按 AGENTS.md「溯源与引用」标注来源
 ```
 
 ### 2.2 Frontmatter 规范
 
-每个 wiki 页面必须有 YAML frontmatter：
+wiki 页面的 frontmatter 字段、`source` 三分支取值与溯源标注方式，以 vault 根 `AGENTS.md`「溯源与引用」及 `templates/wiki.md` 模板为准，本技能不另立字段规范。
 
-```yaml
----
-name: 页面名称（简短，用于索引查找）
-description: 一句话描述 — 覆盖哪些问题/场景
-type: concept | summary | feedback | contradiction
-updated: YYYY-MM-DD
-tags: [标签1, 标签2]
-sources: [[sources/xxx.md]]
----
-```
-
-**关键规则：** `tags` 是分类的核心字段，决定同类摘要是否归入此文件。`sources` 标注此 wiki 文件的来源资料。
+`tags` 仍是分类的核心字段，决定同类摘要是否归入此文件；写入前扫描现有 tags 归类。
 
 ### 2.3 内容格式
 
@@ -302,8 +293,8 @@ sources/ 有文件变更
 当新内容的 tags 与已有 wiki 文件重叠时：
 
 1. 在 wiki 文件中找到合适的节或位置
-2. 追加摘要，标注来源索引：`← [[sources/xxx.md]] L起始-结束`
-3. 更新 frontmatter 的 `updated` 日期和 `sources` 字段
+2. 追加摘要，按 AGENTS.md「溯源与引用」标注来源
+3. 更新 frontmatter 的 `updated` 日期和 `source` 字段（按 AGENTS.md「溯源与引用」）
 4. 如有必要，更新 `tags` 以反映新增的分类范围
 
 ### 4.2 新文件创建
@@ -311,7 +302,7 @@ sources/ 有文件变更
 当新知识的 tags 与所有已有 wiki 文件无重叠时：
 
 1. 创建新 wiki 文件（如 `new-topic.md`）
-2. 编写完整的 frontmatter，tags 写清分类，sources 指向来源资料
+2. 编写完整的 frontmatter，tags 写清分类，`source` 按 AGENTS.md「溯源与引用」填写
 3. 写入内容，每条摘要标注来源索引
 4. 在 MEMORY.md 添加指针（如满足入门条件，见 §1）
 
