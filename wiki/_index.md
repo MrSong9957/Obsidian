@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-09-19
+updated: 2026-09-20
 ---
 
 # Wiki 索引
@@ -73,6 +73,7 @@ updated: 2026-09-19
 | [[wiki/Agent 状态栏：让模型直接掌握任务进度和调用次数\|Agent 状态栏：让模型直接掌握任务进度和调用次数]] | 为什么完整历史仍不够、框架怎样维护状态摘要，以及状态栏减少重复统计与超限操作的作用 | ai-agent, context-engineering, state-tracking, tool-use |
 | [[wiki/Agent 状态栏：信息构成、消息位置与缓存复用\|Agent 状态栏：信息构成、消息位置与缓存复用]] | 状态栏三类信息构成、user 消息承载方式，以及末尾追加对 KV Cache 复用的意义 | ai-agent, context-engineering, state-tracking, kv-cache |
 | [[wiki/Agent 状态栏：更新策略、缓存成本与可靠维护\|Agent 状态栏：更新策略、缓存成本与可靠维护]] | 替换与追加两种状态更新的费用权衡、五种实用状态信息与维护准则 | ai-agent, context-engineering, prompt-cache, state-tracking, error-recovery |
+| [[wiki/Agent 记忆分层与四种存储格式\|Agent 记忆分层与四种存储格式]] | 轨迹、长期记忆与业务状态三层职责，Simple Notes / Enhanced Notes / JSON Cards / Advanced JSON Cards 四种存储格式的取舍与实验 3-2 定性观察 | agent-memory, memory-architecture, memory-storage, json, trajectory |
 | [[wiki/Agent-护栏\|Agent 护栏：把安全控制下沉到模型之外]] | 用上下文、执行、数据三层护栏限制 Agent 的可见信息、可执行动作和最终数据权限。 | agent, guardrails, security, prompt-injection, human-in-the-loop, access-control |
 | [[wiki/Agent-上下文\|Agent 上下文决定它能看到什么]] | 理解 Agent 每次决策依赖哪些信息，以及上下文缺失为什么会导致错误行动。 | agent, context, llm, tool-calling, reasoning, memory |
 | [[wiki/Agent的5个通用设计模式与第一章总框架\|Agent 的 5 个通用设计模式与第一章总框架]] | 用 5 个可复用模式理解 Agent 如何审查、加载信息、保存状态、验证修改和安全演进。 | agent, harness, design-patterns, react, guardrails, context-engineering |
@@ -87,10 +88,15 @@ updated: 2026-09-19
 | [[wiki/Harness五要素\|Harness 五要素：Agent 构建阶段的工程视角]] | 理清 Agent 总公式与 Harness 五要素的关系，以及各要素在全书中的位置。 | agent, harness, context-engineering, tools, validation, security |
 | [[wiki/inline-grid-footer-render\|Inline Grid Footer 渲染架构]] | cell 级双缓冲 + 绝对坐标定位彻底解决 inline 模式 resize 堆叠——footerTopRow 计算、resize 链路、emit yBias、InlineGridRenderer 组件职责 | tui, inline-renderer, grid, double-buffer, resize, footer, conhost, reflow, absolute-positioning |
 | [[wiki/karpathy-methodology\|Karpathy 方法论]] | Andrej Karpathy 的 5 套核心方法论 — 痛苦驱动学习、解释倒逼输入、代码至上、极小闭环、提示词优化法 | karpathy, learning, methodology, ai-workflow, programming, prompt |
+| [[wiki/可执行记忆与记忆内容的三种类型\|可执行记忆与记忆内容的三种类型]] | User as Code 用对象存状态、函数执行规则（日志+检查点），情景/语义/程序三类认知记忆与三套分类体系的组合使用 | agent-memory, executable-memory, user-as-code, knowledge-representation, cognitive-science |
 | [[wiki/LLM是Agent的决策核心\|LLM 是 Agent 的决策核心，能力通过三条路径持续更新]] | 理解模型如何驱动 Agent 决策，以及能力如何从临场适应逐步沉淀为持久能力。 | agent, llm, harness, model-as-agent, learning, reinforcement-learning |
+| [[wiki/Mem0 与 Memobase\|Mem0 与 Memobase：记忆更新、检索和用户画像的设计取舍]] | Mem0 v2 写入时决策与 v3 只追加+查询时判断的演进、官方评测数字的来源辨析，Memobase 画像+事件时间线与缓冲批处理 | agent-memory, mem0, memobase, memory-retrieval, memory-architecture |
 | [[wiki/mi-code-tui-experience\|MiCode TUI 开发经验汇总]] | mi-code 项目从 Ink/React 迁移到自研差量渲染引擎的实战记录——架构演进、渲染优化与踩坑经验 | tui, mimocode, renderer, ink, migration, experience |
 | [[wiki/mimocode-mcp-config\|MiMoCode MCP 配置指南]] | MiMoCode 与 Claude Code 的 MCP 配置差异、wiki-query 接入流程、常见问题排查 | mimocode, mcp, wiki-query, configuration, troubleshooting |
 | [[wiki/Obsidian-AI-Skill-实测清单\|Obsidian AI Skill 实测清单：9大Agent联动工具与本地知识库安全实践]] | 提供9个高星Obsidian AI Skill实测排名、安装命令及Git安全回滚策略，解决本地知识库AI自动化与安全管控问题。 | obsidian, ai-skill, agent, knowledge-management, tool-list, local-first, git-safety |
 | [[wiki/pr-merge-local-sync\|PR merge 后本地分支的安全同步]] | 本地 master 有未推送提交 + 工作区有脏文件时,PR squash merge 后不能机械用 pull/reset --hard;先看拓扑和最终树内容,再做最小受控同步——保住脏文件、对齐到 merge commit | git, pr-merge, squash-merge, local-sync, dirty-worktree, safe-reset |
 | [[wiki/ReAct-循环\|ReAct 循环：Agent 如何通过轨迹持续思考和行动]] | 理解 Agent 如何把模型、上下文和工具串成“想→做→看”的执行闭环。 | agent, react, trajectory, harness, tool-calling, context |
 | [[wiki/terminal-inline-renderer-principles\|Terminal Inline Renderer 架构原则]] | Application-driven Layout 底层约束——DECAWM、wordWrap、宽度计算、ANSI 处理等不变原则 + 架构演进记录（cursorUp 覆写 → cell 级双缓冲） | tui, inline-renderer, decawm, wordwrap, ansi, cursor, layout-engine, terminal, architecture-principles, grid, double-buffer |
+| [[wiki/记忆能力评估\|记忆能力评估：基础回忆、多会话检索与主动服务]] | 三层记忆能力框架（基础回忆/多会话检索/主动服务）、八项能力归纳与 LLM-as-a-judge 逐次更新评估设计 | agent-memory, memory-evaluation, methodology, locomo |
+| [[wiki/记忆压缩与本地日志脱敏\|记忆压缩与本地日志脱敏]] | 三层记忆整理（重要性筛选/聚类合并/抽象规律）、PII 日志脱敏四步流程与 Ollama 本地模型、"原文报告"数字的引用纪律 | agent-memory, memory-compression, log-sanitization, pii, ollama, qwen3 |
+| [[wiki/用户记忆与知识库\|用户记忆与知识库：让 Agent 跨会话记住信息]] | 用户记忆与知识库的分工、对话提取记忆的三条规则（选择性/抽象化/结构化）、RAG 与双层记忆架构预告 | agent-memory, knowledge-base, rag, memory-extraction |
