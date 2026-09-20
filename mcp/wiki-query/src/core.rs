@@ -199,8 +199,10 @@ pub fn list(filter: &ListFilter) -> Result<Vec<SearchResult>, WikiError> {
         params_vec.push(Box::new(t.clone()));
     }
     if let Some(d) = &filter.dir {
-        conditions.push("path LIKE ?".to_string());
-        params_vec.push(Box::new(format!("{}%", d)));
+        // Windows 上 sync 入库的 path 含 `\`,dir 参数按约定用 `/`。
+        // 比较前统一两侧分隔符,兼容已有数据库,不依赖重建索引。
+        conditions.push("REPLACE(path, '\\', '/') LIKE ?".to_string());
+        params_vec.push(Box::new(format!("{}%", d.replace('\\', "/"))));
     }
     let where_clause: String = if conditions.is_empty() {
         String::new()
