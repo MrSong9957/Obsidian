@@ -121,15 +121,22 @@ else
   bad "T8a serve 真实路径启动且默认 vault root 正确 (rc=$rc8)"
 fi
 
-# T8b serve 真实路径:外部 WIKI_VAULT_ROOT 优先于仓库根(错误路径必须触发警告)
+# T8b 外部 WIKI_VAULT_ROOT 优先于仓库根。
+# 优先级用 --check 输出验证(不依赖警告中的路径值——FINDING-4 修复后
+# 警告不再回显绝对路径);启动路径仅验证警告存在与进程退出,不泄露路径。
 tmp8b="$(mktemp -d)"
+chk8b="$(cd "$tmp8b" && WIKI_VAULT_ROOT=/nonexistent-xyz-for-test bash "$SERVE_SH" --check 2>&1)"
+rc8b_chk=$?
 out8b="$(cd "$tmp8b" && WIKI_VAULT_ROOT=/nonexistent-xyz-for-test bash "$SERVE_SH" </dev/null 2>&1)"
 rc8b=$?
 rm -rf "$tmp8b"
-if [ $rc8b -ne 0 ] && printf '%s' "$out8b" | "$GREP" -q "警告" && printf '%s' "$out8b" | "$GREP" -q "/nonexistent-xyz-for-test"; then
+if [ $rc8b_chk -eq 0 ] \
+   && printf '%s' "$chk8b" | "$GREP" -q "vault_root=/nonexistent-xyz-for-test" \
+   && [ $rc8b -ne 0 ] \
+   && printf '%s' "$out8b" | "$GREP" -q "警告"; then
   ok "T8b 外部 WIKI_VAULT_ROOT 优先生效"
 else
-  bad "T8b 外部 WIKI_VAULT_ROOT 优先生效 (rc=$rc8b)"
+  bad "T8b 外部 WIKI_VAULT_ROOT 优先生效 (rc=$rc8b chk=$rc8b_chk)"
 fi
 
 echo "----"

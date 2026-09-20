@@ -1,4 +1,4 @@
-use rusqlite::{Connection, Result};
+use rusqlite::{params, Connection, Result};
 use std::path::Path;
 
 const DEFAULT_DB_PATH: &str = "db/wiki.db";
@@ -29,6 +29,11 @@ pub fn init() -> Result<Connection> {
     conn.pragma_update(None, "journal_mode", "WAL")?;
     conn.pragma_update(None, "busy_timeout", 5000)?;
 
+    // schema 兼容性校验:已存在但列不符的库直接拒绝,防止 CREATE IF NOT EXISTS
+    // 静默跳过后产生"部分 SQL 成功"的半坏索引。Markdown 是唯一真本,
+    // 删除 db 目录重跑 sync 即可重建。
+    validate_schema(&conn)?;
+
     conn.execute_batch(
         "CREATE TABLE IF NOT EXISTS documents (
             id INTEGER PRIMARY KEY,
@@ -53,4 +58,46 @@ pub fn init() -> Result<Connection> {
     )?;
 
     Ok(conn)
+}
+
+/// 校验已存在的表列集合与当前 schema 精确一致;表不存在(新库)则放行,
+/// 由后续 CREATE IF NOT EXISTS 建立。不实现自动迁移:索引可重建,
+/// 明确拒绝 + 重建比静默半迁移更安全(见 README 恢复契约)。
+fn validate_schema(conn: &Connection) -> Result<()> {
+    check_columns(
+        conn,
+        "documents",
+        &["id", "path", "name", "description", "type", "updated", "tags", "modified_at"],
+    )?;
+    check_columns(
+        conn,
+        "documents_fts",
+        &["path", "name", "description", "type", "tags", "content"],
+    )?;
+    Ok(())
+}
+
+fn check_columns(conn: &Connection, table: &str, expected: &[&str]) -> Result<()> {
+    let exists: i64 = conn.query_row(
+        "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = ?1",
+        params![table],
+        |r| r.get(0),
+    )?;
+    if exists == 0 {
+        return Ok(());
+    }
+    let mut stmt = conn.prepare(&format!("PRAGMA table_info({})", table))?;
+    let mut actual: Vec<String> = stmt
+        .query_map([], |r| r.get::<_, String>(1))?
+        .filter_map(|r| r.ok())
+        .collect();
+    let mut wanted: Vec<String> = expected.iter().map(|s| s.to_string()).collect();
+    actual.sort();
+    wanted.sort();
+    if actual != wanted {
+        return Err(rusqlite::Error::InvalidParameterName(
+            "SQLite schema 与当前版本不兼容(列不符),请删除 db 目录后重跑 sync 重建索引".to_string(),
+        ));
+    }
+    Ok(())
 }

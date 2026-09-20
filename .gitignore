@@ -48,6 +48,8 @@ mcp/wiki-query/wiki-query
 
 # SQLite 数据库（运行 wiki-query sync 可重建）
 db/wiki.db
+db/wiki.db-shm
+db/wiki.db-wal
 mcp/wiki.db
 mcp/wiki-query/db/wiki.db
 .codex/

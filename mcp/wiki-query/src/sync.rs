@@ -11,7 +11,9 @@ use crate::models::{SyncReport, SimilarPair};
 
 /// 将路径中的反斜杠替换为正斜杠,去除开头的 `./` 和前导 `/`,
 /// 并解析 `..` / `.` 路径段。内部统一用正斜杠。
-fn normalize_path(path: &str) -> String {
+/// 返回 (规范化路径, 是否越出根)。越出根:`..` 在根边界上继续上跳,
+/// 该路径实际指向根之外,作用域判定必须为 false。
+fn normalize_path_checked(path: &str) -> (String, bool) {
     let normalized = path.replace('\\', "/");
 
     // 去除前导 / 和 ./
@@ -22,17 +24,24 @@ fn normalize_path(path: &str) -> String {
     // 解析 .. 和 . 路径段
     let segments: Vec<&str> = stripped.split('/').collect();
     let mut resolved: Vec<&str> = Vec::new();
+    let mut escaped_root = false;
     for seg in &segments {
         match *seg {
             "." => {}
             ".." => {
-                resolved.pop();
+                if resolved.pop().is_none() {
+                    escaped_root = true;
+                }
             }
             s if !s.is_empty() => resolved.push(s),
             _ => {}
         }
     }
-    resolved.join("/")
+    (resolved.join("/"), escaped_root)
+}
+
+fn normalize_path(path: &str) -> String {
+    normalize_path_checked(path).0
 }
 
 /// 从绝对路径中去除 vault root 前缀,返回相对路径。
@@ -58,7 +67,11 @@ pub fn strip_vault_root(path: &str, vault_root: &str) -> String {
 /// 传入的路径应为相对路径(如 `wiki/page.md`、`sources/dev/rust.md`)。
 /// 如果是绝对路径,需先调用 `strip_vault_root` 去除前缀。
 pub fn is_in_wiki_scope(path: &str) -> bool {
-    let normalized = normalize_path(path);
+    let (normalized, escaped_root) = normalize_path_checked(path);
+    // `..` 越出根的路径实际指向 vault 之外,不在作用域内
+    if escaped_root {
+        return false;
+    }
     let in_scope_dirs = ["sources/", "wiki/", "templates/"];
     in_scope_dirs.iter().any(|dir| normalized.starts_with(dir))
 }
@@ -74,17 +87,55 @@ pub fn run() {
 
 /// 带查重的 sync。scope="incremental" 查本次新文档,scope="full" 查全库。
 /// 返回 SyncReport(同步统计 + 查重报告)。
+///
+/// 库不可用(如 schema 不兼容)时不 panic、不半坏:报告 failed=-1 表示
+/// 整体失败,stderr 给出可观察错误与重建指引。
 pub fn run_with_scope(scope: &str) -> SyncReport {
-    let conn = init().expect("Failed to init database");
+    let conn = match init() {
+        Ok(c) => c,
+        Err(e) => {
+            eprintln!(
+                "[wiki-sync] 错误: {}。未执行任何同步,索引保持原状。{}",
+                e,
+                "若为 schema 不兼容,删除 db 目录后重跑 sync 即可重建。"
+            );
+            return SyncReport {
+                synced: 0,
+                updated: 0,
+                pruned: 0,
+                failed: -1,
+                scope: scope.into(),
+                dedupe_report: vec![],
+            };
+        }
+    };
+
+    // 分隔符口径统一:迁移存量反斜杠路径,保证入库/prune/exists 同一口径
+    normalize_legacy_separators(&conn);
+
     let root = Path::new(".");
 
     let mut count = 0;
     let mut updated = 0;
+    let mut failed = 0;
     let mut updated_paths: Vec<String> = Vec::new(); // 本次更新的路径(incremental 查重用)
     let mut on_disk: std::collections::HashSet<String> = std::collections::HashSet::new();
-    scan_directory(root, &conn, &mut count, &mut updated, &mut on_disk, &mut updated_paths);
+    scan_directory(root, &conn, &mut count, &mut updated, &mut failed, &mut on_disk, &mut updated_paths);
 
-    let pruned = prune_orphans(&conn, &on_disk);
+    // cwd 守卫:当前目录不含 wiki/ 或 sources/ 时视为不在 vault 内,
+    // 跳过 prune——防止错误 cwd 下 on_disk 不含真库路径导致整库误清。
+    // 与 serve 启动校验同一判据;合法 vault 内删空文件不受影响(目录仍在)。
+    let cwd_is_vault =
+        Path::new(".").join("wiki").is_dir() || Path::new(".").join("sources").is_dir();
+    let pruned = if cwd_is_vault {
+        prune_orphans(&conn, &on_disk)
+    } else {
+        eprintln!(
+            "[wiki-sync] 警告: 当前目录不含 wiki/ 或 sources/,跳过 prune 以防误清非本库索引(cwd={:?})",
+            std::env::current_dir()
+        );
+        0
+    };
 
     // 查重:scope 决定候选集
     let dedupe_report = build_dedupe_report(scope, &updated_paths, &conn);
@@ -93,8 +144,58 @@ pub fn run_with_scope(scope: &str) -> SyncReport {
         synced: count,
         updated,
         pruned: pruned as i32,
+        failed,
         scope: scope.into(),
         dedupe_report,
+    }
+}
+
+/// 把库中反斜杠路径统一为正斜杠口径(与扫描入库同一口径)。
+/// 若正斜杠版本已存在(同一逻辑文件两条记录)则删除旧行去重,
+/// documents 与 documents_fts 两表同步。幂等:迁移后无反斜杠行。
+fn normalize_legacy_separators(conn: &Connection) {
+    let legacy: Vec<String> = {
+        let mut stmt = match conn.prepare("SELECT path FROM documents WHERE path LIKE '%\\%'") {
+            Ok(s) => s,
+            Err(_) => return,
+        };
+        stmt.query_map([], |r| r.get::<_, String>(0))
+            .map(|iter| iter.filter_map(|r| r.ok()).collect())
+            .unwrap_or_default()
+    };
+    for old in legacy {
+        let new = old.replace('\\', "/");
+        if new == old {
+            continue;
+        }
+        let dup: i64 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM documents WHERE path = ?1",
+                params![new],
+                |r| r.get(0),
+            )
+            .unwrap_or(0);
+        let result: Result<(), rusqlite::Error> = (|| {
+            conn.execute("BEGIN", [])?;
+            let step: rusqlite::Result<usize> = if dup > 0 {
+                // 同一逻辑文件两条记录:删旧行(正斜杠行是本次/后续 sync 的权威形态)
+                conn.execute("DELETE FROM documents WHERE path = ?1", params![old])
+                    .and_then(|_| conn.execute("DELETE FROM documents_fts WHERE path = ?1", params![old]))
+            } else {
+                conn.execute("UPDATE documents SET path = ?2 WHERE path = ?1", params![old, new])
+                    .and_then(|_| conn.execute("UPDATE documents_fts SET path = ?2 WHERE path = ?1", params![old, new]))
+            };
+            step?;
+            if let Err(e) = conn.execute("COMMIT", []) {
+                let _ = conn.execute("ROLLBACK", []);
+                return Err(e);
+            }
+            Ok(())
+        })();
+        match result {
+            Ok(()) => eprintln!("[wiki-sync] 路径分隔符迁移: {} -> {}", old, new),
+            Err(e) => eprintln!("[wiki-sync] 警告: 分隔符迁移失败 {}: {}", old, e),
+        }
     }
 }
 
@@ -231,7 +332,9 @@ pub(crate) fn prune_orphans(conn: &Connection, on_disk: &std::collections::HashS
 
     let mut pruned = 0;
     for path in &db_paths {
-        if on_disk.contains(path) {
+        // 归一化比对:库内历史反斜杠行与本次扫描的正斜杠行是同一逻辑文件
+        let normalized = path.replace('\\', "/");
+        if on_disk.contains(&normalized) {
             continue;
         }
         // 二次确认:文件确实不存在才删。
@@ -239,6 +342,16 @@ pub(crate) fn prune_orphans(conn: &Connection, on_disk: &std::collections::HashS
         // 导致文件不进 on_disk → 误删有效文档。exists() 为真说明文件还在,保留。
         let abs = Path::new(".").join(path);
         if abs.exists() {
+            continue;
+        }
+        // 父目录失联保护:父目录不存在时无法区分"用户删除整个子树"与
+        // "子树临时失联(挂载/权限/锁定)",保守保留索引行,防止批量误清。
+        // Markdown 真本恢复可见后照常更新;父目录存在的单文件删除仍正常 prune。
+        if abs.parent().map_or(false, |p| !p.exists()) {
+            eprintln!(
+                "[wiki-sync] 警告: 父目录缺失,疑似子树失联,保留索引行: {}",
+                path
+            );
             continue;
         }
         // documents 删成功才删 FTS5,保证两表一致(避免 documents 有、FTS5 无)。
@@ -269,6 +382,7 @@ fn scan_directory(
     conn: &Connection,
     count: &mut i32,
     updated: &mut i32,
+    failed: &mut i32,
     on_disk: &mut std::collections::HashSet<String>,
     updated_paths: &mut Vec<String>,
 ) {
@@ -303,7 +417,7 @@ fn scan_directory(
         }
 
         if path.is_dir() {
-            scan_directory(&path, conn, count, updated, on_disk, updated_paths);
+            scan_directory(&path, conn, count, updated, failed, on_disk, updated_paths);
             continue;
         }
 
@@ -315,13 +429,24 @@ fn scan_directory(
         *count += 1;
 
         let relative_path = path.strip_prefix("./").unwrap_or(&path);
-        let path_str = relative_path.to_string_lossy().to_string();
+        // 统一 '/' 口径:DB 存储与 prune/exists 比对共用,避免 Windows(\)
+        // 与 Unix(/)表示差异造成重复索引或漏比对
+        let path_str = relative_path.to_string_lossy().replace('\\', "/");
         on_disk.insert(path_str.clone());
 
         // 检查是否需要更新
-        if needs_update(conn, &path_str, &path) && sync_file(conn, &path_str, &path).is_ok() {
-            *updated += 1;
-            updated_paths.push(path_str.clone());
+        if needs_update(conn, &path_str, &path) {
+            if sync_file(conn, &path_str, &path).is_ok() {
+                *updated += 1;
+                updated_paths.push(path_str.clone());
+            } else {
+                // 失败必须可观察:索引保留旧数据,报告区分"全部成功"与"部分失败"
+                *failed += 1;
+                eprintln!(
+                    "[wiki-sync] 警告: 文件同步失败(索引保留旧数据): {:?}",
+                    path
+                );
+            }
         }
     }
 }
@@ -337,7 +462,8 @@ fn needs_update(conn: &Connection, path_str: &str, file_path: &Path) -> bool {
         Err(_) => return true, // 无法获取修改时间（FAT32/网络挂载），强制更新
     };
     let modified_dt: chrono::DateTime<Local> = modified.into();
-    let modified_str = modified_dt.format("%Y-%m-%d %H:%M:%S").to_string();
+    // 毫秒粒度:秒级字符串会让同一秒内的连续修改被判"未变"而漏更新
+    let modified_str = modified_dt.format("%Y-%m-%d %H:%M:%S%.3f").to_string();
 
     let stored: String = conn
         .query_row(
@@ -371,7 +497,8 @@ fn sync_file(conn: &Connection, path_str: &str, file_path: &Path) -> Result<(), 
     let modified = metadata.modified()
         .map_err(|e| format!("无法获取修改时间（可能是 FAT32/网络挂载）: {}", e))?;
     let modified_dt: chrono::DateTime<Local> = modified.into();
-    let modified_str = modified_dt.format("%Y-%m-%d %H:%M:%S").to_string();
+    // 与 needs_update 同粒度(毫秒),保证同秒连续修改能被再次更新
+    let modified_str = modified_dt.format("%Y-%m-%d %H:%M:%S%.3f").to_string();
 
     // 用事务包 documents upsert + FTS5 同步,保证两表原子一致。
     // 中途崩溃(如进程被杀)不会出现 documents 已更新但 FTS5 旧记录已删未插的状态;

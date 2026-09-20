@@ -412,4 +412,26 @@ mod scope_tests {
         // 尝试用 .. 绕过作用域检查
         assert!(!is_in_wiki_scope("wiki/../.claude/memory.md"));
     }
+
+    /// 缺陷回归:`..` 数量超过路径深度时应视为越出根,判 false。
+    /// 当前 normalize_path 的 pop 无根绑定,`../../../wiki/x.md` 会被
+    /// 错误解析为 `wiki/x.md` 判 in_scope(误导 agent 跳过提炼)。
+    #[test]
+    fn escape_root_dots_not_in_scope() {
+        assert!(
+            !is_in_wiki_scope("../../../wiki/x.md"),
+            ".. 越出根的路径不应判为 wiki 作用域内"
+        );
+        assert!(
+            !is_in_wiki_scope("../outside.md"),
+            "单层越根也不应在作用域内"
+        );
+    }
+
+    /// 回归保护:目录名相似但非前缀的路径不得误判 in_scope。
+    #[test]
+    fn sibling_dir_names_not_in_scope() {
+        assert!(!is_in_wiki_scope("wiki2/a.md"), "wiki2 不是 wiki 前缀");
+        assert!(!is_in_wiki_scope("sources-dev/a.md"), "sources-dev 不是 sources 前缀");
+    }
 }

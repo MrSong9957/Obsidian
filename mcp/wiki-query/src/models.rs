@@ -34,6 +34,9 @@ pub struct SyncReport {
     pub updated: i32,
     /// 本次清理的孤儿记录数
     pub pruned: i32,
+    /// 本次同步失败的文件数(如非 UTF-8/DB 错误)。0 = 全部成功;
+    /// 失败文件的索引保留旧数据,必须可从报告发现,不得静默。
+    pub failed: i32,
     /// 查重范围:"incremental" 或 "full"
     pub scope: String,
     /// 查重报告:相似文档对(incremental 模式可能为空,full 模式含全库相似对)

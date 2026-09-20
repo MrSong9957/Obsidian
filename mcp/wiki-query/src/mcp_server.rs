@@ -125,8 +125,9 @@ impl WikiServer {
         };
         let report = crate::sync::run_with_scope(scope);
         let report_json = serde_json::to_string_pretty(&report).unwrap_or_else(|_| "{}".into());
-        // 提炼提醒:sync 完成后提醒 agent 删除源记忆文件,避免重复提炼
-        let hint = "\n\n[提醒] 如果本次 sync 是从记忆文件提炼到 wiki 的,请删除源记忆文件以避免重复提炼。";
+        // 提炼提醒:sync 成功仅代表索引更新,不代表提炼已完成;
+        // 必须先确认目标知识写入成功,才允许删除源记忆文件。
+        let hint = "\n\n[提醒] 如果本次 sync 用于记忆提炼:请先确认目标知识文件已成功写入(sources/ 或 wiki/ 下可检索到),再删除源记忆文件以避免重复提炼;sync 成功本身不代表提炼已完成。";
         Ok(CallToolResult::success(vec![
             Content::text(report_json),
             Content::text(hint.to_string()),
@@ -142,10 +143,8 @@ impl WikiServer {
             .join("templates")
             .join("project-rules.md");
         let rules = std::fs::read_to_string(&template_path).unwrap_or_else(|_| {
-            format!(
-                "[警告:未找到 templates/project-rules.md,vault_root={}]",
-                self.vault_root
-            )
+            // 不回显 vault_root 绝对路径(安全审计 FINDING-1)
+            "[警告:未找到 templates/project-rules.md,请检查 WIKI_VAULT_ROOT 配置]".to_string()
         });
         let target_file = match req.agent_type.as_deref() {
             Some("claude") => "CLAUDE.md",
@@ -171,8 +170,14 @@ impl WikiServer {
         &self,
         Parameters(req): Parameters<CheckScopeRequest>,
     ) -> Result<CallToolResult, McpError> {
-        let path_to_check = match &req.vault_root {
-            Some(root) => crate::sync::strip_vault_root(&req.path, root),
+        // vault_root 参数缺省时回退 WIKI_VAULT_ROOT(serve.sh 恒设置):
+        // 绝对路径若无根可剥离会假阴性,工具描述承诺支持绝对路径。
+        let root = req
+            .vault_root
+            .clone()
+            .or_else(|| std::env::var("WIKI_VAULT_ROOT").ok());
+        let path_to_check = match &root {
+            Some(r) => crate::sync::strip_vault_root(&req.path, r),
             None => req.path.clone(),
         };
         let in_scope = crate::sync::is_in_wiki_scope(&path_to_check);
@@ -275,10 +280,10 @@ pub async fn run() -> anyhow::Result<()> {
     let has_wiki = std::path::Path::new(&vault_root).join("wiki").exists();
     let has_sources = std::path::Path::new(&vault_root).join("sources").exists();
     if !has_wiki && !has_sources {
+        // 不打印 vault_root 绝对路径(安全审计 FINDING-4)
         eprintln!(
-            "[wiki-mcp] 警告: vault_root={} 下未找到 wiki/ 或 sources/ 目录。\
-             可用 WIKI_VAULT_ROOT 环境变量指定正确的 vault 路径。",
-            vault_root
+            "[wiki-mcp] 警告: 当前目录未找到 wiki/ 或 sources/ 目录。\
+             可用 WIKI_VAULT_ROOT 环境变量指定正确的 vault 路径。"
         );
     }
 

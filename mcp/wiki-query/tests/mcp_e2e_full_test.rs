@@ -12,13 +12,20 @@ use std::time::Duration;
 
 /// 启动 serve 子进程,发一组 JSON-RPC 消息,读全部 stdout。
 fn run_mcp_session(messages: &[&str]) -> String {
-    let mut child = Command::new("./target/debug/wiki-query.exe")
-        .arg("serve")
+    run_mcp_session_with_env(messages, &[])
+}
+
+/// 带环境变量变体:为子进程追加 env(如 WIKI_VAULT_ROOT / WIKI_DB_PATH)。
+fn run_mcp_session_with_env(messages: &[&str], envs: &[(&str, &str)]) -> String {
+    let mut cmd = Command::new("./target/debug/wiki-query.exe");
+    cmd.arg("serve")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .expect("failed to start serve");
+        .stderr(Stdio::piped());
+    for (k, v) in envs {
+        cmd.env(k, v);
+    }
+    let mut child = cmd.spawn().expect("failed to start serve");
 
     if let Some(mut stdin) = child.stdin.take() {
         for msg in messages {
@@ -392,4 +399,212 @@ fn mcp_multiple_tool_calls_in_sequence() {
     let stdout = run_mcp_session(&[init, notif, search, list]);
     assert!(stdout.contains(r#""id":60"#), "第一个调用应返回");
     assert!(stdout.contains(r#""id":61"#), "第二个调用应返回");
+}
+
+// ============================================================
+// 高风险缺陷回归(F5/F6/F8)
+// ============================================================
+
+/// 缺陷回归:绝对路径未传 vault_root 参数时,应回退 WIKI_VAULT_ROOT
+/// 环境变量剥离前缀,而不是假阴性(工具描述承诺支持绝对路径)。
+#[test]
+fn check_scope_absolute_path_without_param_falls_back_to_env() {
+    let (init, notif) = mcp_handshake();
+    let root = "Z:/nonexistent-fake-vault";
+    let abs_path = format!("{}/wiki/a.md", root);
+    let call = format!(
+        r#"{{"jsonrpc":"2.0","id":80,"method":"tools/call","params":{{"name":"wiki_check_scope","arguments":{{"path":"{}"}}}}}}"#,
+        abs_path
+    );
+    let stdout = run_mcp_session_with_env(&[init, notif, &call], &[("WIKI_VAULT_ROOT", root)]);
+    assert!(stdout.contains(r#""id":80"#), "应返回 id:80");
+    // MCP text 内容里的 JSON 引号被转义为 \",故断言用 \"in_scope\": true 形式
+    assert!(
+        stdout.contains(r#"\"in_scope\": true"#),
+        "绝对路径 + WIKI_VAULT_ROOT 环境变量应剥离前缀判 in_scope,实际: {}",
+        &stdout[..stdout.len().min(800)]
+    );
+}
+
+/// 缺陷回归:删源提醒必须含前置条件——sync 成功不等于提炼完成,
+/// 只有确认目标知识已成功写入后才允许清理源内容。
+#[test]
+fn wiki_sync_hint_requires_confirmation_before_delete() {
+    let (init, notif) = mcp_handshake();
+    let call = r#"{"jsonrpc":"2.0","id":81,"method":"tools/call","params":{"name":"wiki_sync","arguments":{}}}"#;
+    let stdout = run_mcp_session(&[init, notif, call]);
+    assert!(stdout.contains(r#""id":81"#));
+    assert!(
+        stdout.contains("确认") && (stdout.contains("成功写入") || stdout.contains("写入成功")),
+        "删源提醒应含『确认目标已成功写入』前置条件,实际: {}",
+        &stdout[..stdout.len().min(800)]
+    );
+}
+
+/// 回归保护:SyncReport 必须含 failed 字段(区分全部成功与部分失败)。
+#[test]
+fn sync_report_contains_failed_field() {
+    let (init, notif) = mcp_handshake();
+    let call = r#"{"jsonrpc":"2.0","id":82,"method":"tools/call","params":{"name":"wiki_sync","arguments":{}}}"#;
+    let stdout = run_mcp_session(&[init, notif, call]);
+    assert!(
+        stdout.contains("failed"),
+        "sync 报告应含 failed 字段(转义后的 JSON 键名),实际: {}",
+        &stdout[..stdout.len().min(800)]
+    );
+}
+
+/// F8 参数校验:limit 传错误类型(字符串)应被 MCP 层拒绝,返回错误响应而非 panic。
+#[test]
+fn wiki_list_invalid_limit_type_returns_error() {
+    let (init, notif) = mcp_handshake();
+    let call = r#"{"jsonrpc":"2.0","id":83,"method":"tools/call","params":{"name":"wiki_list","arguments":{"limit":"not-a-number"}}}"#;
+    let stdout = run_mcp_session(&[init, notif, call]);
+    assert!(stdout.contains(r#""id":83"#), "应返回 id:83 的响应");
+    assert!(
+        stdout.contains("error") || stdout.contains("Error"),
+        "参数类型错误应返回错误响应,实际: {}",
+        &stdout[..stdout.len().min(800)]
+    );
+}
+
+/// F7 回归保护:模板文件不存在时返回警告文案而非报错/panic。
+#[test]
+fn wiki_get_project_rules_missing_template_returns_warning() {
+    let (init, notif) = mcp_handshake();
+    let call = r#"{"jsonrpc":"2.0","id":84,"method":"tools/call","params":{"name":"wiki_get_project_rules","arguments":{}}}"#;
+    let stdout = run_mcp_session_with_env(
+        &[init, notif, call],
+        &[("WIKI_VAULT_ROOT", "Z:/nonexistent-fake-vault")],
+    );
+    assert!(stdout.contains(r#""id":84"#));
+    assert!(
+        stdout.contains("未找到 templates/project-rules.md"),
+        "模板缺失应返回警告文案,实际: {}",
+        &stdout[..stdout.len().min(800)]
+    );
+}
+
+/// F7 正常路径:WIKI_VAULT_ROOT 指向真实 vault 时,规则文本应来自
+/// templates/project-rules.md 原文(而非警告回退)。已有测试均只覆盖回退路径。
+#[test]
+fn wiki_get_project_rules_returns_template_content_from_real_vault() {
+    let (init, notif) = mcp_handshake();
+    let call = r#"{"jsonrpc":"2.0","id":85,"method":"tools/call","params":{"name":"wiki_get_project_rules","arguments":{}}}"#;
+    // 测试进程 cwd = mcp/wiki-query,vault 根为其上两级
+    let vault_root = std::path::Path::new("..").join("..");
+    let stdout = run_mcp_session_with_env(
+        &[init, notif, call],
+        &[("WIKI_VAULT_ROOT", vault_root.to_str().unwrap())],
+    );
+    assert!(stdout.contains(r#""id":85"#));
+    assert!(
+        !stdout.contains("未找到 templates/project-rules.md"),
+        "真实 vault 下不应出现模板缺失警告,实际: {}",
+        &stdout[..stdout.len().min(800)]
+    );
+    // 模板正文的稳定锚点:模板自身标题与其引用的工具名
+    assert!(
+        stdout.contains("wiki-query 记忆提炼规则"),
+        "规则文本应含模板正文标题,实际: {}",
+        &stdout[..stdout.len().min(2000)]
+    );
+    assert!(
+        stdout.contains("wiki_check_scope"),
+        "规则文本应含模板引用的工具名,实际: {}",
+        &stdout[..stdout.len().min(2000)]
+    );
+}
+
+/// 安全(FINDING-1):模板缺失警告必须保留,但不得回显服务器绝对路径。
+/// 防止修复退化为直接删除警告。
+#[test]
+fn wiki_get_project_rules_missing_template_warns_without_leaking_path() {
+    let (init, notif) = mcp_handshake();
+    let call = r#"{"jsonrpc":"2.0","id":87,"method":"tools/call","params":{"name":"wiki_get_project_rules","arguments":{}}}"#;
+    let fake_vault = std::env::temp_dir().join("leak-detect-atkvault");
+    let fake_str = fake_vault.to_str().unwrap().to_string();
+    let stdout = run_mcp_session_with_env(
+        &[init, notif, call],
+        &[("WIKI_VAULT_ROOT", &fake_str)],
+    );
+    assert!(stdout.contains(r#""id":87"#));
+    // 必要警告必须存在(不能退化成删除提示)
+    assert!(
+        stdout.contains("未找到 templates/project-rules.md"),
+        "模板缺失警告应保留,实际: {}",
+        &stdout[..stdout.len().min(800)]
+    );
+    // 不得泄露实际绝对路径,也不得带 vault_root= 键值
+    assert!(
+        !stdout.contains(&fake_str),
+        "响应不得包含 vault 实际绝对路径: {}",
+        fake_str
+    );
+    assert!(
+        !stdout.contains("vault_root="),
+        "响应不得含 vault_root= 键值对,实际: {}",
+        &stdout[..stdout.len().min(800)]
+    );
+}
+
+/// F8 契约:tools/list 应恰暴露 5 个 wiki_ 工具(防工具集漂移)。
+#[test]
+fn mcp_tools_list_exposes_exactly_five_wiki_tools() {
+    let (init, notif) = mcp_handshake();
+    let tools_list = r#"{"jsonrpc":"2.0","id":86,"method":"tools/list"}"#;
+    let stdout = run_mcp_session(&[init, notif, tools_list]);
+    // tools/list 响应行内每个工具都有 "name":"wiki_..." 形式
+    let count = stdout.matches(r#""name":"wiki_"#).count();
+    assert_eq!(
+        count, 5,
+        "tools/list 应恰含 5 个 wiki_ 工具,实际: {},输出片段: {}",
+        count,
+        &stdout[..stdout.len().min(1500)]
+    );
+}
+
+/// 安全(FINDING-4):serve 启动校验警告必须保留,但 stderr 不得打印
+/// vault 根绝对路径。防止修复退化为删除警告。
+#[test]
+fn serve_startup_warning_does_not_leak_absolute_path() {
+    use std::io::Read;
+    // 错误 cwd:无 wiki/ 与 sources/ 的临时目录,且不设 WIKI_VAULT_ROOT
+    let bad_cwd = tempfile::tempdir().unwrap();
+    let bad_str = bad_cwd.path().to_str().unwrap().to_string();
+    let exe = std::env::current_dir()
+        .unwrap()
+        .join("target/debug/wiki-query.exe");
+    let mut child = Command::new(&exe)
+        .arg("serve")
+        .current_dir(bad_cwd.path())
+        .env_remove("WIKI_VAULT_ROOT")
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .expect("failed to start serve");
+    // 触发启动校验后正常关闭
+    drop(child.stdin.take());
+    let mut stderr = String::new();
+    let _ = child.stderr.take().unwrap().read_to_string(&mut stderr);
+    let _ = child.wait();
+
+    // 必要警告必须存在(不能退化成删除提示)
+    assert!(
+        stderr.contains("未找到 wiki/ 或 sources/"),
+        "启动校验警告应保留,实际 stderr: {}",
+        stderr
+    );
+    // 不得泄露 vault 根绝对路径
+    assert!(
+        !stderr.contains(&bad_str),
+        "stderr 不得包含 vault 根绝对路径: {}",
+        bad_str
+    );
+    assert!(
+        !stderr.contains("vault_root="),
+        "stderr 不得含 vault_root= 键值对,实际: {}",
+        stderr
+    );
 }

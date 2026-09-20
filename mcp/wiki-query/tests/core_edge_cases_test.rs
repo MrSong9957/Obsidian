@@ -378,6 +378,7 @@ fn sync_report_serializes_correctly() {
         synced: 10,
         updated: 3,
         pruned: 1,
+        failed: 0,
         scope: "incremental".into(),
         dedupe_report: vec![],
     };
@@ -385,6 +386,7 @@ fn sync_report_serializes_correctly() {
     assert!(json.contains(r#""synced":10"#));
     assert!(json.contains(r#""updated":3"#));
     assert!(json.contains(r#""pruned":1"#));
+    assert!(json.contains(r#""failed":0"#));
     assert!(json.contains(r#""scope":"incremental""#));
 }
 
