@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-09-21
+updated: 2026-09-22
 ---
 
 # Wiki 索引
@@ -102,3 +102,18 @@ updated: 2026-09-21
 | [[wiki/用户记忆与知识库\|用户记忆与知识库：让 Agent 跨会话记住信息]] | 用户记忆与知识库的分工、对话提取记忆的三条规则（选择性/抽象化/结构化）、RAG 与双层记忆架构预告 | agent-memory, knowledge-base, rag, memory-extraction |
 | [[wiki/Rust 程序设计语言/Rust 入门：核心价值、开发工具与学习方法\|Rust 入门：核心价值、开发工具与学习方法]] | Rust 编译期检查（所有权/unsafe）减少底层错误、零成本抽象边界、Cargo/rustfmt/rust-analyzer 工具分工与官方书学习方法（含 Ferris 标记含义） | rust, memory-safety, systems-programming, cargo, learning-guide |
 | [[wiki/Docker容器开发方案\|Docker 容器开发方案]] | Windows Docker Desktop（WSL2）数据盘迁移 D:\AgentLab、agentlab-base 基础镜像＋项目镜像分层、Rust MCP 以预编译二进制运行于容器、Compose 持久卷与缓存规划、多容器共享 Obsidian 仓库 /vault、Agent 优先执行（命令→桌面自动化→用户兜底） | Docker, WSL2, Agent, 缓存管理 |
+| [[wiki/5步学习法第1步：预提问，带着问题去学习\|5步学习法第1步：预提问，带着问题去学习]] | 学习前先提问激活已有知识网络，让大脑进入搜索模式，提升输入效率 | pre-questioning, active-learning, reading-strategy, knowledge-connection, first-principles |
+| [[wiki/5步学习法第2步：最小输入，一次只学一个知识点\|5步学习法第2步：最小输入，一次只学一个知识点]] | 利用大脑工作记忆容量有限的规律，用最小知识单元和块状学习替代贪多求快 | minimal-input, working-memory, focused-learning, chunk-learning, first-principles |
+| [[wiki/5步学习法第3步：主动提取，合上书才是学习的开始\|5步学习法第3步：主动提取，合上书才是学习的开始]] | 用回忆和讲解代替被动输入，让大脑真正建立并强化神经连接 | active-recall, feynman-technique, learning-method, memory-consolidation, first-principles |
+| [[wiki/5步学习法第4步：间隔复习，用最少时间获得最牢记忆\|5步学习法第4步：间隔复习，用最少时间获得最牢记忆]] | 利用艾宾浩斯遗忘曲线的规律，在最佳时间点复习，用最少时间让记忆永久固化 | spaced-repetition, forgetting-curve, memory-consolidation, review-method, active-learning |
+| [[wiki/5步学习法第5步：迁移应用，让知识真正变成你的能力\|5步学习法第5步：迁移应用，让知识真正变成你的能力]] | 学习的终极目的是解决从未见过的新问题——迁移能力的含义、培养方法与完整学习闭环 | transfer-learning, knowledge-application, metacognition, learning-system, first-principles |
+| [[wiki/90%的人都在犯的5个学习误区，正在拖垮你的努力\|90%的人都在犯的5个学习误区，正在拖垮你的努力]] | 90%的人在犯的5个学习错误，每个都违背大脑底层规律 | learning-myths, mistake-analysis, first-principles, study-habits, brain-science |
+| [[wiki/公理1：大脑没有硬盘，学习就是给神经元牵线搭桥\|公理1：大脑没有硬盘，学习就是给神经元牵线搭桥]] | 学习的本质是建立神经元之间的突触连接而非存储信息，附类比法与举例法两个实操方法 | neural-connection, memory-consolidation, analogy, active-learning, first-principles |
+| [[wiki/公理2：被动输入都是无用功，主动提取才是学习本身\|公理2：被动输入都是无用功，主动提取才是学习本身]] | 突触连接强度与主动提取次数正相关，与被动输入次数几乎无关，附笔记法与费曼技巧 | active-recall, feynman-technique, note-taking, memory-consolidation, first-principles |
+| [[wiki/公理3：你的大脑只能同时处理4件事，贪多必忘\|公理3：你的大脑只能同时处理4件事，贪多必忘]] | 大脑只能同时处理4±1个信息块，超出就会溢出——机制、常见误区与组块化/单任务两个方法 | working-memory, chunking, single-task, block-learning, first-principles |
+| [[wiki/公理4：大脑只会记住有用的知识，孤立信息会被自动删除\|公理4：大脑只会记住有用的知识，孤立信息会被自动删除]] | 大脑只保留与已有知识网络建立有意义连接的信息，孤立信息会被删除——机制与提问/关联/应用三步骤 | meaning-encoding, memory-consolidation, knowledge-connection, learning-method, first-principles |
+| [[wiki/公理5：睡眠不是浪费时间，是学习的最后一步\|公理5：睡眠不是浪费时间，是学习的最后一步]] | 清醒时学习只是打草稿，睡眠才是大脑真正把知识砌成墙的过程——睡眠固化机制与三条睡眠法则 | sleep-consolidation, memory, learning-method, first-principles, study-habits |
+| [[wiki/用第一性原理学数学\|用第一性原理学数学]] | 从定义出发理解数学底层逻辑，替代背公式和盲目刷题 | math-learning, first-principles, definition-driven, logical-thinking, active-learning |
+| [[wiki/用第一性原理学文科\|用第一性原理学文科]] | 用认知科学的底层规律重新设计文科学习方式，替代死记硬背 | liberal-arts, learning-method, knowledge-system, feynman-technique, first-principles |
+| [[wiki/用第一性原理学物理\|用第一性原理学物理]] | 基于底层原理推导物理公式、拆解题目而非死记硬背或盲目刷题 | physics-learning, first-principles, derivation, active-learning, error-analysis |
+| [[wiki/用第一性原理学英语\|用第一性原理学英语]] | 基于认知科学规律重构英语学习方式，替代死记硬背的传统路径 | english-learning, learning-method, spaced-repetition, active-recall, first-principles |
