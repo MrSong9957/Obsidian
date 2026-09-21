@@ -101,4 +101,4 @@ updated: 2026-09-21
 | [[wiki/记忆压缩与本地日志脱敏\|记忆压缩与本地日志脱敏]] | 三层记忆整理（重要性筛选/聚类合并/抽象规律）、PII 日志脱敏四步流程与 Ollama 本地模型、"原文报告"数字的引用纪律 | agent-memory, memory-compression, log-sanitization, pii, ollama, qwen3 |
 | [[wiki/用户记忆与知识库\|用户记忆与知识库：让 Agent 跨会话记住信息]] | 用户记忆与知识库的分工、对话提取记忆的三条规则（选择性/抽象化/结构化）、RAG 与双层记忆架构预告 | agent-memory, knowledge-base, rag, memory-extraction |
 | [[wiki/Rust 程序设计语言/Rust 入门：核心价值、开发工具与学习方法\|Rust 入门：核心价值、开发工具与学习方法]] | Rust 编译期检查（所有权/unsafe）减少底层错误、零成本抽象边界、Cargo/rustfmt/rust-analyzer 工具分工与官方书学习方法（含 Ferris 标记含义） | rust, memory-safety, systems-programming, cargo, learning-guide |
-| [[wiki/Docker容器开发方案\|Docker 容器开发方案]] | Windows Docker Desktop（WSL2）数据盘迁移 D:\AgentLab、devcontainer/Compose 持久卷与缓存路径规划、Agent 优先三级执行（命令→桌面自动化→用户兜底） | Docker, WSL2, Agent, 缓存管理 |
+| [[wiki/Docker容器开发方案\|Docker 容器开发方案]] | Windows Docker Desktop（WSL2）数据盘迁移 D:\AgentLab、agentlab-base 基础镜像＋项目镜像分层、Rust MCP 以预编译二进制运行于容器、Compose 持久卷与缓存规划、多容器共享 Obsidian 仓库 /vault、Agent 优先执行（命令→桌面自动化→用户兜底） | Docker, WSL2, Agent, 缓存管理 |

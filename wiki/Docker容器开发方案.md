@@ -1,255 +1,596 @@
 ---
 name: Docker 容器开发方案
-description: Windows 上把 Docker Desktop（WSL2 后端）数据盘迁移到 D 盘、devcontainer/Compose 持久卷与缓存路径规划的执行方案——Agent 优先三级执行（命令→桌面自动化→用户兜底）
+description: Windows 使用 Docker Desktop WSL2 开发容器，将主要开发数据放到 D 盘，并让多个项目共享 Obsidian 仓库。
 type: reference
-updated: "2026-09-20"
+updated: "2026-09-21"
 tags: [Docker, WSL2, Agent, 缓存管理]
 source: self
-document_id: agentlab-docker-development-guide
-version: "1.2"
-status: "待执行；本文不代表已在目标电脑完成配置"
-audience: [Windows 用户, 本机 Agent]
-platform: "Windows + Docker Desktop + Linux 容器"
-backend: WSL2
-execution_policy: "命令和配置文件优先，其次 Agent 桌面自动化，用户手动兜底"
-base_directory: 'D:\AgentLab'
-example_project_id: demo
-example_project_directory: 'D:\AgentLab\projects\demo'
 ---
 
 # Docker 容器开发方案
 
-目标：统一开发环境，把主要开发数据集中到 D 盘，减少 C 盘持续增长。**Docker 数据盘的迁移目标固定为 `D:\AgentLab\docker-data`。** 桌面应用仍可能在 C 盘保留部分数据，需要单独检查。
+## 1. 方案
 
-采用 **Windows 桌面端＋Docker Desktop WSL2 后端＋Linux 开发容器**。Docker VMM 暂作为性能对比选项，不改变本教程的存储规则。
+**Windows 保留桌面工具，Docker 提供 Linux 开发环境，主要开发数据统一放 D 盘。**
 
-**执行顺序：命令和配置文件 → Agent 操作桌面 → 用户手动兜底。**
+架构：
 
-本教程按你常用的 ZCode、Codex 具备电脑控制能力来安排。Agent 先确认本次会话可用的终端、文件和桌面工具，按下面的顺序完成每一步：
+```text
+Windows 桌面端
+    ↓
+Docker Desktop + WSL2
+    ↓
+Linux 开发容器
+```
 
-| 优先级 | 谁做、怎么做 |
-| --- | --- |
-| 1．命令或配置文件 | Agent 使用当前版本支持的命令、脚本或配置文件，执行后检查实际结果。 |
-| 2．桌面自动化 | 没有合适命令时，Agent 自己打开设置、填写路径、点击应用并检查结果。需要点界面，不等于需要用户做。 |
-| 3．用户兜底 | 只有缺少必要信息、工具或权限确实受阻，或遇到必须本人完成的验证时，才交给用户处理那一步。 |
+Agent 默认连续执行到完成，顺序固定：
 
-后文默认由 Agent 完成；**【用户兜底】只在写明的条件出现时启用。** 交接时说清“卡在哪里、为什么做不了、用户只需做什么、完成后如何判断”；接手后由 Agent 继续验证，不重复停在等待状态。
+```text
+命令 / 配置文件
+→ 桌面自动化
+→ 用户手动兜底
+```
 
-**已明确的项目、路径和操作范围直接沿用，不需要每一步重新确认。** 迁移或重启前先保存工作；若会关闭当前 Agent 所在的应用或容器，先安排独立的宿主机会话接续，无法安排时才请用户完成这一步。下文的 `demo` 只是示例，不能当成真实项目直接执行。
+只有权限、本人验证或工具能力确实不足时，才让用户处理对应步骤。
 
-1. **【Agent 优先】先确定路径，检查环境。**
+执行重启、关闭 Docker 或 WSL 前，先保存当前工作。
 
-   从当前项目和已有说明确定实际项目目录、工具和版本；检查 D 盘可用空间、WSL2 和 Docker 是否可用，创建缺少的下列目录。缺少软件或系统功能时，优先通过官方安装命令补齐，需要界面操作时由 Agent 完成。
+---
 
-   **【用户兜底】**项目无法确定时提供目录；需要本人批准的管理员弹窗、BIOS 设置或无法自动完成的重启恢复，才由用户处理。
+## 2. 存储规划
 
-   | 固定路径 | 用途 |
-   | --- | --- |
-   | **`D:\AgentLab\docker-data`** | **Docker 数据盘迁移目标**，存放镜像、容器和数据卷 |
-   | `D:\AgentLab\wsl-data` | WSL 交换文件 |
-   | `D:\AgentLab\projects` | 新项目源码 |
-   | `D:\AgentLab\desktop-data` | 桌面应用允许迁移的数据，每个应用单独建子目录 |
-   | `D:\AgentLab\backups` | 配置、会话等备份，每个项目单独建子目录 |
+统一根目录：
 
-   以下用项目代号 `demo`、源码目录 `D:\AgentLab\projects\demo` 举例。**Agent 先确定真实项目代号和源码目录，再统一替换后文的示例路径、容器名和卷名。** 已有 D/E 盘项目可以原地使用。没有 D 盘时，先让用户选定非系统盘，再统一修改，不能悄悄改回 C 盘。
+```text
+D:\AgentLab
+```
 
-   项目代号创建后不要随意更改，否则可能连接到新卷，看起来像数据丢失。
+| Windows 路径                       | 用途                  | 容器路径         |
+| -------------------------------- | ------------------- | ------------ |
+| `D:\AgentLab\docker-data`        | Docker 镜像、容器、volume | Docker 管理    |
+| `D:\AgentLab\wsl-data`           | WSL swap            | —            |
+| `D:\AgentLab\projects\<project>` | 项目源码                | `/workspace` |
+| `D:\AgentLab\shared\Obsidian`    | 共享知识库               | `/vault`     |
+| `D:\AgentLab\backups`            | 配置、会话等备份            | —            |
 
-2. **【Agent 优先】迁移 Docker 数据盘。**
+已有 D/E 盘项目可以原地使用，不必强行迁移。
 
-   **Agent：**记录当前存储位置和已有镜像、容器、数据卷，检查目标目录。目标目录已有 Docker 数据时，先核对来源，不直接覆盖。
+项目名确定后不要随意修改，否则 Compose 可能创建新的 volume。
 
-   **尚未安装 Docker 时：**Agent 按[官方安装说明](https://docs.docker.com/desktop/setup/install/windows-install/)使用安装参数 `--backend=wsl-2`、`--wsl-default-data-root=D:\AgentLab\docker-data`，直接指定数据位置。使用实际安装包路径；这些是安装参数，不是已有数据的迁移命令。
+---
 
-   **已经安装时：**本次核对的[官方 CLI](https://docs.docker.com/reference/cli/docker/desktop/)没有列出数据盘迁移命令。Agent 保存工作、正常停止开发任务，再用电脑控制工具操作 Docker Desktop：
+## 3. 宿主机迁移
 
-   **Settings → Resources → Advanced → Disk image location（磁盘镜像位置）→ 选择 `D:\AgentLab\docker-data` → 应用并重启。**
+### Docker 数据盘
 
-   这里选的是**文件夹**，不需要自行填写 `.vhdx` 文件名。Docker 可能在里面自动创建子目录。[官方说明](https://docs.docker.com/desktop/features/wsl/)
+目标：
 
-   **Agent 验证：**重新打开设置，确认位置已保存；检查 D 盘目标下的实际磁盘文件，确认 Docker 恢复运行，原来的镜像、容器和数据卷仍可见。只改了路径文字，不能算迁移完成。
+```text
+D:\AgentLab\docker-data
+```
 
-   **【用户兜底】**Agent 确实无法控制该设置页或处理必要授权时，用户按上面的同一路径完成设置；其余准备和验证仍由 Agent 负责。
+#### 尚未安装 Docker
 
-   **不要把 `projects`、`desktop-data` 或 `backups` 填进这个设置，也不要在 Docker 运行时手工搬动虚拟磁盘文件。** 找不到该设置时，先核对版本和后端，不猜替代路径。
+安装时直接指定：
 
-3. **【Agent 优先】把 WSL 交换文件也指定到 D 盘。**
+```text
+--backend=wsl-2
+--wsl-default-data-root=D:\AgentLab\docker-data
+```
 
-   **Agent：**创建 `D:\AgentLab\wsl-data`，编辑当前 Windows 用户的配置文件：
+#### 已安装 Docker
 
-   ```text
-   %USERPROFILE%\.wslconfig
-   ```
+当前没有通用 CLI 用于迁移现有 Docker Desktop 数据盘，因此由 Agent 操作：
 
-   这是文件位置的写法；在 PowerShell 中使用 `$env:USERPROFILE` 获取当前用户目录。在已有的 `[wsl2]` 段中添加或修改以下内容；没有文件时再新建：
+```text
+Settings
+→ Resources
+→ Advanced
+→ Disk image location
+→ D:\AgentLab\docker-data
+→ Apply / Restart
+```
 
-   ```ini
-   [wsl2]
-   swapFile=D:\\AgentLab\\wsl-data\\swap.vhdx
-   ```
+迁移前记录已有镜像、容器和 volume。
 
-   保留其他设置，不重复添加 `[wsl2]` 段。如果原本已设置 `swap=0`，保持禁用即可，无须修改交换文件位置。
+目标目录已有数据时先确认来源，不能直接覆盖。
 
-   Agent 保存工作、正常停止相关任务，先用 `docker desktop --help` 确认命令可用，再在 **Windows PowerShell** 逐条执行；上一条成功后再继续：
+#### 验收
 
-   ```powershell
-   docker desktop stop
-   wsl --shutdown
-   docker desktop start
-   docker info
-   ```
+必须确认：
 
-   `docker info` 能返回服务端信息，才算 Docker 恢复运行；同时核对交换文件的位置。当前版本没有 `docker desktop` 命令时，Agent 用桌面工具正常退出、启动 Docker Desktop。[Docker Desktop CLI 说明](https://docs.docker.com/desktop/features/desktop-cli/)
+* Docker 正常启动；
+* 原镜像、容器和 volume 仍然存在；
+* D 盘出现实际 Docker 数据。
 
-   **【用户兜底】**命令和桌面操作都受阻，或有 Agent 无法代为保存的工作时，用户只处理受阻部分。
+**只改了设置里的路径，不算迁移完成。**
 
-   `wsl --shutdown` 会停止所有 WSL 环境。小配置文件仍在用户目录，大交换文件才放到 D 盘。[Microsoft 说明](https://learn.microsoft.com/en-us/windows/wsl/wsl-config)
+禁止在 Docker 运行时手工移动 `.vhdx`。
 
-4. **【Agent】在项目里生成容器配置。**
+---
 
-   示例文件位置固定为：
+### WSL swap
 
-   ```text
-   D:\AgentLab\projects\demo\.devcontainer\Dockerfile
-   D:\AgentLab\projects\demo\.devcontainer\compose.yaml
-   ```
+创建：
 
-   已有这些文件时先读取、合并，不直接覆盖。Agent 根据项目实际语言、版本和使用的工具生成完整配置；下面的表格是配置要求，不是可以直接运行的配置文件。
+```text
+D:\AgentLab\wsl-data
+```
 
-   | 配置项 | 示例固定值 |
-   | --- | --- |
-   | Compose 项目名 | `agentlab-demo` |
-   | 服务名 | `dev` |
-   | 容器名 | `agentlab-demo-dev` |
-   | 开发用户及用户目录 | `dev`、`/home/dev` |
-   | 容器工作目录 | `/workspace` |
-   | 镜像构建目录 | `.devcontainer` |
-   | 源码挂载 | 项目根目录 → `/workspace` |
+编辑：
 
-   `compose.yaml` 位于 `.devcontainer` 内，因此源码挂载使用 `source: ..`。使用长格式挂载，并设置 `bind.create_host_path: false`，避免路径写错时自动创建空目录。[Compose 说明](https://docs.docker.com/reference/compose-file/services/)
+```text
+%USERPROFILE%\.wslconfig
+```
 
-   Dockerfile 安装项目需要的工具和 CLI，并确保所有挂载目录对 `dev` 可写。容器启动后必须持续运行，ZCode 才能连接。
+配置：
 
-5. **【Agent】同时配置保存路径和持久卷。**
+```ini
+[wsl2]
+swapFile=D:\\AgentLab\\wsl-data\\swap.vhdx
+```
 
-   **环境变量告诉程序往哪里写；持久卷让数据在重建容器后保留。两项都要配置。**
+已有 `[wsl2]` 时直接合并，不重复创建。
 
-   在 Compose 中按下表填写数据卷的 `name` 和挂载目标。未使用的工具不必创建对应卷。
+如果已经设置：
 
-   | 数据卷名称 | 容器内挂载位置 | 管理规则 |
-   | --- | --- | --- |
-   | `agentlab-demo-zcode` | `/home/dev/.zcode` | 保留配置和所需会话，输出记录另清 |
-   | `agentlab-demo-claude` | `/home/dev/.claude` | 保留 |
-   | `agentlab-demo-codex` | `/home/dev/.codex` | 保留 |
-   | `agentlab-demo-cache` | `/cache` | 下载缓存，可清理 |
-   | `agentlab-demo-cargo` | `/home/dev/.cargo` | 含缓存、配置和命令，不能整卷当缓存删除 |
-   | `agentlab-demo-node` | `/workspace/node_modules` | 可重建 |
-   | `agentlab-demo-venv` | `/workspace/.venv` | 可重建 |
-   | `agentlab-demo-target` | `/workspace/target` | 可重建 |
+```ini
+swap=0
+```
 
-   这些卷由 Compose 首次启动时创建，实际位于 **D 盘 Docker 虚拟磁盘内部**，不是 Windows 普通文件夹。[数据卷说明](https://docs.docker.com/reference/compose-file/volumes/)
+说明 swap 已关闭，无须设置 swap 文件。
 
-   将实际使用的变量写入 `compose.yaml` 的 `services.dev.environment`，不要写进 Windows 全局环境变量：
+应用配置：
 
-   ```text
-   CLAUDE_CONFIG_DIR=/home/dev/.claude
-   CODEX_HOME=/home/dev/.codex
-   npm_config_cache=/cache/npm
-   UV_CACHE_DIR=/cache/uv
-   PIP_CACHE_DIR=/cache/pip
-   CARGO_HOME=/home/dev/.cargo
-   CARGO_TARGET_DIR=/workspace/target
-   PLAYWRIGHT_BROWSERS_PATH=/cache/playwright
-   UV_LINK_MODE=copy
-   ```
+```powershell
+docker desktop stop
+wsl --shutdown
+docker desktop start
+docker info
+```
 
-   pnpm 按安装版本配置：`storeDir=/cache/pnpm/store`、`cacheDir=/cache/pnpm/cache`。`UV_LINK_MODE=copy` 用于处理缓存与虚拟环境位于不同卷的情况，可能增加复制占用。[uv 说明](https://docs.astral.sh/uv/guides/integration/docker/)
+如果当前版本没有 `docker desktop` 命令，就由 Agent 正常退出并重新启动 Docker Desktop。
 
-   Claude Code 必须同时设置上述目录和变量，才能避免遗漏目录外的配置文件。[官方说明](https://code.claude.com/docs/en/devcontainer)
+验收：
 
-6. **【Agent 优先】启动容器并配置连接。**
+```text
+docker info 正常
++ swap 实际位于 D 盘
+```
 
-   **Agent：**在 **Windows PowerShell** 进入实际项目根目录，检查配置并启动：
+---
 
-   ```powershell
-   Set-Location 'D:\AgentLab\projects\demo'
-   docker compose -f .devcontainer/compose.yaml config --quiet
-   docker compose -f .devcontainer/compose.yaml up -d --build
-   ```
+## 4. 项目容器
 
-   第一条 Compose 命令检查配置；检查失败就先修配置，不继续启动。
+项目使用：
 
-   | 使用方式 | Agent 默认完成 | 用户兜底条件 |
-   | --- | --- | --- |
-   | ZCode 桌面端 | 准备容器，自动操作：项目 → ＋ → 远程连接 → Docker → 选择 `agentlab-demo-dev` → 打开 `/workspace` | 界面工具无法完成时，用户只代做该连接操作 |
-   | CLI | 检查安装、启动交互终端，复用可用登录状态或打开登录流程 | 需要本人扫码、验证码或授权，或 Agent 无法操作交互终端 |
-   | Claude、Codex 桌面端的 SSH 连接 | 配置容器 SSH，在支持的桌面版本中自动添加连接，验证可用，并交付主机、端口、用户名和密钥位置 | 自动配置与桌面操作均受阻，或需要本人验证 |
+```text
+<project>\.devcontainer\Dockerfile
+<project>\.devcontainer\compose.yaml
+```
 
-   Docker Desktop 使用 WSL2 后端时，ZCode 的连接类型仍选择 **Docker**。
+已有文件先读取并合并，不能直接覆盖。
 
-   CLI 启动命令由 Agent 在 **Windows PowerShell、项目根目录** 执行。没有交互终端工具时，先尝试桌面终端；两种方式都无法完成，才交给用户：
+基本约定：
 
-   ```powershell
-   docker compose -f .devcontainer/compose.yaml exec -u dev -w /workspace dev claude
-   docker compose -f .devcontainer/compose.yaml exec -u dev -w /workspace dev codex
-   ```
+| 项目          | 示例                   |
+| ----------- | -------------------- |
+| Compose 项目名 | `agentlab-demo`      |
+| 服务名         | `dev`                |
+| 容器名         | `agentlab-demo-dev`  |
+| 用户          | `dev`                |
+| 用户目录        | `/home/dev`          |
+| 工作目录        | `/workspace`         |
+| 源码          | 项目根目录 → `/workspace` |
 
-   **SSH 仅在使用该连接方式时配置。** Agent 必须给出可用的连接信息，不能只写“通过 SSH 连接”就算完成。端口只绑定本机 `127.0.0.1`，不同项目避免端口冲突。
+`compose.yaml` 位于 `.devcontainer` 时，源码可以挂载：
 
-   SSH 登录不一定继承 Compose 的全部环境变量。Agent 从桌面工具发起一次检查任务，核对实际使用的用户、项目和保存路径。
+```yaml
+source: ..
+target: /workspace
+```
 
-7. **【Agent 优先】补齐 ZCode 的技能和工具。**
+bind mount 使用：
 
-   **Agent：**配置所需技能和 MCP，转换路径、安装容器内依赖，并检查能否运行。
+```yaml
+bind:
+  create_host_path: false
+```
 
-   | 内容 | 容器路径 |
-   | --- | --- |
-   | 项目技能 | `/workspace/.zcode/skills/` |
-   | 项目 MCP 配置 | `/workspace/.zcode/config.json` |
-   | 用户级 MCP 配置 | `/home/dev/.zcode/cli/config.json` |
+避免路径写错时自动创建空目录。
 
-   优先由 Agent 写入配置并安装依赖；需要界面中的 Sync 时，也由 Agent 点击并验证。ZCode 的官方 Sync 目前只明确支持 SSH、WSL。Docker 直连时单独配置；需要 Sync，可以改用 SSH 连接同一个 Docker 容器。[官方说明](https://zcode.z.ai/cn/docs/remote-development)
+Dockerfile 基于通用基础镜像构建（见下文），只安装项目实际需要的语言和依赖，并保证 `dev` 用户能读写挂载目录。
 
-   Windows 路径要改成容器路径，Windows 专用程序要换成 Linux 版本。不要把 Windows 的整份 `.zcode` 和设备加密凭据直接覆盖进容器。
+### 基础镜像与项目环境
 
-   **桌面数据位置：**Agent 先记录并检查现有位置；需要调整时，优先用当前版本支持的配置方式，否则自动操作应用设置。`D:\AgentLab\desktop-data\zcode` 只接收桌面端明确支持迁移的数据，不能假定该设置覆盖全部 ZCode 数据。
+**不要让每个项目从零搭环境。先做一个通用 Ubuntu 基础镜像，项目再在它上面增加自己的开发环境。**
 
-   **【用户兜底】**需要本人完成 MCP 授权，或 Agent 确实无法操作对应设置时，用户只接手这一项。
+结构：
 
-8. **【Agent 优先】先验收，再清理旧数据。**
+```text
+Ubuntu 24.04
+    ↓
+agentlab-base
+    ↓
+项目镜像
+```
 
-   **Agent：**在 Windows PowerShell 查看实际挂载，对照第 4、5 步确认源码路径、卷名和容器目标一致：
+#### 基础镜像
 
-   ```powershell
-   docker inspect agentlab-demo-dev --format '{{json .Mounts}}'
-   ```
+基础镜像只放**所有项目都常用的工具**：
 
-   | 检查 | 谁执行 | 通过标准 |
-   | --- | --- | --- |
-   | 桌面工具连接 | Agent 自动发起真实任务并检查 | 使用 `dev`，项目位于 `/workspace` |
-   | 实际写入位置 | Agent | 新会话和下载缓存写入指定目录，不只是变量显示正确 |
-   | 一次安装、构建、测试 | Agent | 正常完成 |
-   | 重建容器 | Agent 重建，检查文件并打开桌面会话 | 源码、所需配置和会话仍能使用 |
-   | 磁盘变化 | Agent | 大量开发数据增长发生在 D 盘；C 盘残留增长能定位到具体目录 |
+```text
+系统基础
+├─ Ubuntu
+├─ dev 用户
+└─ ca-certificates
 
-   Agent 先保存工作、正常结束相关任务，再在项目根目录执行重建：
+开发基础
+├─ Python
+├─ pip / venv / uv
+└─ Git
 
-   ```powershell
-   docker compose -f .devcontainer/compose.yaml up -d --build --force-recreate
-   ```
+Agent 常用工具
+├─ curl
+├─ openssh-client
+├─ jq
+├─ ripgrep
+├─ tar / gzip / zip / unzip
+├─ findutils / procps / less
+│
+└─ Claude Code / Codex
+```
 
-   日常清理也按分工执行：
+Python 作为 Agent 的通用脚本环境保留，但项目自己的 Python 依赖仍放进项目 `.venv`。
 
-   | 谁做 | 操作 |
-   | --- | --- |
-   | Agent | 沿用已明确的会话保留规则；保存工作、正常退出相关应用，再执行清理。 |
-   | Agent | 先备份配置和会话到 `D:\AgentLab\backups\demo\`，文件名包含日期和时间；备份数据卷时通过 Docker 导出。停止相关任务后，按第 5 步的规则清理已选定的缓存和编译输出。 |
-   | Agent | 配置 Compose 日志轮转，可设每文件 10 MB、保留 3 个；构建缓存可设 20 GB 回收目标。优先修改受支持的配置文件，需要在 Docker Desktop 界面应用时也由 Agent 操作。这两项不限制应用自己写入的文件。 |
-   | Agent | ZCode 完全退出、没有后台命令后，才清理对应环境的 `cli/exec`：Windows 为 `%USERPROFILE%\.zcode\cli\exec`，容器为 `/home/dev/.zcode/cli/exec`。旧命令输出将无法回看；其他会话按保留规则，优先通过应用管理界面处理。[FAQ](https://zcode.z.ai/cn/docs/qa) |
-   | 用户兜底 | 保留范围不明确时作出选择；有 Agent 无法代为保存的工作，或操作确实受阻时，处理该项。 |
+ZCode **不安装进容器**。它是 Windows 桌面应用，通过 Docker 或 SSH 连接开发容器。
 
-   **不用 `down -v` 或全局数据卷清理来重建环境。** 删除容器不会删除这里配置的持久卷，镜像和构建缓存也不会一起消失。
+`openssh-client` 默认安装，用于 Git 和 SSH。只有确实需要通过 SSH 连接容器时，才安装 `openssh-server`。
 
-   迁移不会自动清掉原来留在 C 盘的缓存，删除内部文件也不保证虚拟磁盘立即缩小。Agent 在验收后列出剩余目录和占用，再按已明确的清理范围处理；磁盘缩容单独安排。
+基础镜像单独构建一次，保持 `agentlab-base:latest` 标签；更新基础镜像后，重建项目镜像即可继承。
 
-   **Agent 最后交付：**实际路径、修改的文件、连接方法、验收结果，以及确实需要用户接手的步骤和原因。没执行的项目写“未执行”，只生成配置文件不能写成“已部署”。
+#### 项目镜像
+
+每个项目继承基础镜像：
+
+```dockerfile
+FROM agentlab-base:latest
+```
+
+然后只增加本项目真正需要的环境，按语言和用途从下列内容中选择：
+
+```text
+Node.js / pnpm
+Rust / Cargo
+Mojo
+Go
+JDK
+.NET
+build-essential
+CMake / Ninja
+CUDA
+Playwright
+数据库客户端
+Docker CLI
+openssh-server
+Git LFS
+GitHub CLI
+```
+
+#### 原则
+
+判断一个工具是否应该进入基础镜像，只问一个问题：
+
+> 大多数项目是否都会用到？
+
+如果不是，就放到项目镜像。
+
+最终保持：
+
+```text
+基础镜像 = Agent 通用工作环境
+项目镜像 = 项目语言、编译器和专用工具
+volume / bind mount = 配置、缓存、源码和长期数据
+```
+
+这样公共环境只维护一次，同时不会把基础镜像堆成一个包含所有语言和工具的巨大镜像。
+
+---
+
+### Wiki MCP 的运行方式
+
+**Wiki MCP 由 Rust 开发，保存在 `obsidian` 仓库中，运行在开发容器里，不在 Windows 上。** ZCode 在 Windows 通过 Docker 或 SSH 连接容器后，加载的是容器内的 MCP 配置，启动的是容器内的 MCP 可执行文件。
+
+Wiki MCP 优先使用已编译好的稳定二进制：编译一次，把可执行文件复制进容器，ZCode 直接启动。普通项目因此不需要安装 Rust / Cargo；基础镜像同样不含 Rust，Rust 按需放进项目镜像。
+
+只有两种情况才在容器里安装 Rust：正在开发或调试这个 MCP；或它必须在目标环境现场编译。
+
+> **使用 Wiki MCP，只需要可执行文件；开发 MCP，才需要 Rust 工具链。**
+
+---
+
+### 持久数据和缓存
+
+核心原则：
+
+**环境变量决定程序往哪里写；volume 决定容器重建后数据还在不在。**
+
+| 数据         | 容器路径                      | 规则                 |
+| ---------- | ------------------------- | ------------------ |
+| ZCode      | `/home/dev/.zcode`        | 持久                 |
+| Claude     | `/home/dev/.claude`       | 持久                 |
+| Codex      | `/home/dev/.codex`        | 持久                 |
+| 下载缓存       | `/cache`                  | 可清理                |
+| Cargo      | `/home/dev/.cargo`        | 持久，不能整卷删除          |
+| Node       | `/workspace/node_modules` | 可重建                |
+| Python     | `/workspace/.venv`        | 可重建                |
+| Rust build | `/workspace/target`       | 可重建                |
+| Obsidian   | `/vault`                  | Windows bind mount |
+
+常用环境变量：
+
+```text
+CLAUDE_CONFIG_DIR=/home/dev/.claude
+CODEX_HOME=/home/dev/.codex
+
+npm_config_cache=/cache/npm
+UV_CACHE_DIR=/cache/uv
+PIP_CACHE_DIR=/cache/pip
+
+CARGO_HOME=/home/dev/.cargo
+CARGO_TARGET_DIR=/workspace/target
+
+PLAYWRIGHT_BROWSERS_PATH=/cache/playwright
+UV_LINK_MODE=copy
+```
+
+pnpm：
+
+```text
+storeDir=/cache/pnpm/store
+cacheDir=/cache/pnpm/cache
+```
+
+这些变量写进项目 Compose，不写 Windows 全局环境变量。
+
+---
+
+### 共享 Obsidian
+
+仓库：
+
+```text
+https://github.com/MrSong9957/Obsidian
+```
+
+Windows 只保留一份：
+
+```text
+D:\AgentLab\shared\Obsidian
+```
+
+所有容器统一访问：
+
+```text
+/vault
+```
+
+Compose：
+
+```yaml
+- type: bind
+  source: 'D:/AgentLab/shared/Obsidian'
+  target: /vault
+  read_only: false
+  bind:
+    create_host_path: false
+```
+
+规则：
+
+* 多个项目都可以读写 `/vault`；
+* 按 Obsidian 仓库已有规则管理；
+* 同一文件避免多个 Agent 同时修改；
+* Git pull、commit、push 由明确的 Agent 统一处理；
+* 长期知识、经验和文档进 Obsidian；
+* 构建缓存、索引和原始运行数据留在开发环境。
+
+---
+
+## 5. Agent 接入
+
+启动项目：
+
+```powershell
+Set-Location 'D:\AgentLab\projects\demo'
+
+docker compose -f .devcontainer/compose.yaml config --quiet
+docker compose -f .devcontainer/compose.yaml up -d --build
+```
+
+配置检查失败时先修复，不能继续启动。
+
+## ZCode
+
+Docker Desktop 使用 WSL2 后端时，连接类型仍选：
+
+```text
+Docker
+```
+
+打开：
+
+```text
+容器：agentlab-demo-dev
+目录：/workspace
+```
+
+项目 Skill / MCP：
+
+```text
+/workspace/.zcode/skills/
+/workspace/.zcode/config.json
+```
+
+用户级 MCP：
+
+```text
+/home/dev/.zcode/cli/config.json
+```
+
+Windows 路径必须转换成 Linux 容器路径。
+
+不要把 Windows 整份 `.zcode` 或设备相关凭据直接复制到容器。
+
+---
+
+## Claude / Codex
+
+直接在容器中启动：
+
+```powershell
+docker compose -f .devcontainer/compose.yaml exec -u dev -w /workspace dev claude
+```
+
+```powershell
+docker compose -f .devcontainer/compose.yaml exec -u dev -w /workspace dev codex
+```
+
+需要扫码、验证码或本人授权时，才交给用户。
+
+---
+
+## SSH
+
+只有桌面工具确实需要 SSH 时才配置。
+
+要求：
+
+* 只绑定 `127.0.0.1`；
+* 不同项目使用不同端口；
+* 明确交付主机、端口、用户名和密钥位置。
+
+连接后检查真实环境：
+
+```text
+当前用户
+/workspace
+Agent 配置目录
+缓存目录
+```
+
+不能只证明“连上了”。
+
+---
+
+## 6. 验收与维护
+
+**配置正确不等于系统真的按预期工作，必须验证实际结果。**
+
+检查挂载：
+
+```powershell
+docker inspect agentlab-demo-dev --format '{{json .Mounts}}'
+```
+
+验收标准：
+
+| 项目       | 必须确认                |
+| -------- | ------------------- |
+| Docker   | 主要数据实际增长在 D 盘       |
+| 源码       | `/workspace` 指向正确项目 |
+| Agent    | 能真实执行任务             |
+| 配置       | 实际写入对应持久卷           |
+| 缓存       | 实际写入指定目录            |
+| Obsidian | `/vault` 可读写        |
+| 构建       | 至少完成一次真实安装、构建或测试    |
+| 重建       | 配置、会话和长期数据仍然存在      |
+| C 盘      | 剩余增长可以定位到具体目录       |
+
+重建测试：
+
+```powershell
+docker compose -f .devcontainer/compose.yaml up -d --build --force-recreate
+```
+
+重建后再次检查 Agent、项目、配置和 `/vault`。
+
+---
+
+## 备份和清理
+
+只分三类：
+
+| 类型    | 处理        |
+| ----- | --------- |
+| 长期数据  | 先备份，默认保留  |
+| 可重建数据 | 验收后可清理    |
+| 不确定数据 | 先确认用途，不删除 |
+
+备份放：
+
+```text
+D:\AgentLab\backups\<project>\
+```
+
+Docker volume 使用 Docker 方式导出备份。
+
+可清理内容通常包括：
+
+* npm / pnpm / pip / uv 缓存；
+* `node_modules`；
+* `.venv`；
+* Rust `target`；
+* Docker build cache；
+* 已确认无用的 Agent 运行输出。
+
+禁止：
+
+```text
+把 docker compose down -v 当普通重建
+全局清理未知 volume
+删除未确认用途的 Agent 配置、会话或 Cargo 数据
+```
+
+Docker 数据迁到 D 盘后，C 盘旧缓存不会自动消失。
+
+删除虚拟磁盘内部数据，也不代表 `.vhdx` 会立即缩小。
+
+正确顺序：
+
+```text
+迁移并验收
+→ 定位 C 盘剩余占用
+→ 判断用途
+→ 清理允许删除的数据
+→ 必要时再处理虚拟磁盘缩容
+```
+
+---
+
+## 完成标准
+
+Agent 最终报告：
+
+* 实际项目路径；
+* Docker 数据位置；
+* 修改过的配置；
+* 容器和 volume；
+* Agent 连接方式；
+* `/vault` 是否可读写；
+* 构建或测试结果；
+* 容器重建结果；
+* C / D 盘实际数据位置；
+* 未执行项目及原因。
+
+**生成配置文件不等于完成。**
+
+真正完成必须同时满足：
+
+```text
+能开发
++ 能重建
++ 长期数据不丢
++ Obsidian 可共享
++ 大量开发数据主要落到 D 盘
+```
