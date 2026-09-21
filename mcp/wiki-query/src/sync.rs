@@ -44,6 +44,73 @@ fn normalize_path(path: &str) -> String {
     normalize_path_checked(path).0
 }
 
+/// 分隔符归一化:仅在 Windows 分隔符语义(`MAIN_SEPARATOR == '\\'`)下把 `\`
+/// 替换为 `/`。Unix 上 `\` 是合法文件名字符而非分隔符,替换会破坏索引路径与
+/// 磁盘的一致性;Unix 的 Path 文本形式本就以 `/` 分隔,无需替换。
+/// `_with` 变体供测试注入分隔符语义(本机无法运行另一种平台的文件系统)。
+fn normalize_separators_with(main_sep: char, s: &str) -> String {
+    if main_sep == '\\' {
+        s.replace('\\', "/")
+    } else {
+        s.to_string()
+    }
+}
+
+fn normalize_separators(s: &str) -> String {
+    normalize_separators_with(std::path::MAIN_SEPARATOR, s)
+}
+
+/// sync 边界确认,必须在任何索引访问(含 init/迁移)之前执行:
+/// 1. 当前目录须为仓库形状(含 wiki/ 或 sources/ 目录;serve 启动校验为同类
+///    存在性检查,但其可受 WIKI_VAULT_ROOT 指向他处且用 exists——sync 侧
+///    仅看 cwd 且要求 is_dir,更严格);
+/// 2. 索引库须位于当前目录之内——相对路径经 `..` 解析后须仍在 cwd 内
+///    (不得逃逸),绝对路径做分隔符/`..` 归一化 + Windows 忽略大小写的
+///    前缀比较。
+/// 任一不成立即整体拒绝——防止错误 cwd(恰为 vault 形状)+ WIKI_DB_PATH 指向
+/// 真库时污染或误清目标索引。错误文案不含绝对路径(安全口径同 FINDING-1/4),
+/// 保留排查指引。
+fn confirm_sync_boundary() -> Result<(), String> {
+    let cwd = std::env::current_dir()
+        .map_err(|e| format!("无法获取当前目录({}),已拒绝同步", e))?;
+    let vault_shaped = cwd.join("wiki").is_dir() || cwd.join("sources").is_dir();
+    if !vault_shaped {
+        return Err(
+            "当前目录不含 wiki/ 或 sources/,不是 wiki 仓库根,已拒绝同步(未打开索引库)。\
+             请从仓库根目录运行,或修正启动 cwd。"
+                .into(),
+        );
+    }
+    let db_file = crate::db::db_path();
+    let db_abs = Path::new(&db_file);
+    let db_abs = if db_abs.is_absolute() {
+        db_abs.to_path_buf()
+    } else {
+        cwd.join(db_abs)
+    };
+    if !is_path_under(&cwd, &db_abs) {
+        return Err(
+            "索引库不在当前目录内,无法确认其属于本仓库,已拒绝同步(未打开索引库)。\
+             请从仓库根运行(索引库默认 db/wiki.db),或检查 WIKI_DB_PATH 是否误指其他仓库的索引。"
+                .into(),
+        );
+    }
+    Ok(())
+}
+
+/// 判断 path 是否位于 base 目录之下。两侧先经 `normalize_path` 解析 `..`/`.`
+/// 段并统一分隔符,再做前缀比较;Windows 文件系统大小写不敏感,比较忽略大小写。
+fn is_path_under(base: &Path, path: &Path) -> bool {
+    let base_n = normalize_path(&base.to_string_lossy());
+    let path_n = normalize_path(&path.to_string_lossy());
+    let (b, p) = if cfg!(windows) {
+        (base_n.to_lowercase(), path_n.to_lowercase())
+    } else {
+        (base_n, path_n)
+    };
+    p.starts_with(&format!("{}/", b))
+}
+
 /// 从绝对路径中去除 vault root 前缀,返回相对路径。
 /// 例如 `strip_vault_root("/home/user/vault/wiki/page.md", "/home/user/vault")`
 /// 返回 `"wiki/page.md"`。
@@ -80,17 +147,33 @@ pub fn is_in_wiki_scope(path: &str) -> bool {
 pub fn run() {
     let report = run_with_scope("incremental");
     println!(
-        "Scan complete: {} files found, {} updated, {} pruned, {} similar pairs (scope={})",
-        report.synced, report.updated, report.pruned, report.dedupe_report.len(), report.scope
+        "Scan complete: {} files found, {} updated, {} pruned, {} failed, {} similar pairs (scope={})",
+        report.synced, report.updated, report.pruned, report.failed, report.dedupe_report.len(), report.scope
     );
 }
 
 /// 带查重的 sync。scope="incremental" 查本次新文档,scope="full" 查全库。
 /// 返回 SyncReport(同步统计 + 查重报告)。
 ///
-/// 库不可用(如 schema 不兼容)时不 panic、不半坏:报告 failed=-1 表示
+/// 仓库边界确认先行(`confirm_sync_boundary`):无法确认"当前目录 + 索引库"
+/// 属于同一仓库时整体拒绝(failed=-1),不 init、不迁移、不扫描、不清理。
+/// 库不可用(如 schema 不兼容)时同样不 panic、不半坏:failed=-1 表示
 /// 整体失败,stderr 给出可观察错误与重建指引。
 pub fn run_with_scope(scope: &str) -> SyncReport {
+    // 边界确认必须先于 init:错误 cwd + 外部真库的场景下,连打开 DB
+    // (产生 WAL 文件)都不允许,更不允许迁移/扫描/清理。
+    if let Err(msg) = confirm_sync_boundary() {
+        eprintln!("[wiki-sync] 错误: {}", msg);
+        return SyncReport {
+            synced: 0,
+            updated: 0,
+            pruned: 0,
+            failed: -1,
+            scope: scope.into(),
+            dedupe_report: vec![],
+        };
+    }
+
     let conn = match init() {
         Ok(c) => c,
         Err(e) => {
@@ -122,20 +205,8 @@ pub fn run_with_scope(scope: &str) -> SyncReport {
     let mut on_disk: std::collections::HashSet<String> = std::collections::HashSet::new();
     scan_directory(root, &conn, &mut count, &mut updated, &mut failed, &mut on_disk, &mut updated_paths);
 
-    // cwd 守卫:当前目录不含 wiki/ 或 sources/ 时视为不在 vault 内,
-    // 跳过 prune——防止错误 cwd 下 on_disk 不含真库路径导致整库误清。
-    // 与 serve 启动校验同一判据;合法 vault 内删空文件不受影响(目录仍在)。
-    let cwd_is_vault =
-        Path::new(".").join("wiki").is_dir() || Path::new(".").join("sources").is_dir();
-    let pruned = if cwd_is_vault {
-        prune_orphans(&conn, &on_disk)
-    } else {
-        eprintln!(
-            "[wiki-sync] 警告: 当前目录不含 wiki/ 或 sources/,跳过 prune 以防误清非本库索引(cwd={:?})",
-            std::env::current_dir()
-        );
-        0
-    };
+    // 边界已在函数入口确认,扫描/迁移/清理三阶段作用于同一已确认仓库。
+    let pruned = prune_orphans(&conn, &on_disk);
 
     // 查重:scope 决定候选集
     let dedupe_report = build_dedupe_report(scope, &updated_paths, &conn);
@@ -150,9 +221,11 @@ pub fn run_with_scope(scope: &str) -> SyncReport {
     }
 }
 
-/// 把库中反斜杠路径统一为正斜杠口径(与扫描入库同一口径)。
-/// 若正斜杠版本已存在(同一逻辑文件两条记录)则删除旧行去重,
-/// documents 与 documents_fts 两表同步。幂等:迁移后无反斜杠行。
+/// 把库中反斜杠路径统一为正斜杠口径(与扫描入库同一口径,仅 Windows 语义下
+/// 有实际替换;Unix 见 `normalize_separators`)。若正斜杠版本已存在(同一逻辑
+/// 文件两条记录)则删除旧行去重,documents 与 documents_fts 两表同步。
+/// 迁移后若 FTS 侧与新口径暂不对齐(如历史中断残留),由扫描阶段
+/// `needs_update` 的 FTS 缺失检查在同一轮 sync 内自愈。幂等:迁移后无反斜杠行。
 fn normalize_legacy_separators(conn: &Connection) {
     let legacy: Vec<String> = {
         let mut stmt = match conn.prepare("SELECT path FROM documents WHERE path LIKE '%\\%'") {
@@ -164,8 +237,9 @@ fn normalize_legacy_separators(conn: &Connection) {
             .unwrap_or_default()
     };
     for old in legacy {
-        let new = old.replace('\\', "/");
+        let new = normalize_separators(&old);
         if new == old {
+            // Unix 上文件名可含字面 '\',不是分隔符,原样保留
             continue;
         }
         let dup: i64 = conn
@@ -309,9 +383,11 @@ fn search_similar_by_name(
 /// 删除数据库里存在但磁盘上不存在的记录,返回删除条数。
 /// 同时清理 documents 和 documents_fts(保持两表一致)。
 ///
-/// 注意:路径规范化约定 —— on_disk 与 DB 里存的 path 都用 `strip_prefix("./")`
-/// 后的形式,Windows 上含 `\`。跨平台同步(如从 Linux 同步用 `/` 的 path)会
-/// 因分隔符不一致触发误删,目前仅支持单平台 sync。
+/// 路径口径:DB 存储与 on_disk 集合均经 `normalize_separators` 统一——
+/// Windows 上为正斜杠(存量反斜杠行由 `normalize_legacy_separators` 迁移),
+/// Unix 上原样保留(`\` 可为合法文件名字符)。跨平台共享同一个 DB 仍不支持:
+/// 边界确认会拒绝"库不在当前目录内"的同步,平台间文件系统语义差异由
+/// 各自平台的口径独立保证。
 ///
 /// 删除前对每个候选 path 做 exists() 二次确认:文件实际还在(如被杀毒锁导致
 /// read_dir 跳过)则保留,不误删。
@@ -333,7 +409,8 @@ pub(crate) fn prune_orphans(conn: &Connection, on_disk: &std::collections::HashS
     let mut pruned = 0;
     for path in &db_paths {
         // 归一化比对:库内历史反斜杠行与本次扫描的正斜杠行是同一逻辑文件
-        let normalized = path.replace('\\', "/");
+        // (仅 Windows 语义替换;Unix 上原样,`\` 为文件名字符)
+        let normalized = normalize_separators(path);
         if on_disk.contains(&normalized) {
             continue;
         }
@@ -429,9 +506,9 @@ fn scan_directory(
         *count += 1;
 
         let relative_path = path.strip_prefix("./").unwrap_or(&path);
-        // 统一 '/' 口径:DB 存储与 prune/exists 比对共用,避免 Windows(\)
-        // 与 Unix(/)表示差异造成重复索引或漏比对
-        let path_str = relative_path.to_string_lossy().replace('\\', "/");
+        // 入库口径与 prune/迁移一致(见 normalize_separators):Windows 统一 '/',
+        // Unix 原样保留('\' 为合法文件名字符)
+        let path_str = normalize_separators(&relative_path.to_string_lossy());
         on_disk.insert(path_str.clone());
 
         // 检查是否需要更新
@@ -565,5 +642,69 @@ fn sync_file(conn: &Connection, path_str: &str, file_path: &Path) -> Result<(), 
             let _ = conn.execute("ROLLBACK", []);
             Err(Box::from(e))
         }
+    }
+}
+
+#[cfg(test)]
+mod boundary_unit_tests {
+    use super::*;
+
+    /// R4:分隔符归一化按平台语义——Windows 替换,Unix 原样保留
+    /// ('\' 是合法文件名字符)。
+    #[test]
+    fn normalize_separators_follows_platform_semantics() {
+        assert_eq!(
+            normalize_separators_with('\\', "wiki\\a\\b.md"),
+            "wiki/a/b.md",
+            "Windows 语义:反斜杠是分隔符,须归一"
+        );
+        assert_eq!(
+            normalize_separators_with('/', "wiki\\a\\b.md"),
+            "wiki\\a\\b.md",
+            "Unix 语义:反斜杠是文件名字符,必须原样保留"
+        );
+        assert_eq!(normalize_separators_with('/', "wiki/a.md"), "wiki/a.md");
+    }
+
+    /// 本平台默认入口与 MAIN_SEPARATOR 语义一致。
+    #[test]
+    fn normalize_separators_default_matches_platform() {
+        let expected = if std::path::MAIN_SEPARATOR == '\\' {
+            "x/y"
+        } else {
+            "x\\y"
+        };
+        assert_eq!(normalize_separators("x\\y"), expected);
+    }
+
+    #[test]
+    fn is_path_under_basic() {
+        let base = Path::new("/repo");
+        assert!(is_path_under(base, Path::new("/repo/db/wiki.db")));
+        assert!(is_path_under(base, Path::new("/repo/db/sub/x.db")));
+        assert!(
+            !is_path_under(base, Path::new("/repository/db/wiki.db")),
+            "同级同名前缀不得误判为子目录"
+        );
+        assert!(!is_path_under(base, Path::new("/other/db/wiki.db")));
+    }
+
+    #[test]
+    fn is_path_under_resolves_dot_segments() {
+        let base = Path::new("/repo");
+        assert!(
+            !is_path_under(base, Path::new("/repo/../elsewhere/db/wiki.db")),
+            "`..` 解析后逃出 base 不得算 under"
+        );
+        assert!(is_path_under(base, Path::new("/repo/sub/../db/wiki.db")));
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn is_path_under_case_insensitive_on_windows() {
+        assert!(is_path_under(
+            Path::new("E:\\Repo"),
+            Path::new("e:\\repo\\db\\wiki.db")
+        ));
     }
 }

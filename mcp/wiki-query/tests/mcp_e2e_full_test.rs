@@ -186,6 +186,13 @@ fn wiki_sync_default_scope_is_incremental() {
     assert!(stdout.contains("updated"), "应含 updated 字段");
     assert!(stdout.contains("pruned"), "应含 pruned 字段");
     assert!(stdout.contains("incremental"), "默认 scope 应为 incremental");
+    // 本测试进程 cwd=mcp/wiki-query(非 vault 形状),边界确认拒绝:
+    // 显式断言拒绝结果,与 mcp_sync_e2e_test 的正常同步形成对照
+    assert!(
+        stdout.contains(r#"\"failed\": -1"#),
+        "非 vault cwd 的 wiki_sync 应整体拒绝,输出: {}",
+        &stdout[..stdout.len().min(800)]
+    );
 }
 
 #[test]
@@ -195,6 +202,8 @@ fn wiki_sync_incremental_scope() {
     let stdout = run_mcp_session(&[init, notif, call]);
     assert!(stdout.contains(r#""id":31"#));
     assert!(stdout.contains("incremental"), "scope 应为 incremental");
+    // cwd=mcp/wiki-query(非 vault):拒绝契约(与正常同步对照见 mcp_sync_e2e_test)
+    assert!(stdout.contains(r#"\"failed\": -1"#), "非 vault cwd 应整体拒绝");
 }
 
 #[test]
@@ -204,6 +213,8 @@ fn wiki_sync_full_scope() {
     let stdout = run_mcp_session(&[init, notif, call]);
     assert!(stdout.contains(r#""id":32"#));
     assert!(stdout.contains("full"), "scope 应为 full");
+    // cwd=mcp/wiki-query(非 vault):拒绝契约
+    assert!(stdout.contains(r#"\"failed\": -1"#), "非 vault cwd 应整体拒绝");
 }
 
 #[test]
@@ -214,6 +225,8 @@ fn wiki_sync_invalid_scope_defaults_to_incremental() {
     let stdout = run_mcp_session(&[init, notif, call]);
     assert!(stdout.contains(r#""id":33"#));
     assert!(stdout.contains("incremental"), "无效 scope 应 fallback 到 incremental");
+    // cwd=mcp/wiki-query(非 vault):拒绝契约
+    assert!(stdout.contains(r#"\"failed\": -1"#), "非 vault cwd 应整体拒绝");
 }
 
 #[test]
@@ -223,6 +236,8 @@ fn wiki_sync_report_has_dedupe_report() {
     let stdout = run_mcp_session(&[init, notif, call]);
     assert!(stdout.contains(r#""id":34"#));
     assert!(stdout.contains("dedupe_report"), "应含 dedupe_report 字段");
+    // cwd=mcp/wiki-query(非 vault):拒绝契约(与正常同步对照见 mcp_sync_e2e_test)
+    assert!(stdout.contains(r#"\"failed\": -1"#), "非 vault cwd 应整体拒绝");
 }
 
 #[test]

@@ -35,6 +35,8 @@ pub struct SyncReport {
     /// 本次清理的孤儿记录数
     pub pruned: i32,
     /// 本次同步失败的文件数(如非 UTF-8/DB 错误)。0 = 全部成功;
+    /// -1 = 整体失败(库不可用或被仓库边界守卫拒绝,见 run_with_scope),
+    /// 此时 synced/updated/pruned 均为 0,索引未被触碰;
     /// 失败文件的索引保留旧数据,必须可从报告发现,不得静默。
     pub failed: i32,
     /// 查重范围:"incremental" 或 "full"
