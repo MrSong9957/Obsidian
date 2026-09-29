@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-09-22
+updated: 2026-09-29
 ---
 
 # Wiki 索引
@@ -117,3 +117,6 @@ updated: 2026-09-22
 | [[wiki/用第一性原理学文科\|用第一性原理学文科]] | 用认知科学的底层规律重新设计文科学习方式，替代死记硬背 | liberal-arts, learning-method, knowledge-system, feynman-technique, first-principles |
 | [[wiki/用第一性原理学物理\|用第一性原理学物理]] | 基于底层原理推导物理公式、拆解题目而非死记硬背或盲目刷题 | physics-learning, first-principles, derivation, active-learning, error-analysis |
 | [[wiki/用第一性原理学英语\|用第一性原理学英语]] | 基于认知科学规律重构英语学习方式，替代死记硬背的传统路径 | english-learning, learning-method, spaced-repetition, active-recall, first-principles |
+| [[wiki/从零实现Agent\|从零实现Agent]] | 34 步迭代表从零实现终端编程 Agent——能聊天、会用工具、能改代码、稳定持续工作、可扩展发布（Rust，主参考 Codex 与 DeepSeek Harness 源码） | agent, coding-agent, rust, roadmap, tool-calling, codex, deepseek-harness |
+| [[wiki/Agent工具结果与上下文压缩：裁剪、摘要与证据补读\|Agent 工具结果与上下文压缩]] | 工具结果先代码减量/落盘/单条摘要再进上下文、历史到阈值集中压缩、证据不足按需补读原文，附 DeepSeek Harness/Codex/Claude Code 三家做法对比 | agent, context-management, tool-output, summarization, prompt-cache, rag |
+| [[wiki/假说驱动：先给答案再验证，而不是先收集全部信息\|假说驱动：先给答案再验证]] | 三步把模糊难题变成可验证猜想（第一判断、议题树拆解、优先证伪），靠证伪快速逼近真相 | hypothesis-driven, problem-solving, decision-making, verification, consulting |

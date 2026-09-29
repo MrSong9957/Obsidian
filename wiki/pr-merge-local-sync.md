@@ -4,14 +4,7 @@ name: PR merge 后本地分支的安全同步
 description: 本地 master 有未推送提交 + 工作区有脏文件时,PR squash merge 后不能机械用 pull/reset --hard;先看拓扑和最终树内容,再做最小受控同步——保住脏文件、对齐到 merge commit
 type: concept
 updated: 2026-08-02
-tags:
-  - git
-  - pr-merge
-  - squash-merge
-  - local-sync
-  - dirty-worktree
-  - diverged-branches
-  - safe-reset
+tags: [git, pr-merge, squash-merge, local-sync, dirty-worktree, diverged-branches, safe-reset]
 source: self
 ---
 

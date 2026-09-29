@@ -57,7 +57,7 @@ ANTHROPIC_AUTH_TOKEN=xxx        # 容器内映射名（Claude Code 读取的变�
 1. 修改 `D:\Files\.env`
 2. 重启容器 `docker compose up -d`
 3. Claude Code 宿主机的 token 需单独更新 `~/.claude/settings.json`
-4. Git remote URL 中的 token 不会自动同步，需手动 `git remote set-url`（推荐改用 credential store，详见 [[wiki/git-security.md|Git 安全实践]]）
+4. Git remote URL 中的 token 不会自动同步，需手动 `git remote set-url`（推荐改用 credential store，详见 [[wiki/git-quick-reference|Git 安全实践]]）
 
 ← [[sources/tools/2026-05-15-token-management.md]]
 
