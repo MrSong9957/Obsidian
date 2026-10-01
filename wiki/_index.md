@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-09-29
+updated: 2026-10-01
 ---
 
 # Wiki 索引
@@ -20,7 +20,6 @@ updated: 2026-09-29
 | [[wiki/email-assistant\|Email Assistant]] | Email Assistant 项目核心文档 | email, python, assistant |
 | [[wiki/frontend\|前端与 UI]] | UI 设计原则/终端 UI 测试/Playwright 自动化/技术栈策略 | frontend, ui, testing, playwright |
 | [[wiki/git-quick-reference\|Git 快速参考]] | Git 常用命令速查 | git, cli, reference |
-| [[wiki/learning\|学习方法]] | AI 时代技能发展/学习方法论/认知提升 | learning, methodology, cognition, ai-skills |
 | [[wiki/learn-shareai\|Learn ShareAI]] | 从零构建 Claude Code-like Agent——19 章学习笔记 | agent, learn-shareai |
 | [[wiki/mental-models\|思维模型]] | 跨学科思维模型框架（芒格 100 模型） | mental-models, decision-making, cognition |
 | [[wiki/new-project-setup\|新项目开发环境初始化]] | Docker 容器启动、镜像配置、首次配置、Obsidian 记忆链接 | docker, setup, claude-md, configuration |
@@ -35,7 +34,6 @@ updated: 2026-09-29
 | [[wiki/mimocode-memory-system\|MiMo Code 记忆系统架构]] | 三层记忆文件结构、写入权限、搜索机制、提升逻辑 | mimocode, memory, architecture |
 | [[wiki/streaming-architecture\|流式架构模式]] | EventBus 模式、渲染器分离、压缩集成、4 层流式管道 | streaming, architecture, event-bus |
 | [[wiki/mimocode-ui-rendering\|MiMo Code UI 渲染管道]] | 屏幕缓冲区 + diff 系统、布局计算、光标定位 | mimocode, ui, rendering, terminal |
-| [[wiki/AI时代编程的深层能力\|AI 时代编程的深层能力]] | 自己设计、AI 查零件——五步核心训练法（拆流程→写骨架→查 API→看懂生成→空白重写） | learning, training, coding-ability, deliberate-practice |
 | [[wiki/how-openai-uses-codex\|How OpenAI uses Codex]] | OpenAI 7 类 Codex 用法 + 6 条最佳实践入口；细节见 sources 全量中译 | codex, openai, coding-agent, workflow, best-practices |
 | [[wiki/how-anthropic-teams-use-claude-code\|How Anthropic teams use Claude Code]] | Anthropic 10 团队案例入口——含非技术岗；细节见 sources 全量中译 | claude-code, anthropic, case-study, workflow |
 | [[wiki/大模型API上下文结构\|大模型 API 上下文结构]] | 四种消息角色 + tools 字段、API 无状态原理与 Harness 状态保存 | ai-agent, context-engineering, llm-api, messages, tool-calling |
@@ -120,3 +118,4 @@ updated: 2026-09-29
 | [[wiki/从零实现Agent\|从零实现Agent]] | 34 步迭代表从零实现终端编程 Agent——能聊天、会用工具、能改代码、稳定持续工作、可扩展发布（Rust，主参考 Codex 与 DeepSeek Harness 源码） | agent, coding-agent, rust, roadmap, tool-calling, codex, deepseek-harness |
 | [[wiki/Agent工具结果与上下文压缩：裁剪、摘要与证据补读\|Agent 工具结果与上下文压缩]] | 工具结果先代码减量/落盘/单条摘要再进上下文、历史到阈值集中压缩、证据不足按需补读原文，附 DeepSeek Harness/Codex/Claude Code 三家做法对比 | agent, context-management, tool-output, summarization, prompt-cache, rag |
 | [[wiki/假说驱动：先给答案再验证，而不是先收集全部信息\|假说驱动：先给答案再验证]] | 三步把模糊难题变成可验证猜想（第一判断、议题树拆解、优先证伪），靠证伪快速逼近真相 | hypothesis-driven, problem-solving, decision-making, verification, consulting |
+| [[wiki/规格文档实战法\|规格文档实战法]] | 学习编程主方法——每个功能一份规格文档：五步流程（想清楚→预测→实测→关键判断→坑记录），规格是母版、代码随用随生成 | spec-driven, learning-method, programming-method, ai-era, knowledge-management |

@@ -37,7 +37,7 @@ source: "[[sources/dev/dev-practice]]"
 
 ## 代码讲解策略
 
-→ [[wiki/learning-habits.md|学习习惯 — 代码讲解策略]]
+→ [[sources/learning/learning-references.md|学习习惯 — 代码讲解策略]] L475-483
 
 ## KV 缓存设计
 

@@ -11,10 +11,9 @@
 - 调试：先观察再修改，三段式可观测性 → [[wiki/dev-practice.md|详情]]([wiki/dev-practice.md](wiki/dev-practice.md))
 - 方法论：Harness Engineering → [[wiki/agent-arch.md|详情]]([wiki/agent-arch.md](wiki/agent-arch.md))
 - 子代理：可并行或需隔离时用；简单操作直接做
-- 学习习惯：学霸七法（框架/反向/深层/逻辑/分科/渐进/理解>数量）+AI辅助 → [[wiki/learning.md|详情]]([wiki/learning.md](wiki/learning.md))
+- 学习/编程主方法：规格文档实战法——每个功能一份规格文档，预测→实测→坑记录沉淀经验 → [[wiki/规格文档实战法.md|详情]]([wiki/规格文档实战法.md](wiki/规格文档实战法.md))
 - 技术栈：原型 HTML/CSS/JS，正式 Flutter，后端 Python/Rust → [[wiki/frontend.md|详情]]([wiki/frontend.md](wiki/frontend.md))
 - 开发方法：默认 TDD，代码质量由 AI 发现最佳实践 → [[wiki/dev-practice.md|详情]]([wiki/dev-practice.md](wiki/dev-practice.md))
-- 编程认知：必须用四层分离法（设计/验证/诊断/决策），禁止 vibe coding → [[wiki/dev-practice.md|详情]]([wiki/dev-practice.md](wiki/dev-practice.md))
 
 ## 经验教训
 - Claude Code：技能存放/SKILL开发/文档双链/Hooks复盘 → [[wiki/claude-code.md|详情]]([wiki/claude-code.md](wiki/claude-code.md))

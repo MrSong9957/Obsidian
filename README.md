@@ -49,7 +49,7 @@ obsidian/
 |------|------|
 | [[wiki/agent-arch.md\|Agent 架构]] | Agent 循环、多智能体、Harness 工程方法论 |
 | [[wiki/learn-shareai.md\|Learn ShareAI]] | s01-s19 从零构建 Agent 学习笔记 |
-| [[wiki/learning.md\|学习方法]] | AI 时代技能、学习方法论、认知提升、语言学习哲学 |
+| [[wiki/规格文档实战法.md\|规格文档实战法]] | 学习编程主方法——每个功能一份规格文档，预测→实测→坑记录，规格是母版、代码随用随生成 |
 | [[wiki/mental-models.md\|思维模型]] | 跨学科思维模型（芒格 100 模型） |
 
 ### 工具指南
