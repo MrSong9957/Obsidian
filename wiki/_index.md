@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-10-01
+updated: 2026-10-05
 ---
 
 # Wiki 索引
@@ -119,3 +119,5 @@ updated: 2026-10-01
 | [[wiki/Agent工具结果与上下文压缩：裁剪、摘要与证据补读\|Agent 工具结果与上下文压缩]] | 工具结果先代码减量/落盘/单条摘要再进上下文、历史到阈值集中压缩、证据不足按需补读原文，附 DeepSeek Harness/Codex/Claude Code 三家做法对比 | agent, context-management, tool-output, summarization, prompt-cache, rag |
 | [[wiki/假说驱动：先给答案再验证，而不是先收集全部信息\|假说驱动：先给答案再验证]] | 三步把模糊难题变成可验证猜想（第一判断、议题树拆解、优先证伪），靠证伪快速逼近真相 | hypothesis-driven, problem-solving, decision-making, verification, consulting |
 | [[wiki/规格文档实战法\|规格文档实战法]] | 学习编程主方法——每个功能一份规格文档：五步流程（想清楚→预测→实测→关键判断→坑记录），规格是母版、代码随用随生成 | spec-driven, learning-method, programming-method, ai-era, knowledge-management |
+| [[wiki/多厂商LLM接入架构\|多厂商LLM接入架构]] | Rust CLI 多厂商 LLM 接入——Harness 厂商适配器 + Codex 请求分层，五类职责划分、一次对话数据流、错误/重试/断流/取消规则与验收；对应从零实现 Agent 第 28 步 | rust, llm, provider, adapter, retry, streaming, codex, deepseek-harness |
+| [[wiki/终端UI方案：Codex复用与首版规格\|终端UI方案：Codex复用与首版规格]] | Rust CLI 终端 UI——Codex 源码按模块复用边界、Ratatui/Crossterm/ratatui-textarea 库选型与首版（MVP）渲染规格草稿；对应从零实现 Agent 第 27 步 | rust, tui, codex, ratatui, crossterm, terminal, spec |
