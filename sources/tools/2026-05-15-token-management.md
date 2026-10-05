@@ -35,7 +35,7 @@ Claude Code 宿主机配置：`~/.claude/settings.json` 中 `env.ANTHROPIC_AUTH_
 1. 访问 https://github.com/settings/tokens
 2. Generate new token (classic) 或 Fine-grained token
 3. 勾选所需权限（一般需要 repo, read:org）
-4. 格式示例：`[REDACTED]`
+4. 格式示例：`ghp_[真实token已移除：原串曾随提交历史推送，按既定边界不轮换，使用前请到 GitHub 重新生成]`
 
 ⚠️ token 只在创建时显示一次，务必保存。
 

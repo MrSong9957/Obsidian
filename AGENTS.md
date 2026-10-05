@@ -98,4 +98,4 @@
 sed -E 's/(ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]+/\1_[REDACTED]/g; s#(https?://)[^/@[:space:]]+@#\1[REDACTED]@#g'
 ```
 
-迁移与验收步骤、检查入口见 [sources/security/feedback_git-token-security.md](sources/security/feedback_git-token-security.md)。
+迁移与验收步骤见 [sources/security/feedback_git-token-security.md](sources/security/feedback_git-token-security.md)；检查入口为 `/vault/scripts/git-token-check.sh [仓库路径]`（脱敏输出，正常与错误输出均已覆盖）。
