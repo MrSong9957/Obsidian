@@ -2,7 +2,7 @@
 name: 前端与 UI（完整资料）
 description: UI设计原则/终端UI测试/Playwright自动化/技术栈策略的完整资料，含代码示例和详细教程
 type: concept
-updated: 2026-04-17
+updated: 2026-10-04
 tags: frontend, ui, testing, playwright, tech-stack
 source: https://example.com
 ---
@@ -12,7 +12,7 @@ source: https://example.com
 
 ## 终端 UI 自动化测试深入研究
 
-> 相关文档：[[terminal-ui-testing.md|终端 UI 测试精要]] · [[multi-agent-framework.md|多智能体框架]] · [[ui-design.md|UI 设计]]
+> 相关文档：[[frontend|终端 UI 测试精要]] · [[agent-arch|多智能体框架]] · [[frontend|UI 设计]]
 
 ## Context
 
@@ -339,7 +339,7 @@ Generator Agent          VHS Test Runner          Evaluator Agent
 
 > 轻量级 CLI 工具，让 Claude Code 高效完成 UI 测试
 
-**相关文档**：**相关文档**：[[ui-design.md|UI 设计原则]]
+**相关文档**：[[frontend|UI 设计原则]]
 
 ## 安装
 

@@ -3,8 +3,8 @@ name: Git Token 安全认证方式
 description: 避免在 git remote URL 中使用明文 token，改用 credential store
 type: feedback
 updated: 2026-05-30
-tags: [tag1, tag2]
-source: https://example.com
+tags: [git, security, token, credentials]
+source: self
 ---
 Git remote URL 中禁止明文 token，改用 credential store 方案。
 

@@ -87,20 +87,16 @@ obsidian/
 | 技能 | 用途 |
 |------|------|
 | [[skills/agent-builder/SKILL.md\|agent-builder]] | 构建 AI Agent |
+| [[skills/ai-era-fundamentals-learning/SKILL.md\|ai-era-fundamentals-learning]] | AI 时代底层原理学习法辅助学习编程语言 |
 | [[skills/auto-optimize/SKILL.md\|auto-optimize]] | 自动优化技能 |
 | [[skills/claude-code-config-health/SKILL.md\|claude-code-config-health]] | Claude Code 配置健康检查 |
-| [[skills/code-review/code-review.md\|code-review]] | PR 代码审查 |
 | [[skills/comprehensive-testing/SKILL.md\|comprehensive-testing]] | 系统性回归强化测试 |
 | [[skills/docker-dev-container/SKILL.md\|docker-dev-container]] | Docker 容器开发 |
-| [[skills/ecc-status-check/SKILL.md\|ecc-status-check]] | ECC 插件状态检查 |
-| [[skills/frontend-design/SKILL.md\|frontend-design]] | 前端视觉设计指导 |
-| [[skills/kimi-skills-finder/SKILL.md\|kimi-skills-finder]] | 搜索与发现技能 |
-| [[skills/mcp-builder/SKILL.md\|mcp-builder]] | MCP 服务器构建 |
 | [[skills/obsidian-link/SKILL.md\|obsidian-link]] | Obsidian 仓库链接 |
 | [[skills/obsidian-remember/SKILL.md\|obsidian-remember]] | 知识仓库管理 |
 | [[skills/pdf/SKILL.md\|pdf]] | PDF 处理 |
 | [[skills/playwright-cli/SKILL.md\|playwright-cli]] | 浏览器自动化测试 |
-| [[skills/project-artifact/SKILL.md\|project-artifact]] | 生成项目状态工件页 |
+| [[skills/plain-language-knowledge/SKILL.md\|plain-language-knowledge]] | 大白话知识萃取与通俗改写 |
 | [[skills/skill-creator/SKILL.md\|skill-creator]] | 创建与优化技能 |
 | [[skills/wiki-mcp/SKILL.md\|wiki-mcp]] | wiki-query MCP 知识库操作 |
 

@@ -1,9 +1,9 @@
 ---
 name: project-persona-style-progress
-description: 人格化邮件回复功能开发进度（2026-05-15），已合并 master，事项已迁移至 wiki/todos.md
+description: 人格化邮件回复功能开发进度（2026-05-15），已合并 master，事项已迁移至待办事项
 type: project
 updated: 2026-05-30
-tags: [tag1, tag2]
+tags: [project, email-assistant, progress]
 source: https://example.com
 ---
 
@@ -12,7 +12,7 @@ source: https://example.com
 **状态:** 已合并 master ✅
 **日期:** 2026-05-14 ~ 2026-05-15
 
-事项已迁移至 [[wiki/todos.md|待办事项]]。
+事项已迁移至待办事项（原 wiki/todos 页已移除）。
 
 ## Git 状态
 

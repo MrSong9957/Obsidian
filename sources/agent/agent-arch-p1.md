@@ -2,7 +2,7 @@
 name: Agent 架构（上）- 详细资料
 description: Agent循环/多智能体框架/系统提示词/教学脚本的完整详细内容
 type: concept
-updated: 2026-04-17
+updated: 2026-10-04
 tags: agent, architecture, multi-agent, system-prompts
 source: https://example.com
 ---
@@ -95,11 +95,11 @@ agentMetadata:
 
 ### 相关概念
 
-- [[harness-engineering.md]] — "代码是 harness" 的核心方法论
-- [[multi-agent-framework.md]] — 多智能体协作的四角色框架
+- [[openai-harness-engineering]] — "代码是 harness" 的核心方法论
+- [[agent-arch]] — 多智能体协作的四角色框架
 - [[learn-shareai.md]] — 19 章教学笔记（Learn ShareAI）
-- [[summary-claude-code-system-prompts.md]] — 250 个生产提示词的分类摘要
-- [[natural-language-programming.md]] — 自然语言定义 Agent 行为（对应 System Prompts 的行为约束）
+- 250 个生产提示词的分类摘要（详见 sources/claude-code/claude-code-system-prompts/）
+- 自然语言定义 Agent 行为（对应 System Prompts 的行为约束）
 
 ### 待解决的问题
 

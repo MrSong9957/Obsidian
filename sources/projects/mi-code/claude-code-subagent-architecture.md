@@ -2,7 +2,7 @@
 name: Claude Code 子代理架构分析
 description: 基于 Claude Code 源码的子代理架构分析——预设角色体系、工具策略与模型选择，作为 mi-code 子代理系统的对标参考
 type: concept
-updated: 2026-07-22
+updated: 2026-10-04
 tags: [claude-code, subagent, agent-architecture, mi-code]
 source: self
 ---
@@ -115,5 +115,5 @@ disallowedTools: [AGENT, EXIT_PLAN_MODE, FILE_EDIT, FILE_WRITE, NOTEBOOK_EDIT]
 | spinner token k 格式 | ✅ 3909 → 3.9k |
 
 ## 相关
-- [[mi-code AUTO-0025 计划审批 UI 修订]]
+- mi-code AUTO-0025 计划审批 UI 修订
 - mi-code 源码：`src/agent/roles.ts`, `src/agent/subagent.ts`, `src/agent/tools/spawn-agent-tool.ts`

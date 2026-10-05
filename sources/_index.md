@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-08-30
+updated: 2026-10-04
 ---
 
 # 原始资料索引
@@ -78,8 +78,7 @@ updated: 2026-08-30
 | 文件 | 说明 |
 |------|------|
 | [[sources/learning/charlie-munger-mental-models\|芒格100思维模型]] | 跨学科思维模型完整参考（8大类100个模型） |
-| [[sources/learning/learning\|学习方法]] | AI时代技能发展/学习方法论/认知提升习惯 |
-| [[sources/learning/learning-references\|学习方法参考]] | 四层认知分离法详解、编程第一性原理、AI 时代语言学习哲学 |
+| [[sources/learning/learning-references\|学习方法参考]] | 学霸七法、四层认知分离法详解、编程第一性原理、AI 时代语言学习哲学（原 learning.md 已并入） |
 
 ## projects/
 
@@ -116,5 +115,5 @@ updated: 2026-08-30
 
 | 路径 | 文件数 | 说明 |
 |------|--------|------|
-| [[sources/claude-code/claude-code-system-prompts/\|claude-code-system-prompts]] | 252 | Claude Code System Prompts |
-| [[sources/agent/learn-shareai/\|learn-shareai]] | 19 | Agent 核心循环系列 |
+| [[sources/claude-code/claude-code-system-prompts/\|claude-code-system-prompts]] | 253 | Claude Code System Prompts |
+| [[sources/agent/learn-claude-code/\|learn-claude-code]] | 19 | Agent 核心循环系列 |
