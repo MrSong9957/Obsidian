@@ -89,3 +89,13 @@
 - 使用 wiki-query 时读取 [wiki-mcp Skill](skills/wiki-mcp/SKILL.md)，获取工具调用与首次接入流程。
 - 构建、启动和 CLI 运维按需查阅 [wiki-query README](mcp/wiki-query/README.md)。
 - 根目录 [MEMORY.md](MEMORY.md) 是文件记忆入口：服务通过 Junction/链接把本 vault 用作项目记忆的场景，仅维护少量长期有效的偏好与知识指针。涉及入口或引用的变更、发现失效引用时检查更新该文件；知识库操作以本文件为准，该入口不替代外部项目自身的规则。
+
+## Git 凭据与输出脱敏
+
+凭据只存系统安全凭据管理器（本机为 Git Credential Manager，`credential.helper=manager`）；remote URL 与 git 配置中不得出现明文 token，禁用 `credential.helper store` 及任何明文转存。任何可能输出凭据的命令（`git remote -v`、config 查看、认证报错等），正常与错误输出都必须先过脱敏管道再进入工具输出或日志，例如：
+
+```bash
+sed -E 's/(ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]+/\1_[REDACTED]/g; s#(https?://)[^/@[:space:]]+@#\1[REDACTED]@#g'
+```
+
+迁移与验收步骤、检查入口见 [sources/security/feedback_git-token-security.md](sources/security/feedback_git-token-security.md)。

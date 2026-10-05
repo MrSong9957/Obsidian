@@ -2,7 +2,7 @@
 name: Token 获取与管理
 description: 各平台 API token 获取方式与集中管理方案 — 智谱/DeepSeek/GitHub/QQ/Gmail/163/Outlook/Docker Hub 的 key 申请流程与 D:\Files\.env 统一管理架构
 type: reference
-updated: 2026-05-15
+updated: 2026-10-05
 tags: token, credentials, env, security, api-key
 source: self
 ---
@@ -133,3 +133,5 @@ git push origin master  # 成功
 ```
 
 **根因：** Git remote URL 中嵌入的 token 与 `.env` 文件中的 token 是**独立管理**的。更新 `.env` 不会自动更新 remote URL。这与 `wiki/git-security.md` 中"禁止明文 token 嵌入 remote URL"的规则一致——正确做法是用 credential store。
+
+> **2026-10-05 更正：** 本节"修复"向 remote URL 嵌 token 的做法已废弃，"credential store"方案也已禁用——凭据应经 `git credential approve` 从 stdin 存入系统安全凭据管理器（GCM），remote URL 保持无 token 形式，详见 [[feedback_git-token-security]]。另：本文件第 38 行"格式示例"处的字符串为 40 位真实 token 格式且已随提交历史推送，建议轮换该 token（本页其余 `ghp_` 串均为短占位示例）。
