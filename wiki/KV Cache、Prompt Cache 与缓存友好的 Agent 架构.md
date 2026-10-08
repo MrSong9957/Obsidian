@@ -1,9 +1,9 @@
 ---
 name: KV Cache、Prompt Cache 与缓存友好的 Agent 架构
-description: 区分两层缓存，理解缓存如何约束上下文设计，以及可编辑、可组合缓存的研究边界。
+description: 区分两层缓存，理解稳定前缀＋追加后缀的上下文组装顺序与缓存约束，以及可编辑、可组合缓存的研究边界。
 type: hybrid
-updated: 2026-09-15
-tags: [context-engineering, kv-cache, prompt-cache, agent, architecture]
+updated: 2026-10-08
+tags: [context-engineering, kv-cache, prompt-cache, agent, architecture, codex]
 source: self
 ---
 
@@ -31,6 +31,39 @@ source: self
 * 在末尾追加内容，可以保留已有前缀。
 
 原文“改一个字节，后面的缓存就全废”是工程上的简写。更准确地说，要看**实际输入的 token、位置和影响缓存的配置**；实际命中还受缓存分块、有效期等条件限制。
+
+**按组装顺序，完整上下文等于“相对稳定的前缀 + 持续追加的后缀”。**
+
+以 Codex 这类终端编程 Agent 为例：
+
+```text
+完整上下文
+= 相对稳定的前缀
+  〔初始工具定义
+   + Codex 模型基础指令
+   + 开发者／运行规则
+   + 用户／会话／项目规则
+   + 初始环境与能力说明〕
++ 持续追加的后缀
+  〔交互记录
+   + 后续规则、环境、工具更新
+   + 本轮新增输入〕
+```
+
+相对固定的工具定义应放进可复用前缀。Codex 源码有直接证据：Responses Lite 路径先放 `AdditionalTools`，再放基础指令，最后接已有消息；普通路径则通过独立的 `tools` 字段提供工具。[请求构造代码](https://github.com/openai/codex/blob/2fdf047c9631c9ed01a31b62efb7891718a931a8/codex-rs/core/src/client.rs#L971-L998)。所以 **JSON 字段顺序和模型最终读取的顺序要分开看**。
+
+结合 KV 缓存，上下文还有另一条等式：
+
+```text
+完整上下文
+= 命中 KV 缓存的连续前缀
++ 本次需要重新处理的后缀
+```
+
+由此有两个容易忽略的推论：
+
+* **缓存边界不等于静态／动态边界。** 已经发生、保持原样的聊天和工具记录，也可以进入缓存前缀；判断标准是前缀是否连续一致，不是内容是否还会变化。
+* **缓存省计算，不省窗口容量。** 例如输入有 20k token、命中缓存 18k，这次输入仍占 20k 窗口；省去的只是那 18k 前缀的重复处理，窗口还要容纳本次回答和推理。[OpenAI Prompt Caching](https://developers.openai.com/api/docs/guides/prompt-caching)
 
 **缓存成为架构约束，是因为提示词、子 Agent 和历史消息的设计都会影响复用成本。**
 

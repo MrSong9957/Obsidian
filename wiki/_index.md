@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-10-05
+updated: 2026-10-08
 ---
 
 # Wiki 索引
@@ -42,7 +42,7 @@ updated: 2026-10-05
 | [[wiki/Agent上下文布局与本地模型工具调用\|Agent 上下文布局与本地模型工具调用]] | 稳定前缀 + 动态轨迹、预算压缩伪代码、本地模型工具调用与首 token 延迟测量 | ai-agent, context-engineering, kv-cache, tool-calling, local-llm |
 | [[wiki/API消息如何变成模型输入\|Chat Template：API 消息如何变成模型输入]] | 消息到 token 的排列规则；工具结果回传格式、思考内容保留与缓存前缀影响 | llm, chat-template, tokenization, tool-calling, kv-cache |
 | [[wiki/KV-Cache友好的上下文设计与注意力机制\|KV Cache 友好的上下文设计与注意力机制]] | Q/K/V 与因果遮罩、缓存复用原理、三条上下文布局原则、注意力可视化 | context-engineering, kv-cache, attention, transformer, prompt-cache |
-| [[wiki/KV Cache、Prompt Cache 与缓存友好的 Agent 架构\|KV Cache、Prompt Cache 与缓存友好的 Agent 架构]] | 两层缓存区分、缓存边界与子 Agent 前缀对齐、可编辑/可组合 KV 研究边界 | context-engineering, kv-cache, prompt-cache, agent, architecture |
+| [[wiki/KV Cache、Prompt Cache 与缓存友好的 Agent 架构\|KV Cache、Prompt Cache 与缓存友好的 Agent 架构]] | 两层缓存区分、Codex 上下文组装顺序与源码证据、缓存边界与子 Agent 前缀对齐、可编辑/可组合 KV 研究边界 | context-engineering, kv-cache, prompt-cache, agent, architecture, codex |
 | [[wiki/Obsidian仓库大脑模型\|Obsidian 仓库大脑模型]] | 网页 ChatGPT 仓库管理大脑提示词：三层管理、ADD/UPDATE/NOOP/CONTRADICT 裁决、/goal 与 CONTINUE/DONE 状态机 | brain-model, decision-control, agent-orchestration, obsidian, wiki-management, goal |
 | [[wiki/1个月把技能练到前1%\|1个月技能精通3-2-1法则]] | Dan Koe提出的技能快速精通框架，通过3种资源输入、2个输出出口、1个月验证周期，帮助区分真兴趣与伪需求，实现从学习到实践的闭环 | skill-mastery, learning-framework, output-driven, deliberate-practice, personal-growth |
 | [[wiki/从Prompt到Graph\|从 Prompt 到 Graph：Agent 工程关注范围如何逐层扩大]] | 理解 AI 工程如何从优化提示词，演进到管理 Agent 循环、长期自治和执行图。 | agent, prompt-engineering, context-engineering, harness, loop-engineering, graph-engineering |
@@ -121,3 +121,4 @@ updated: 2026-10-05
 | [[wiki/规格文档实战法\|规格文档实战法]] | 学习编程主方法——每个功能一份规格文档：五步流程（想清楚→预测→实测→关键判断→坑记录），规格是母版、代码随用随生成 | spec-driven, learning-method, programming-method, ai-era, knowledge-management |
 | [[wiki/多厂商LLM接入架构\|多厂商LLM接入架构]] | Rust CLI 多厂商 LLM 接入——Harness 厂商适配器 + Codex 请求分层，五类职责划分、一次对话数据流、错误/重试/断流/取消规则与验收；对应从零实现 Agent 第 28 步 | rust, llm, provider, adapter, retry, streaming, codex, deepseek-harness |
 | [[wiki/终端UI方案：Codex复用与首版规格\|终端UI方案：Codex复用与首版规格]] | Rust CLI 终端 UI——Codex 源码按模块复用边界、Ratatui/Crossterm/ratatui-textarea 库选型与首版（MVP）渲染规格草稿；对应从零实现 Agent 第 27 步 | rust, tui, codex, ratatui, crossterm, terminal, spec |
+| [[wiki/Git 幻影修改：Windows Git 与容器 Git 不一致\|Git 幻影修改：Windows Git 与容器 Git 不一致]] | 同一仓库被两侧 git 共用结论不一致——autocrlf 行尾与 filemode 两类幻影的成因、判断方法与 .gitattributes／filemode 根治原则 | git, windows, wsl, autocrlf, filemode, vscode, line-endings |
