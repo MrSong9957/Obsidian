@@ -196,6 +196,12 @@ pub fn run_with_scope(scope: &str) -> SyncReport {
     // 分隔符口径统一:迁移存量反斜杠路径,保证入库/prune/exists 同一口径
     normalize_legacy_separators(&conn);
 
+    // FTS 缺行检查的批量预载:FTS5 虚拟表对 path 无二级索引,逐文件
+    // `count(*) WHERE path=?` 每次都是全表扫描,N 个文件即 O(N²)
+    // (503 文件实测 ~110s,文件系统无关)。改为一次扫描装载 path 集合,
+    // needs_update 里做 O(1) 成员检查,语义不变(仍能发现 FTS 缺行并自愈)。
+    let fts_paths = load_fts_paths(&conn);
+
     let root = Path::new(".");
 
     let mut count = 0;
@@ -203,7 +209,7 @@ pub fn run_with_scope(scope: &str) -> SyncReport {
     let mut failed = 0;
     let mut updated_paths: Vec<String> = Vec::new(); // 本次更新的路径(incremental 查重用)
     let mut on_disk: std::collections::HashSet<String> = std::collections::HashSet::new();
-    scan_directory(root, &conn, &mut count, &mut updated, &mut failed, &mut on_disk, &mut updated_paths);
+    scan_directory(root, &conn, &fts_paths, &mut count, &mut updated, &mut failed, &mut on_disk, &mut updated_paths);
 
     // 边界已在函数入口确认,扫描/迁移/清理三阶段作用于同一已确认仓库。
     let pruned = prune_orphans(&conn, &on_disk);
@@ -457,6 +463,7 @@ pub(crate) fn prune_orphans(conn: &Connection, on_disk: &std::collections::HashS
 fn scan_directory(
     dir: &Path,
     conn: &Connection,
+    fts_paths: &std::collections::HashSet<String>,
     count: &mut i32,
     updated: &mut i32,
     failed: &mut i32,
@@ -494,7 +501,7 @@ fn scan_directory(
         }
 
         if path.is_dir() {
-            scan_directory(&path, conn, count, updated, failed, on_disk, updated_paths);
+            scan_directory(&path, conn, fts_paths, count, updated, failed, on_disk, updated_paths);
             continue;
         }
 
@@ -512,7 +519,7 @@ fn scan_directory(
         on_disk.insert(path_str.clone());
 
         // 检查是否需要更新
-        if needs_update(conn, &path_str, &path) {
+        if needs_update(conn, fts_paths, &path_str, &path) {
             if sync_file(conn, &path_str, &path).is_ok() {
                 *updated += 1;
                 updated_paths.push(path_str.clone());
@@ -528,7 +535,30 @@ fn scan_directory(
     }
 }
 
-fn needs_update(conn: &Connection, path_str: &str, file_path: &Path) -> bool {
+/// 一次性装载 documents_fts 全部 path(单次全表扫描),供 needs_update 做
+/// FTS 缺行成员检查。表缺失/查询失败返回空集合——空集使每个文件都判定
+/// "FTS 缺行"而触发重写,保守方向与原逐条 count 查询的失败语义一致。
+fn load_fts_paths(conn: &Connection) -> std::collections::HashSet<String> {
+    let mut stmt = match conn.prepare("SELECT path FROM documents_fts") {
+        Ok(s) => s,
+        Err(e) => {
+            // 失败影响是整轮全量重写(比旧逐条查询的单文件粒度大),必须可观察
+            eprintln!("[wiki-sync] 警告: FTS path 集合装载失败({e}),本轮按缺行处理全部重写");
+            return std::collections::HashSet::new();
+        }
+    };
+    stmt.query_map([], |row| row.get::<_, String>(0))
+        .ok()
+        .map(|iter| iter.filter_map(|r| r.ok()).collect())
+        .unwrap_or_default()
+}
+
+fn needs_update(
+    conn: &Connection,
+    fts_paths: &std::collections::HashSet<String>,
+    path_str: &str,
+    file_path: &Path,
+) -> bool {
     let metadata = match std::fs::metadata(file_path) {
         Ok(m) => m,
         Err(_) => return true,
@@ -556,14 +586,9 @@ fn needs_update(conn: &Connection, path_str: &str, file_path: &Path) -> bool {
 
     // documents 表虽未变,但 FTS5 可能缺失该行(如 FTS5 表新建后首次回填)。
     // 任一表缺失都判定需更新,保证两表最终一致。
-    let in_fts: i64 = conn
-        .query_row(
-            "SELECT count(*) FROM documents_fts WHERE path = ?1",
-            params![path_str],
-            |row| row.get(0),
-        )
-        .unwrap_or(0);
-    in_fts == 0
+    // path 集合由本轮 sync 开始时一次性装载(load_fts_paths),
+    // 成员检查 O(1);不得回退为逐文件 count 查询——FTS5 对 path 无索引,是全表扫描。
+    !fts_paths.contains(path_str)
 }
 
 fn sync_file(conn: &Connection, path_str: &str, file_path: &Path) -> Result<(), Box<dyn std::error::Error>> {
