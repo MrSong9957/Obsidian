@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-10-09
+updated: 2026-10-10
 ---
 
 # Wiki 索引
@@ -125,3 +125,4 @@ updated: 2026-10-09
 | [[wiki/上下文嵌入与近似向量检索\|上下文嵌入与近似向量检索]] | 理解词向量如何随语境变化，以及 Annoy、HNSW 怎样加快向量查找。 | embeddings, word2vec, bert, bge-m3, ann, annoy, hnsw |
 | [[wiki/稀疏检索与 BM25：按词匹配，按重要性排序\|稀疏检索与 BM25：按词匹配，按重要性排序]] | 理解稀疏向量、TF-IDF、BM25 和倒排索引如何共同完成关键词检索。 | sparse-retrieval, bow, tf-idf, bm25, inverted-index |
 | [[wiki/混合检索与重排序：合并候选，再细排相关性\|混合检索与重排序：合并候选，再细排相关性]] | 理解两路检索、RRF 融合、跨编码器重排序的分工，以及检索质量指标。 | hybrid-search, bm25, rrf, cross-encoder, reranking, evaluation |
+| [[wiki/工具调用闭环：Codex复用与参考范围\|工具调用闭环：Codex复用与参考范围]] | Codex 工具定义机制（Rust 规格 → JSON 声明、自然语言写在 description）与工具调用闭环复用——固定快照 2fdf047c 文件级参考表、测试夹具、Chat Completions／apply_patch 适配点；对应从零实现 Agent 工具闭环里程碑 | codex, agent, tool-calling, rust, harness |
