@@ -125,4 +125,3 @@ updated: 2026-10-09
 | [[wiki/上下文嵌入与近似向量检索\|上下文嵌入与近似向量检索]] | 理解词向量如何随语境变化，以及 Annoy、HNSW 怎样加快向量查找。 | embeddings, word2vec, bert, bge-m3, ann, annoy, hnsw |
 | [[wiki/稀疏检索与 BM25：按词匹配，按重要性排序\|稀疏检索与 BM25：按词匹配，按重要性排序]] | 理解稀疏向量、TF-IDF、BM25 和倒排索引如何共同完成关键词检索。 | sparse-retrieval, bow, tf-idf, bm25, inverted-index |
 | [[wiki/混合检索与重排序：合并候选，再细排相关性\|混合检索与重排序：合并候选，再细排相关性]] | 理解两路检索、RRF 融合、跨编码器重排序的分工，以及检索质量指标。 | hybrid-search, bm25, rrf, cross-encoder, reranking, evaluation |
->>>>>>> 6f86a36 (docs(wiki): 检索三篇标准化转正——围栏 frontmatter 转正、source 归一 AI Agent Book 第三章 URL（WebFetch 核对小节）+首段脚注与引用索引、_index 补录三行)
