@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-10-04
+updated: 2026-10-15
 ---
 
 # 原始资料索引
@@ -72,6 +72,7 @@ updated: 2026-10-04
 | [[sources/dev/dev-practice\|开发实践]] | TDD/调试案例/代码讲解/提示词技巧 |
 | [[sources/dev/frontend\|前端与 UI]] | UI设计原则/终端UI测试/Playwright自动化/技术栈策略 |
 | [[sources/dev/rust\|Rust 学习]] | Rust 语言学习资料 |
+| [[sources/dev/rust-session-persistence-pitfalls\|会话持久化实测坑（terminal-chat 007）]] | 追加日志提交点/锁顺序/降级装载/结果归属/PTY 测试等会话持久化实测坑 |
 
 ## learning/
 
