@@ -2,7 +2,7 @@
 name: Docker 容器开发方案
 description: Windows 使用 Docker Desktop WSL2 开发容器，将主要开发数据放到 D 盘，并让多个项目共享 Obsidian 仓库。
 type: reference
-updated: "2026-09-21"
+updated: 2026-10-15
 tags: [Docker, WSL2, Agent, 缓存管理]
 source: self
 ---
