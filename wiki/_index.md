@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-10-10
+updated: 2026-10-15
 ---
 
 # Wiki 索引
@@ -13,6 +13,7 @@ updated: 2026-10-10
 | [[wiki/claude-md-base\|CLAUDE.md 双层架构模板]] | 全局（karpathy 行为准则）+ 项目级（开发规范与测试实现标准）双层 CLAUDE.md，编排职责已迁出 | claude-md, template, karpathy |
 | [[wiki/大脑模型-v3\|大脑模型 v3]] | Superpowers + goal 版——S/A/B/C 任务分级、Skill 调度、返回门禁、L1/L2/L3 测试证据、Security Testing Gate、verify:full | agent, orchestration, decision-control, superpowers, testing-gates, goal |
 | [[wiki/大脑模型-v4\|大脑模型 v4]] | grill-me + goal 版——Supervisor 职责边界、Matt Skills 地图、/goal 自治交付、返回门禁与 delivery decision | agent, orchestration, decision-control, grill-me, goal, matt-skills |
+| [[wiki/大脑模型-v4-规格驱动版\|大脑模型 v4 规格驱动版]] | v4 演进稿——统一流程（规格→分支→/goal→用户批准→交付）、五节规格实战法收编、保留 4 个 Skill、返回门禁与 L1-L3 验证范围 | agent, orchestration, decision-control, spec-driven, goal, supervisor |
 | [[wiki/cli-tools-productivity\|十个提升生产力的 CLI 工具]] | 10 个提升开发生产力的 CLI 工具推荐 | cli, productivity |
 | [[wiki/container-python-setup\|Docker 容器内安装 Python 版本]] | 容器网络受限环境下安装 Python 版本的经验路线图 | docker, python, networking |
 | [[wiki/dev-practice\|开发实践]] | TDD/代码质量/调试方法论/提示词技巧/协作提示词 | dev, tdd, debugging, prompt, code-quality |
@@ -86,6 +87,7 @@ updated: 2026-10-10
 | [[wiki/Harness五要素\|Harness 五要素：Agent 构建阶段的工程视角]] | 理清 Agent 总公式与 Harness 五要素的关系，以及各要素在全书中的位置。 | agent, harness, context-engineering, tools, validation, security |
 | [[wiki/inline-grid-footer-render\|Inline Grid Footer 渲染架构]] | cell 级双缓冲 + 绝对坐标定位彻底解决 inline 模式 resize 堆叠——footerTopRow 计算、resize 链路、emit yBias、InlineGridRenderer 组件职责 | tui, inline-renderer, grid, double-buffer, resize, footer, conhost, reflow, absolute-positioning |
 | [[wiki/karpathy-methodology\|Karpathy 方法论]] | Andrej Karpathy 的 5 套核心方法论 — 痛苦驱动学习、解释倒逼输入、代码至上、极小闭环、提示词优化法 | karpathy, learning, methodology, ai-workflow, programming, prompt |
+| [[wiki/拼贴编程法\|拼贴编程法]] | Karpathy 拼贴编程法——半代码半注释写清每步数据类型与状态变化，Agent 生成具体代码，人掌握数据流与关键规则并验收 | karpathy, programming-method, ai-workflow, code-comments, agent-collaboration |
 | [[wiki/可执行记忆与记忆内容的三种类型\|可执行记忆与记忆内容的三种类型]] | User as Code 用对象存状态、函数执行规则（日志+检查点），情景/语义/程序三类认知记忆与三套分类体系的组合使用 | agent-memory, executable-memory, user-as-code, knowledge-representation, cognitive-science |
 | [[wiki/LLM是Agent的决策核心\|LLM 是 Agent 的决策核心，能力通过三条路径持续更新]] | 理解模型如何驱动 Agent 决策，以及能力如何从临场适应逐步沉淀为持久能力。 | agent, llm, harness, model-as-agent, learning, reinforcement-learning |
 | [[wiki/Mem0 与 Memobase\|Mem0 与 Memobase：记忆更新、检索和用户画像的设计取舍]] | Mem0 v2 写入时决策与 v3 只追加+查询时判断的演进、官方评测数字的来源辨析，Memobase 画像+事件时间线与缓冲批处理 | agent-memory, mem0, memobase, memory-retrieval, memory-architecture |
