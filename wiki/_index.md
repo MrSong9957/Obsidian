@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-10-15
+updated: 2026-10-18
 ---
 
 # Wiki 索引
@@ -130,3 +130,4 @@ updated: 2026-10-15
 | [[wiki/知识组织与检索：从零散片段到统计与规则\|知识组织与检索：从零散片段到统计与规则]] | 解释为什么相关片段不足以支持完整回答，以及如何在索引阶段补上统计、规则和知识关系。 | rag, indexing, knowledge-organization, retrieval, knowledge-distillation |
 | [[wiki/工具调用闭环：Codex复用与参考范围\|工具调用闭环：Codex复用与参考范围]] | Codex 工具定义机制（Rust 规格 → JSON 声明、自然语言写在 description）与工具调用闭环复用——固定快照 2fdf047c 文件级参考表、测试夹具、Chat Completions／apply_patch 适配点；对应从零实现 Agent 工具闭环里程碑 | codex, agent, tool-calling, rust, harness |
 | [[wiki/让模型输出人能看懂、能验证的四种形式\|让模型输出人能看懂、能验证的四种形式]] | Karpathy 的提效思路：用受控语言、图、交互网页和定制讲解视频替代长文，把读结论变成验证结论。 | prompt-engineering, llm-output, controlled-language, visualization, explainer-video |
+| [[wiki/codex-memory-system\|Codex 记忆系统]] | 两阶段记忆管线（逐会话提炼→全局合并）、SQLite+Markdown 双存储、developer 级摘要注入与按需文件搜索、全量配置项与 V2 差异——使用、排障与移植入口 | codex, agent-memory, memory, sqlite, markdown, progressive-disclosure |
