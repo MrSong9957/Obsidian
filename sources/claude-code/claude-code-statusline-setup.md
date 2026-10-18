@@ -1,8 +1,8 @@
 ---
 name: Claude Code 状态栏插件安装指南
-description: Claude Code StatusLine 配置方法 — Python/Shell 脚本、可用 stdin 变量、配色方案、Safety-net 集成、常见崩溃防御
+description: Claude Code StatusLine 配置方法 — Python/Shell 脚本、可用 stdin 变量、配色方案、常见崩溃防御（2026-10-18 起不集成 Safety-net）
 type: guide
-updated: 2026-05-30
+updated: 2026-10-18
 tags: claude-code, statusline, python, settings, ansi
 source: self
 ---
@@ -16,14 +16,15 @@ StatusLine 是 Claude Code 的内置功能，无需额外安装。只需在 `~/.
 
 在每次命令执行后显示：
 - 当前模型名称
-- 当前工作目录（最后两级，前缀 `~`）
-- Git 分支名称（非 git 仓库显示 `~` 占位符）
-- 上下文使用进度条（颜色编码：绿<50%，黄<80%，红>=80%）
-- Safety-net 保护状态（需额外配置）
+- 当前工作目录（最后两级）
+- Git 分支名称（非 git 仓库隐藏该段）
+- 上下文使用进度条（4 色语义：绿<50%、黄<65%、橙<80%、红≥80%，含 16.5% auto-compact 缓冲）
+- 当前任务（todos 中 in_progress 项，存在才显示）
+- 计费指标（$成本 / 工具数 / 文件数 / 时长）
 
-**示例输出：**
+**示例输出（Linux 容器实测，2026-10-18）：**
 ```
-mimo-v2.5-pro | ~/Projects/test | ~ | ███░░░░░░░ 30% | 🛡️ Safety Net ✅
+glm-5.3[1M] | /workspace | main | ███████░░░ 72% | $0.01 0t 0f 5m
 ```
 
 ## 快速开始（推荐 Python 版本）
@@ -32,7 +33,7 @@ mimo-v2.5-pro | ~/Projects/test | ~ | ███░░░░░░░ 30% | 🛡�
 
 ### 步骤 1：创建脚本文件
 
-> 🟢 **推荐直接用 canonical 源** [`statusline.py`](./statusline.py)（含 4 色配色、per-segment 隔离、null 防御、计费取 stdin `cost`、ANSI 残片剥离）：
+> 🟢 **推荐直接用 canonical 源** [`statusline.py`](./statusline.py)（含 4 色配色、per-segment 隔离、null 防御、计费取 stdin `cost`、ANSI 残片剥离、换行折叠与 todos 数组任务段——后两项为 2026-10-18 修复）：
 > ```bash
 > cp sources/claude-code/statusline.py ~/.claude/scripts/statusline.py && chmod +x ~/.claude/scripts/statusline.py
 > ```
@@ -163,37 +164,17 @@ chmod +x ~/.claude/scripts/statusline.py
 {
   "statusLine": {
     "type": "command",
-    "command": "python \"C:/Users/<username>/.claude/scripts/statusline.py\""
+    "command": "python3 /home/<user>/.claude/scripts/statusline.py"
   }
 }
 ```
 
-> **Windows 用户**：使用正斜杠 `/` 或转义反斜杠 `\\`
+> 用**绝对路径**；canonical 脚本无 shebang，必须经 `python3`/`python` 调用，不能直接执行。
+> **Windows 用户**：用 `python`＋正斜杠路径，并在命令前加 `PYTHONIOENCODING=utf-8 ` 防中文乱码。
 
-### 步骤 3b（可选）：集成 Safety-net 状态
+### Safety-net 集成：已移除（2026-10-18 决策）
 
-如果已安装 [safety-net](https://github.com/kenryu42/claude-code-safety-net) 插件，可通过管道连接显示保护状态：
-
-```json
-{
-  "statusLine": {
-    "type": "command",
-    "command": "python \"C:/Users/<username>/.claude/scripts/statusline.py\" | npx -y cc-safety-net --statusline"
-  },
-  "enabledPlugins": {
-    "safety-net@cc-marketplace": true
-  }
-}
-```
-
-Safety-net 状态指示器：
-
-| 状态 | 显示 |
-|------|------|
-| 默认模式 | 🛡️ Safety Net ✅ |
-| 严格模式 | 🛡️ Safety Net 🔒 |
-| 偏执模式 | 🛡️ Safety Net 👁️ |
-| Worktree 模式 | 🛡️ Safety Net 🌳 |
+经调研（Claude Code 2.1.302 官方文档对照），原生能力已覆盖 cc-safety-net 主要职责：`permissions.deny`（全模式生效、拆复合命令、穿透 `$(...)`）、auto 模式分类器（内置 force push / `reset --hard` / `rm -rf "$VAR"` 等阻断清单）、critical-path rm 硬编码保险丝、可选 OS 级沙箱。且部署环境（Linux 容器）无 node/npx，集成需引入 Node 18+ 并给状态栏管道增加「整行消失」故障点。**状态栏不集成 Safety-net，全部功能仅需 python3 + git。**需要硬门禁走原生路线（deny 规则＋可选沙箱）。
 
 ### 步骤 4：重启 Claude Code
 
@@ -236,13 +217,13 @@ Safety-net 状态指示器：
 
 ## 健壮性与常见崩溃
 
-canonical 源已做以下防御，**自写脚本务必复刻**，否则状态栏会间歇性只剩「模型名 + 🛡️」：
+canonical 源已做以下防御，**自写脚本务必复刻**，否则状态栏会间歇性残缺甚至整行消失：
 
 1. **null 容器/叶子字段**：Claude Code 在会话启动 / 上下文压缩等过渡态会发 key 存在但值为 `null` 的字段。`data.get(k, default)` 对「存在但 null」返回 `None`（**不是 default**），后续 `.get()` / 算术即崩。→ 用 `data.get(k) or {}` / `or default`，叶子值用 `isinstance` 校验。
 2. **bridge 值类型不可靠**：ECC metrics bridge 的 `first_timestamp` 等可能为字符串，`str / 1000` → `TypeError`，会让计费段崩溃、单 try/except 兜底清空整行。→ **计费/时长改取 stdin `cost`**（权威、类型稳定）；读 bridge 的值一律强转（`_num()`）。
 3. **per-segment 隔离**：每段（目录/Git/进度条/任务/计费）独立 try/except，一段崩只丢该段，不全行清空。
 4. **状态栏只在 idle 刷新**：agent 执行期间不刷新。调试「改脚本→等→读日志」抓不到，须让用户发条消息触发 idle 再读。
-5. **顶层 try/except 兜底**：无论如何输出非空行（至少模型名），避免 Python 段零输出导致 safety-net 只剩 🛡️。
+5. **顶层 try/except 兜底**：无论如何输出非空行（至少模型名），避免零输出导致状态栏整行消失。
 
 ## 配置类型说明
 
@@ -382,8 +363,7 @@ def get_git_branch_cached(cwd: str) -> str:
 |------|----------|
 | 状态栏不显示 | 优先使用 Python 版本，避免 bash 转义问题 |
 | 脚本执行失败 | 检查脚本路径和执行权限 (`chmod +x`) |
-| Git 分支显示 `~` | 正常行为，表示当前目录不是 git 仓库 |
-| Safety-net 不显示 | 确认 `enabledPlugins` 已配置，且 `npx` 可用 |
+| Git 分支段不显示 | 当前目录不是 git 仓库时隐藏该段（canonical 行为，非占位 `~`） |
 | 颜色显示异常 | 确认终端支持 ANSI 颜色 |
 
 ## 注意事项
@@ -391,6 +371,11 @@ def get_git_branch_cached(cwd: str) -> str:
 - 每次工具执行后自动刷新
 - command 类型执行 shell，复杂命令会影响响应速度
 - 命令失败时不显示状态栏
+
+## 已验证部署记录
+
+- **2026-10-18，Linux 容器（WSL2 devcontainer，python3 3.12，仅 python3+git）**：按本文步骤部署成功；13 项边界用例全过（null 容器、空对象、顶层非对象、非法百分比、换行×3、todos 数组/最新优先/坏 JSON/无 in_progress、真实仓库分支、计费格式化），全部 rc=0、单行、无 Traceback。canonical 同步修复 BUG 5 回归与 todos 数组格式，细节见 `wiki/Claude-Code-Statusline-部署与故障恢复.md`「漂移教训」。
+- **Safety-net 集成已移除**：理由见「步骤 3b」位置的决策说明；恢复流程与排障以运维手册为准。
 
 ## 参考
 

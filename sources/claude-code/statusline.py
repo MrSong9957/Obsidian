@@ -28,6 +28,11 @@ def blue(t):    return _c(94, t)    # bright blue   — directory
 def magenta(t): return _c(95, t)    # bright magenta — git branch
 def cyan(t):    return _c(96, t)    # bright cyan   — billing/metrics
 
+def one_line(t: str) -> str:
+    """Collapse newlines — a stray \n/\r in any stdin/todos field must not
+    break the single-line status bar (BUG 5 in the ops manual)."""
+    return re.sub(r"[\r\n]+", " ", t)
+
 # ============================================================
 # Git branch detection
 # ============================================================
@@ -107,11 +112,17 @@ def read_current_task(session_id: str) -> str:
         todo_dir = Path.home() / ".claude" / "todos"
         if not todo_dir.exists():
             return ""
-        for f in todo_dir.glob(f"{session_id[:8]}*-agent-*.json"):
+        # Newest agent todo file first (multiple agents may write concurrently).
+        matches = sorted(todo_dir.glob(f"{session_id[:8]}*-agent-*.json"),
+                         key=lambda f: f.stat().st_mtime, reverse=True)
+        for f in matches:
             try:
                 data = json.loads(f.read_text(encoding="utf-8"))
-                if data.get("status") == "in_progress" and data.get("activeForm"):
-                    return data["activeForm"]
+                # Claude Code writes a task ARRAY; tolerate a bare object too.
+                items = data if isinstance(data, list) else [data]
+                for t in items:
+                    if isinstance(t, dict) and t.get("status") == "in_progress" and t.get("activeForm"):
+                        return t["activeForm"]
             except Exception:
                 continue
     except Exception:
@@ -177,10 +188,10 @@ def main():
         model_name = re.sub(r"(\x1b)?\[[0-9;]*m\]?", "",
                             model.get("display_name") or model.get("id") or "unknown") or "unknown"
 
-        parts = [white(model_name)]
+        parts = [white(one_line(model_name))]
 
         # Directory (blue)
-        seg(lambda: blue(shorten_path(cwd)))
+        seg(lambda: blue(one_line(shorten_path(cwd))))
 
         # Git branch (magenta)
         def _git():
@@ -201,7 +212,7 @@ def main():
         # Current task (yellow, only if present)
         def _task():
             t = read_current_task(session_id)
-            return yellow(t) if t else None
+            return yellow(one_line(t)) if t else None
         seg(_task)
 
         # Metrics (cyan): cost + duration from Claude Code's own `cost` object

@@ -80,7 +80,7 @@ updated: 2026-10-18
 | [[wiki/AI-Agent-的最小结构\|AI Agent 的最小结构：Model、Context、Tools 与 Environment]] | 理解现代 Agent 由什么组成，以及 Agent 与外部环境之间如何形成行动闭环。 | agent, llm, context, tools, harness, environment |
 | [[wiki/AI时代知识管理防御体系与核心书单\|AI时代知识管理防御体系与核心书单]] | 构建“信源过滤-深度加工-输出验证”三层防线抵御AI噪声，并附6本搭建底层认知结构的必读书单及适用场景 | pkm, ai-era, information-defense, book-list, cognitive-framework, anti-algorithm-bias, engineering-thinking |
 | [[wiki/architecture-migration-semantic-boundary\|架构迁移语义边界准则]] | 从"renderer 控制视觉"迁移到"message store 控制语义"时,必须区分视觉控制指令与真实数据,否则旧时代的视觉指令会污染新时代的语义数据 | architecture, migration, semantic-boundary, tui, message-store, renderer, anti-pattern |
-| [[wiki/Claude-Code-Statusline-部署与故障恢复\|Claude Code Statusline 部署与故障恢复]] | 状态栏运维手册——在新 Claude Code 环境恢复状态栏或排障：settings.json/scripts 部署结构、test_statusline.py 回归测试与 CC Safety Net 恢复流程 | claude-code, statusline, safety-net, ops |
+| [[wiki/Claude-Code-Statusline-部署与故障恢复\|Claude Code Statusline 部署与故障恢复]] | 状态栏运维手册——canonical 源为准的部署结构、Linux 容器实测恢复流程、边界矩阵验证与快速排障（2026-10-18 起不集成 Safety-net） | claude-code, statusline, ops |
 | [[wiki/CLI 备用屏架构设计\|CLI 备用屏架构设计]] | DeepSeek Harness CLI 备用屏架构设计——启动即备用屏、职责划分与受限布局、聊天数据与画面分离、缩放重建七步流程、/trace 与退出恢复、三层验收门禁 | cli, terminal, alternate-screen, ink, rendering, deepseek-harness, design |
 | [[wiki/终端重复绘制：原因与备用屏方案\|终端重复绘制：原因与备用屏方案]] | 终端重复绘制的根因与备用屏方案——旧画面擦除位置判断错误、全时备用屏、缩放清屏完整重画与真实终端验收要点 | cli, terminal, alternate-screen, ink, rendering, deepseek-harness, design |
 | [[wiki/Harness-工程\|Harness 工程：让 Agent 从“能做”变成“可靠地做”]] | 理解 Harness 如何通过上下文、工具、约束、验证和纠正，让 Agent 在生产环境中可靠运行。 | agent, harness, context, tools, reliability, verification |
