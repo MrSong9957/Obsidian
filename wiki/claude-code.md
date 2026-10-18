@@ -56,6 +56,7 @@ source: "[[sources/claude-code/claude-code-references]]"
 - 每个文件不超过 200 行；超长内容用 `@path` 导入或拆分到 rules/
 - 写具体可验证的指令，不写模糊指令；定期审查消除矛盾
 - 子目录 CLAUDE.md 按需加载（读取该子目录文件时才触发）
+- AGENTS.md 的层级/优先级/import 共存规则见 [[wiki/agents-md-claude-md.md|AGENTS.md 与 CLAUDE.md 配置关系]]
 
 ## .claude/rules/ 使用结论
 

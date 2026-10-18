@@ -34,6 +34,7 @@ obsidian/
 | [[wiki/claude-code.md\|配置与工作流]] | settings.json、CLAUDE.md、rules、记忆系统、插件、Hooks、子代理、MCP |
 | [[wiki/claude-code-setup.md\|当前配置清单]] | 本机完整配置 + 自检清单 + 缓存优化 + cc switch 模板 |
 | [[wiki/claude-md-base.md\|CLAUDE.md 模板]] | 双层架构模板（全局 + 项目级） |
+| [[wiki/agents-md-claude-md.md\|AGENTS.md 与 CLAUDE.md 配置关系]] | 四层级放置规则、AGENTS.md 默认替补逻辑、四档配置、import 共存方案 |
 
 ### 开发实践
 
