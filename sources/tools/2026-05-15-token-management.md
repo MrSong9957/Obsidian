@@ -2,7 +2,7 @@
 name: Token 获取与管理
 description: 各平台 API token 获取方式与集中管理方案 — 智谱/DeepSeek/GitHub/QQ/Gmail/163/Outlook/Docker Hub 的 key 申请流程与 D:\Files\.env 统一管理架构
 type: reference
-updated: 2026-10-05
+updated: 2026-10-19
 tags: token, credentials, env, security, api-key
 source: self
 ---
@@ -19,7 +19,7 @@ source: self
 1. 访问 https://open.bigmodel.cn
 2. 登录 → 控制台 → API Keys
 3. 创建新 key 或复制现有 key
-4. 格式示例：`<32位hex>.<16位字母数字>`
+4. 格式：`<32位hex>.<16位字母数字>`（2026-10-19 审计：原"格式示例"为真实格式 key，已移除，待轮换）
 
 Claude Code 宿主机配置：`~/.claude/settings.json` 中 `env.ANTHROPIC_AUTH_TOKEN` 直接硬编码（不读 .env）。容器内通过 `D:\Files\.env` 注入。
 
@@ -28,14 +28,14 @@ Claude Code 宿主机配置：`~/.claude/settings.json` 中 `env.ANTHROPIC_AUTH_
 1. 访问 https://platform.deepseek.com
 2. 登录 → API Keys
 3. 创建新 key
-4. 格式示例：`sk-<32位hex>`
+4. 格式：`sk-` + 32 位 hex（2026-10-19 审计：原"格式示例"为真实格式 key，已移除，待轮换）
 
 ### GitHub — `GITHUB_PERSONAL_ACCESS_TOKEN` / `GITHUB_TOKEN`
 
 1. 访问 https://github.com/settings/tokens
 2. Generate new token (classic) 或 Fine-grained token
 3. 勾选所需权限（一般需要 repo, read:org）
-4. 格式示例：`ghp_[真实token已移除：原串曾随提交历史推送，按既定边界不轮换，使用前请到 GitHub 重新生成]`
+4. 格式：`ghp_` + 36 位字母数字〔2026-10-19 审计：全量历史（294 提交含悬空对象）最长 `ghp_` 串仅 9 字符，"40 位 token 曾随提交历史推送"自述不成立——token 泄露仅发生于当时终端会话输出；稳妥起见仍建议轮换〕
 
 ⚠️ token 只在创建时显示一次，务必保存。
 
@@ -45,7 +45,7 @@ Claude Code 宿主机配置：`~/.claude/settings.json` 中 `env.ANTHROPIC_AUTH_
 2. 找到 POP3/SMTP/IMAP 栏
 3. 开启 IMAP/SMTP 服务（需手机验证）
 4. 点击"生成授权码"
-5. 格式示例：`<16位小写字母>`（16 位小写字母）
+5. 格式：16 位小写字母（2026-10-19 审计：原"格式示例"为真实格式授权码，已移除，待轮换）
 
 ⚠️ 授权码生成后无法再次查看，只能重新生成。
 
@@ -54,7 +54,7 @@ Claude Code 宿主机配置：`~/.claude/settings.json` 中 `env.ANTHROPIC_AUTH_
 1. 开启两步验证：https://myaccount.google.com/security
 2. 生成应用专用密码：https://myaccount.google.com/apppasswords
 3. 选择"邮件"→ 生成
-4. 格式示例：`<16位小写字母>`（16 位小写字母）
+4. 格式：16 位小写字母（2026-10-19 审计：原"格式示例"为真实格式应用密码，已移除，待轮换）
 
 ⚠️ Google 于 2024 年逐步移除应用专用密码，改用 OAuth 2.0。如果无法生成，可能需要用 OAuth 方式。
 
@@ -63,21 +63,21 @@ Claude Code 宿主机配置：`~/.claude/settings.json` 中 `env.ANTHROPIC_AUTH_
 1. 访问 https://mail.163.com → 设置 → POP3/SMTP/IMAP
 2. 开启 IMAP/SMTP
 3. 设置客户端授权密码（需手机验证）
-4. 格式示例：`<16位混合大小写>`
+4. 格式：16 位混合大小写字母数字（2026-10-19 审计：原"格式示例"为真实格式授权密码，已移除，待轮换）
 
 ### Outlook — `OUTLOOK_APP_PASSWORD`
 
 1. 访问 https://account.microsoft.com/security
 2. 高级安全选项 → 应用密码
 3. 创建新的应用密码
-4. 格式示例：`<16位小写字母>`
+4. 格式：16 位小写字母（2026-10-19 审计：原"格式示例"为真实格式应用密码，已移除，待轮换）
 
 ### Docker Hub — Access Token（非环境变量）
 
 1. 访问 https://hub.docker.com → Settings → Security
 2. New Access Token
-3. 终端登录：`docker login -u s7620605`，输入 token 作为密码
-4. 格式示例：`dckr_pat_<token>`
+3. 终端登录：`docker login -u <用户名>`，输入 token 作为密码（2026-10-19 审计：已移除真实用户名）
+4. 格式：`dckr_pat_` 前缀 + 字母数字串（2026-10-19 审计：原"格式示例"为真实格式 token，已移除，待轮换）
 
 Docker Hub token 不适合放 .env（通过 `docker login` 交互式使用）。
 
@@ -119,19 +119,19 @@ GITHUB_TOKEN=xxx    # 同上，容器内变量名映射
 
 ## 2026-05-15 Git Remote Token 过期事件
 
-**现象：** `git push` 报 `fatal: could not read Password for 'https://ghp_***...@github.com': No such device or address`
+**现象：** `git push` 报 `fatal: could not read Password for 'https://ghp_***（旧）...@github.com': No such device or address`
 
 **排查：**
 1. 先怀疑容器 `.env` 未加载，检查发现容器内 `ANTHROPIC_AUTH_TOKEN` 与 `D:\Files\.env` 一致 → `env_file` 机制正常
-2. 报错信息中的 token `ghp_***...` 与 `.env` 中的 `ghp_***...` 不同 → git remote URL 里嵌了旧 token
-3. `git remote -v` 确认：`origin https://ghp_***...@github.com/MrSong9957/email-assistant.git`
+2. 报错信息中的 token `ghp_***（旧）...` 与 `.env` 中的 `ghp_***（新）...` 不同 → git remote URL 里嵌了旧 token
+3. `git remote -v` 确认：`origin https://ghp_***（旧）...@github.com/MrSong9957/email-assistant.git`
 
 **修复：**
 ```bash
-git remote set-url origin "https://ghp_***...@github.com/MrSong9957/email-assistant.git"
+git remote set-url origin "https://ghp_***（新）...@github.com/MrSong9957/email-assistant.git"
 git push origin master  # 成功
 ```
 
 **根因：** Git remote URL 中嵌入的 token 与 `.env` 文件中的 token 是**独立管理**的。更新 `.env` 不会自动更新 remote URL。这与 `wiki/git-security.md` 中"禁止明文 token 嵌入 remote URL"的规则一致——正确做法是用 credential store。
 
-> **2026-10-05 更正：** 本节"修复"向 remote URL 嵌 token 的做法已废弃，"credential store"方案也已禁用——凭据应经 `git credential approve` 从 stdin 存入系统安全凭据管理器（GCM），remote URL 保持无 token 形式，详见 [[feedback_git-token-security]]。另：本文件第 38 行"格式示例"处的字符串为 40 位真实 token 格式且已随提交历史推送，建议轮换该 token（本页其余 `ghp_` 串均为短占位示例）。
+> **2026-10-05 更正：** 本节"修复"向 remote URL 嵌 token 的做法已废弃，"credential store"方案也已禁用——凭据应经 `git credential approve` 从 stdin 存入系统安全凭据管理器（GCM），remote URL 保持无 token 形式，详见 [[feedback_git-token-security]]。另：〔2026-10-05 记录〕本文件第 38 行"格式示例"处的字符串曾按 40 位真实 token 格式处理并建议轮换。〔2026-10-19 审计更正〕全量历史复核（294 提交含悬空对象）未发现任何超过 9 字符的 `ghp_` 串，"已随提交历史推送"不成立，token 泄露仅发生于当时终端会话输出；本页原各平台"格式示例"（智谱/DeepSeek/Docker token、四个邮箱授权码）均按真实格式凭据对待，已于本日从正文移除，**请全部轮换**；Docker Hub 真实用户名同日移除。

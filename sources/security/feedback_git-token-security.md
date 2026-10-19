@@ -2,7 +2,7 @@
 name: Git Token 安全认证方式
 description: 避免 git remote URL 使用明文 token——凭据存入系统安全凭据管理器（GCM），输出前脱敏，禁用 credential store
 type: feedback
-updated: 2026-10-05
+updated: 2026-10-19
 tags: [git, security, token, credentials]
 source: self
 ---
@@ -19,4 +19,4 @@ Git remote URL 中禁止明文 token；凭据只存系统安全凭据管理器�
 3. 存取验证只比对不显示：取 `git credential fill` 的 `password=` 行与原值比对长度/一致性，原始值不打印；另用 `cmdkey /list` 确认凭据管理器有条目。
 4. 任何可能输出凭据的命令（`git remote -v`、config 查看、认证报错），**正常与错误输出都必须先过脱敏管道**再进入工具输出或日志：
    `sed -E 's/(ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]+/\1_[REDACTED]/g; s#(https?://)[^/@[:space:]]+@#\1[REDACTED]@#g'`
-5. 检查入口：运行 `/vault/scripts/git-token-check.sh [仓库路径]`（封装 remote/config 脱敏显示与凭据嵌入形态检测，正常与错误输出均过脱敏管道）；等价手工检查（两条都应无输出）：`git config --get-regexp '^remote\.' | grep -E '://[^/@[:space:]]+:[^/@[:space:]]+@|(ghp|gho)_[A-Za-z0-9]{20,}'`；`rg -l 'ghp_[A-Za-z0-9]{36,}' -g '!.git'`。已知例外：[2026-05-15-token-management](../tools/2026-05-15-token-management.md) 第 38 行"格式示例"处有一个 40 位真实格式的 token 已随历史推送，待轮换后此检查即归零。
+5. 检查入口：运行 `/vault/scripts/git-token-check.sh [仓库路径]`（封装 remote/config 脱敏显示与凭据嵌入形态检测，正常与错误输出均过脱敏管道）；等价手工检查（两条都应无输出）：`git config --get-regexp '^remote\.' | grep -E '://[^/@[:space:]]+:[^/@[:space:]]+@|(ghp|gho)_[A-Za-z0-9]{20,}'`；`rg -l 'ghp_[A-Za-z0-9]{36,}' -g '!.git'`。已知例外（2026-10-19 审计更新）：〔2026-05-15-token-management〕原"第 38 行 40 位真实格式 token 已随历史推送"经全量历史复核不成立（全部提交含悬空对象，最长 `ghp_` 串仅 9 字符）；该页真实格式凭据（智谱/DeepSeek/Docker token 与邮箱授权码）已于 2026-10-19 从正文移除，待轮换。
