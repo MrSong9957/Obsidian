@@ -35,7 +35,7 @@ Claude Code 宿主机配置：`~/.claude/settings.json` 中 `env.ANTHROPIC_AUTH_
 1. 访问 https://github.com/settings/tokens
 2. Generate new token (classic) 或 Fine-grained token
 3. 勾选所需权限（一般需要 repo, read:org）
-4. 格式：`ghp_` + 36 位字母数字〔2026-10-19 审计：全量历史（294 提交含悬空对象）最长 `ghp_` 串仅 9 字符，"40 位 token 曾随提交历史推送"自述不成立——token 泄露仅发生于当时终端会话输出；稳妥起见仍建议轮换〕
+4. 格式：`ghp_` + 36 位字母数字〔2026-10-19 审计：当前可获取的全部对象（294 提交与悬空对象）中未检出 ≥10 字符的 `ghp_` 串；格式匹配只能认定"疑似凭据"，"未检出"不能证明 token 从未进入过 Git，也不能证明仅泄露于终端会话；Actions 日志匿名 403 属未验证范围——稳妥起见仍建议轮换该 PAT〕
 
 ⚠️ token 只在创建时显示一次，务必保存。
 
@@ -134,4 +134,4 @@ git push origin master  # 成功
 
 **根因：** Git remote URL 中嵌入的 token 与 `.env` 文件中的 token 是**独立管理**的。更新 `.env` 不会自动更新 remote URL。这与 `wiki/git-security.md` 中"禁止明文 token 嵌入 remote URL"的规则一致——正确做法是用 credential store。
 
-> **2026-10-05 更正：** 本节"修复"向 remote URL 嵌 token 的做法已废弃，"credential store"方案也已禁用——凭据应经 `git credential approve` 从 stdin 存入系统安全凭据管理器（GCM），remote URL 保持无 token 形式，详见 [[feedback_git-token-security]]。另：〔2026-10-05 记录〕本文件第 38 行"格式示例"处的字符串曾按 40 位真实 token 格式处理并建议轮换。〔2026-10-19 审计更正〕全量历史复核（294 提交含悬空对象）未发现任何超过 9 字符的 `ghp_` 串，"已随提交历史推送"不成立，token 泄露仅发生于当时终端会话输出；本页原各平台"格式示例"（智谱/DeepSeek/Docker token、四个邮箱授权码）均按真实格式凭据对待，已于本日从正文移除，**请全部轮换**；Docker Hub 真实用户名同日移除。
+> **2026-10-05 更正：** 本节"修复"向 remote URL 嵌 token 的做法已废弃，"credential store"方案也已禁用——凭据应经 `git credential approve` 从 stdin 存入系统安全凭据管理器（GCM），remote URL 保持无 token 形式，详见 [[feedback_git-token-security]]。另：〔2026-10-05 记录〕本文件第 38 行"格式示例"处的字符串曾按 40 位真实 token 格式处理并建议轮换。〔2026-10-19 审计更正〕当前可获取的全部对象（294 提交与悬空对象）中未检出 ≥10 字符的 `ghp_` 串——"未检出"不能证明从未进入 Git（格式匹配只能认定疑似，Actions 日志 403 未验证），"仅泄露于终端会话"同样无法证实；本页原各平台"格式示例"（智谱/DeepSeek/Docker token、四个邮箱授权码）均按疑似真实凭据对待，已于本日从正文移除并重写历史，**请全部轮换**；Docker Hub 登录用户名同日移除（公开镜像引用保留）。
