@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-10-18
+updated: 2026-10-19
 ---
 
 # Wiki 索引
@@ -61,6 +61,7 @@ updated: 2026-10-18
 | [[wiki/email-assistant\|Email Assistant]] | Python 邮件助手 — Claude Code Skill，通过 IMAP/SMTP 连接 QQ 邮箱，AI ... | email, python, imap, smtp, skill, claude-code |
 | [[wiki/frontend\|前端与 UI]] | UI设计原则/终端UI测试/Playwright自动化/技术栈策略 — 遇到前端设计、UI测试、技术选型问题时参考 | frontend, ui, testing, playwright, tech-stack |
 | [[wiki/git-quick-reference\|Git 快速参考（兜底手册）]] | AI 工具不可用时的手动 git 操作指南 — Obsidian 仓库备份、ZCode 配置同步、Wiki MCP... | git, quick-reference, backup |
+| [[wiki/grill-me最小必要技能安装清单\|grill-me 最小必要技能安装清单]] | Matt Pocock 技能库最小必要 9 技能的跨 Agent 安装指令——目录确认、Git 克隆复制、安装验证与执行约束 | agent-skills, grill-me, matt-skills, installation, checklist |
 | [[wiki/how-anthropic-teams-use-claude-code\|How Anthropic teams use Claude Code]] | Anthropic 内部 10 团队案例 — 开发者与非技术岗怎么用 Claude Code，含完整细节中译入口 | claude-code, anthropic, case-study, workflow, non-technical |
 | [[wiki/how-openai-uses-codex\|How OpenAI uses Codex]] | OpenAI 内部怎么把 Codex 用进日常工程 — 7 类用法 + 6 条最佳实践入口（细节见 sources... | codex, openai, coding-agent, workflow, best-practices, agents-md |
 | [[wiki/inline-grid-footer-render\|Inline Grid Footer 渲染架构]] | cell 级双缓冲 + 绝对坐标定位彻底解决 inline 模式 resize 堆叠——footerTopRow ... | tui, inline-renderer, grid, double-buffer, resize, footer, conhost, reflow, absolute-positioning |
