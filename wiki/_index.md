@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-10-19
+updated: 2026-10-20
 ---
 
 # Wiki 索引
@@ -14,6 +14,7 @@ updated: 2026-10-19
 | [[wiki/5步学习法第4步：间隔复习，用最少时间获得最牢记忆\|5步学习法第4步：间隔复习，用最少时间获得最牢记忆]] | 利用艾宾浩斯遗忘曲线的规律，在最佳时间点复习，用最少时间让记忆永久固化 | spaced-repetition, forgetting-curve, memory-consolidation, review-method, active-learning |
 | [[wiki/5步学习法第5步：迁移应用，让知识真正变成你的能力\|5步学习法第5步：迁移应用，让知识真正变成你的能力]] | 学习的终极目的是解决从未见过的新问题，本文讲迁移能力的含义、培养方法和完整学习闭环 | transfer-learning, knowledge-application, metacognition, learning-system, first-principles |
 | [[wiki/90%的人都在犯的5个学习误区，正在拖垮你的努力\|90%的人都在犯的5个学习误区，正在拖垮你的努力]] | 90%的人在犯的5个学习错误，每个都违背大脑底层规律 | learning-myths, mistake-analysis, first-principles, study-habits, brain-science |
+| [[wiki/AGENTS-md-base\|AGENTS-md]] | 全局行为准则与项目开发规范的双层 AGENTS.md 模板；默认使用 Codex 目录，兼容 Claude Cod... | agent, agents-md, claude-md, template, karpathy, setup |
 | [[wiki/AI-Agent-的最小结构\|AI Agent 的最小结构：Model、Context、Tools 与 Environment]] | 理解现代 Agent 由什么组成，以及 Agent 与外部环境之间如何形成行动闭环。 | agent, llm, context, tools, harness, environment |
 | [[wiki/AI时代知识管理防御体系与核心书单\|AI时代知识管理防御体系与核心书单]] | 构建“信源过滤-深度加工-输出验证”三层防线抵御AI噪声，并附6本搭建底层认知结构的必读书单及适用场景 | pkm, ai-era, information-defense, book-list, cognitive-framework, anti-algorithm-bias, engineering-thinking |
 | [[wiki/API消息如何变成模型输入\|Chat Template：API 消息如何变成模型输入]] | 理解消息格式转换，以及它对工具调用、思考内容保留和缓存复用的影响。 | llm, chat-template, tokenization, tool-calling, kv-cache |
@@ -26,6 +27,7 @@ updated: 2026-10-19
 | [[wiki/Agent-工具设计\|Agent 工具设计：连接世界、扩大能力，也扩大风险]] | 理解 Agent 工具的类型、调用流程，以及通用工具和专用工具该怎么选。 | agent, tools, tool-calling, mcp, sandbox, aci |
 | [[wiki/Agent-护栏\|Agent 护栏：把安全控制下沉到模型之外]] | 用上下文、执行、数据三层护栏限制 Agent 的可见信息、可执行动作和最终数据权限。 | agent, guardrails, security, prompt-injection, human-in-the-loop, access-control |
 | [[wiki/Agent上下文布局与本地模型工具调用\|Agent 上下文布局与本地模型工具调用]] | 理解上下文如何组装、压缩和复用缓存，以及本地模型如何参与工具调用。 | ai-agent, context-engineering, kv-cache, tool-calling, local-llm |
+| [[wiki/Agent工具初始化配置\|Agent 工具初始化配置]] | 新 Agent 环境两步初始化清单——双层规则配置与 grill-me 技能安装，适用于 Codex、Claude... | agent, setup, agents-md, claude-md, checklist |
 | [[wiki/Agent工具结果与上下文压缩：裁剪、摘要与证据补读\|Agent 工具结果与上下文压缩：裁剪、摘要与证据补读]] | 讲清 Agent 如何处理过长工具结果和过长上下文，以及证据不足时如何可靠补查原文 | agent, context-management, tool-output, summarization, prompt-cache, rag |
 | [[wiki/Agent工具调用的API循环\|Agent 工具调用的 API 循环]] | 理解模型如何决定调用工具，以及 Harness 如何执行工具并把结果送回模型。 | ai-agent, tool-calling, react, context-engineering, llm-api |
 | [[wiki/Agent核心循环\|Agent 核心循环：上下文组装与工具执行]] | 理解如何组装请求、提取模型消息、执行工具，并将结果交回模型。 | ai-agent, context-engineering, tool-calling, python |
@@ -52,7 +54,7 @@ updated: 2026-10-19
 | [[wiki/claude-code-prompt-architecture\|Claude Code 提示词架构]] | Claude Code 10 层治理架构、系统提示词构造、自动模式分类器、消息规范化 | claude-code, prompt, architecture, system-prompt, permissions |
 | [[wiki/claude-code-setup\|Claude Code 当前配置清单]] | 本机 Claude Code 完整配置清单 + 自检清单（插件/Hooks/状态栏/MCP/技能/代理/规则/团队... | claude-code, setup, plugins, hooks, mcp, skills, agents, config, checklist |
 | [[wiki/claude-code\|Claude Code 配置与工作流]] | settings.json/CLAUDE.md/rules/记忆系统/插件/Hooks/子代理/MCP/并行工作流... | claude-code, settings, claudemd, memory, rules, hooks, subagents, mcp, workflow, plugins |
-| [[wiki/claude-md-base\|claude-md]] | 全局（karpathy 行为准则）+ 项目级（开发规范与测试实现标准）双层 CLAUDE.md/AGENTS.md... | claude-md, template, karpathy, superpowers, kv-cache, two-tier |
+| [[wiki/claude-md-base\|CLAUDE.md 模板（deprecated）]] | 旧模板名称的兼容入口，现行内容已迁移到 AGENTS.md 双层架构模板 | deprecated, claude-md, agents-md, template |
 | [[wiki/cli-tools-productivity\|十个提升生产力的 CLI 工具]] | 10 个提升开发生产力的 CLI 工具推荐及核心功能 — 选择提升效率的 CLI 工具时参考 | cli, productivity |
 | [[wiki/codex-memory-system\|Codex 记忆系统]] | Codex 记忆管线——两阶段提炼合并、SQLite+Markdown 双存储、摘要注入与按需文件搜索、全量配置项... | codex, agent-memory, memory, sqlite, markdown, progressive-disclosure |
 | [[wiki/container-python-setup\|Docker 容器内安装 Python 版本]] | 容器网络受限环境下安装 Python 版本的经验路线图 | docker, python, networking, experience |
@@ -61,7 +63,7 @@ updated: 2026-10-19
 | [[wiki/email-assistant\|Email Assistant]] | Python 邮件助手 — Claude Code Skill，通过 IMAP/SMTP 连接 QQ 邮箱，AI ... | email, python, imap, smtp, skill, claude-code |
 | [[wiki/frontend\|前端与 UI]] | UI设计原则/终端UI测试/Playwright自动化/技术栈策略 — 遇到前端设计、UI测试、技术选型问题时参考 | frontend, ui, testing, playwright, tech-stack |
 | [[wiki/git-quick-reference\|Git 快速参考（兜底手册）]] | AI 工具不可用时的手动 git 操作指南 — Obsidian 仓库备份、ZCode 配置同步、Wiki MCP... | git, quick-reference, backup |
-| [[wiki/grill-me最小必要技能安装清单\|grill-me 最小必要技能安装清单]] | Matt Pocock 技能库最小必要 9 技能的跨 Agent 安装指令——目录确认、Git 克隆复制、安装验证与执行约束 | agent-skills, grill-me, matt-skills, installation, checklist |
+| [[wiki/grill-me最小必要技能安装清单\|grill-me 最小必要技能安装清单]] | Matt Pocock 技能库最小必要 9 技能的跨 Agent 安装指令——目录确认、Git 克隆复制、安装验证... | agent-skills, grill-me, matt-skills, installation, checklist |
 | [[wiki/how-anthropic-teams-use-claude-code\|How Anthropic teams use Claude Code]] | Anthropic 内部 10 团队案例 — 开发者与非技术岗怎么用 Claude Code，含完整细节中译入口 | claude-code, anthropic, case-study, workflow, non-technical |
 | [[wiki/how-openai-uses-codex\|How OpenAI uses Codex]] | OpenAI 内部怎么把 Codex 用进日常工程 — 7 类用法 + 6 条最佳实践入口（细节见 sources... | codex, openai, coding-agent, workflow, best-practices, agents-md |
 | [[wiki/inline-grid-footer-render\|Inline Grid Footer 渲染架构]] | cell 级双缓冲 + 绝对坐标定位彻底解决 inline 模式 resize 堆叠——footerTopRow ... | tui, inline-renderer, grid, double-buffer, resize, footer, conhost, reflow, absolute-positioning |

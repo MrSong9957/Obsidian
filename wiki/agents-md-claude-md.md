@@ -2,7 +2,7 @@
 name: AGENTS.md 与 CLAUDE.md 配置关系
 description: Claude Code 指令文件四层级放置规则、AGENTS.md 默认替补逻辑、四档"项目说明"配置与 import 共存方案 — 配置指令文件或排查其未加载时查阅
 type: reference
-updated: 2026-10-18
+updated: 2026-10-20
 tags: [claude-code, claude-md, agents-md, memory]
 source: https://code.claude.com/docs/zh-CN/memory
 ---
@@ -81,7 +81,7 @@ CLAUDE.md 是 Claude Code 的原生指令文件，四个层级都认；AGENTS.md
 ### 相关概念
 
 - [[wiki/claude-code.md|Claude Code 配置与工作流]] — settings/rules/记忆系统聚合参考
-- [[wiki/claude-md-base.md|CLAUDE.md 双层架构模板]] — 全局（Karpathy 准则）＋项目级双层落地方案，是本页 import 方案的具体应用
+- [[wiki/AGENTS-md-base.md|AGENTS.md 双层架构模板]] — 全局（Karpathy 准则）＋项目级双层落地方案，是本页 import 方案的具体应用
 - [[wiki/how-anthropic-teams-use-claude-code.md|Anthropic 团队如何使用 Claude Code]] — 团队实践视角
 
 ### 待解决的问题

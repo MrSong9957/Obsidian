@@ -2,7 +2,7 @@
 name: How Anthropic teams use Claude Code
 description: Anthropic 内部 10 团队案例 — 开发者与非技术岗怎么用 Claude Code，含完整细节中译入口
 type: concept
-updated: 2026-08-30
+updated: 2026-10-20
 tags: [claude-code, anthropic, case-study, workflow, non-technical]
 source: "[[sources/claude-code/how-anthropic-teams-use-claude-code]]"
 ---
@@ -49,7 +49,7 @@ Anthropic 用 10 个内部团队的访谈案例说明：Claude Code **不只是�
 ## 相关概念
 
 - [[claude-code]] — 配置与工作流手册（settings / CLAUDE.md / Hooks / MCP）
-- [[claude-md-base]] — CLAUDE.md / AGENTS.md 双层模板
+- [[AGENTS-md-base]] — AGENTS.md / CLAUDE.md 双层模板
 - [[how-openai-uses-codex]] — 姊妹篇：OpenAI 内部怎么用 Codex
 - [[Harness-工程]] — 环境与反馈回路
 - [[上下文工程]] — 给 Agent 喂什么、喂多少

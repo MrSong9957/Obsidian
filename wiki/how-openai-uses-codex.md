@@ -2,7 +2,7 @@
 name: How OpenAI uses Codex
 description: OpenAI 内部怎么把 Codex 用进日常工程 — 7 类用法 + 6 条最佳实践入口（细节见 sources 全量中译）
 type: concept
-updated: 2026-08-30
+updated: 2026-10-20
 tags: [codex, openai, coding-agent, workflow, best-practices, agents-md]
 source: "[[sources/agent/how-openai-uses-codex]]"
 ---
@@ -61,7 +61,7 @@ OpenAI 各技术团队把 Codex（编程 Agent）当成**日常工程加速器**
 
 - [[how-anthropic-teams-use-claude-code]] — 姊妹篇：Anthropic 按**团队**组织案例
 - [[claude-code]] — Claude Code 配置与工作流手册
-- [[claude-md-base]] — CLAUDE.md / AGENTS.md 双层模板
+- [[AGENTS-md-base]] — AGENTS.md / CLAUDE.md 双层模板
 - [[Harness-工程]] — 环境与反馈回路
 - [[上下文工程]] — 给 Agent 喂什么、喂多少
 - [[Agent核心循环]] — 编码 Agent 通用循环骨架

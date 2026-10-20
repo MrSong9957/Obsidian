@@ -2,14 +2,14 @@
 name: new-project-setup
 description: 新项目初始化统一入口——Docker 容器启动、镜像配置验证、首次配置、Obsidian 记忆链接、项目级配置补充；镜像更新命令与故障排查见详细参考
 type: reference
-updated: 2026-06-17
+updated: 2026-10-20
 tags: docker, setup, claude-md, ecc, superpowers, configuration
 source: [[sources/claude-code/new-project-setup-references.md]]
 ---
 
 # 新项目开发环境初始化
 
-> 相关文档：[[wiki/claude-md-base.md|CLAUDE.md 模板]] | [[wiki/claude-code.md|Claude Code 配置与工作流]]
+> 相关文档：[[wiki/AGENTS-md-base.md|AGENTS.md 模板]] | [[wiki/claude-code.md|Claude Code 配置与工作流]]
 >
 > 详细参考：[[sources/claude-code/new-project-setup-references.md|新项目初始化详细参考]]（镜像更新命令清单、构建故障排查、Docker Hub Push 代理配置）
 
@@ -268,7 +268,7 @@ git config user.email "<邮箱>"
 
 ### 5.2 项目级 CLAUDE.md
 
-按 [[wiki/claude-md-base.md|CLAUDE.md 双层架构模板]] 第二层创建：放置**项目自身**的开发规则（项目原则、日志约定、测试实现规范、工具可用性等），核心内容从该模板复制，仅「项目信息」（技术栈/架构/文件约定/项目描述）按项目实际填写。
+按 [[wiki/AGENTS-md-base.md|AGENTS.md 双层架构模板]] 第二层创建：放置**项目自身**的开发规则（项目原则、日志约定、测试实现规范、工具可用性等），核心内容从该模板复制，仅「项目信息」（技术栈/架构/文件约定/项目描述）按项目实际填写。
 
 Agent 编排与决策控制不在项目模板内，遵循 [[wiki/大脑模型-v3.md|大脑模型 v3]]（Superpowers 版）或 [[wiki/大脑模型-v4.md|大脑模型 v4]]（当前 grill-me + goal 版）：S/A/B/C 任务分级、Skill 调度、Agent 自治阶段、L1/L2/L3 测试证据、Review 与 verify:full 门禁、Security Testing Gate、返回门禁和交付决策。
 

@@ -2,7 +2,7 @@
 name: ECC 快速指南
 description: ECC 插件安装方式、Hooks 配置档位、持续学习/会话记忆/代理注册/模板库/隐藏组件、故障排除
 type: reference
-updated: 2026-06-17
+updated: 2026-10-20
 tags: ecc, hooks, rules, agents, templates, session-memory, continuous-learning, installation, troubleshooting
 source: https://github.com/affaan-m/everything-claude-code
 ---
@@ -105,7 +105,7 @@ Agents 路径：`~/.claude/plugins/cache/ecc/ecc/2.0.0/agents`
 
 | 层级 | 使用 ECC 模板 | 说明 |
 |------|---------------|------|
-| **用户级** | 否 | 使用 [[wiki/claude-md-base.md\|Karpathy 行为准则]] |
+| **用户级** | 否 | 使用 [[wiki/AGENTS-md-base.md\|Karpathy 行为准则]] |
 | **项目级** | 参考 | 选最接近的模板按需裁剪 |
 
 6 个项目级模板：`CLAUDE.md`（通用）、`django-api-CLAUDE.md`、`go-microservice-CLAUDE.md`、`laravel-api-CLAUDE.md`、`rust-api-CLAUDE.md`、`saas-nextjs-CLAUDE.md`
