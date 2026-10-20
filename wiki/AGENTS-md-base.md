@@ -13,7 +13,15 @@ source: https://learn.chatgpt.com/docs/agent-configuration/agents-md
 > - 全局层：[andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) — Karpathy 四条行为准则
 > - 项目层：自建
 
-> **Claude Code 侧**：本文将规则正文统一保存在 `AGENTS.md`。在 `~/.claude/CLAUDE.md` 与 `./CLAUDE.md` 各写一行 `@AGENTS.md`，分别导入同目录的 `~/.claude/AGENTS.md` 与 `./AGENTS.md`。相对导入路径以所在的 `CLAUDE.md` 为基准。[^claude] 层级规则、四档配置与加载条件详见 [[wiki/agents-md-claude-md|AGENTS.md 与 CLAUDE.md 配置关系]]。
+规则正文统一保存在 `AGENTS.md`。Codex、ZCode、MiMo Code 等 Agent 工具原生支持该文件；`CLAUDE.md` 仅用于适配 Claude Code 的加载机制，不维护另一套规则正文。[^codex][^zcode][^mimo]
+
+`CLAUDE.md` 的全部内容只有一行：[^claude]
+
+```markdown
+@AGENTS.md
+```
+
+全局的 `~/.claude/CLAUDE.md` 导入同目录的 `~/.claude/AGENTS.md`，项目级的 `./CLAUDE.md` 导入同目录的 `./AGENTS.md`。相对导入路径以所在的 `CLAUDE.md` 为基准；调查与文档依据见 [[wiki/agents-md-claude-md|AGENTS.md 与 CLAUDE.md 配置关系]]。[^claude]
 
 ---
 
@@ -28,15 +36,15 @@ source: https://learn.chatgpt.com/docs/agent-configuration/agents-md
 | Agent 工具 | 规则正文位置 | 加载方式 |
 |---|---|---|
 | Codex（默认） | `~/.codex/AGENTS.md`，或 `$CODEX_HOME/AGENTS.md` | 原生读取；同目录非空 `AGENTS.override.md` 优先于 `AGENTS.md`。[^codex] |
-| Claude Code | `~/.claude/AGENTS.md` | 在 `~/.claude/CLAUDE.md` 写一行 `@AGENTS.md` 导入正文。[^claude] |
+| Claude Code | `~/.claude/AGENTS.md` | 适配文件 `~/.claude/CLAUDE.md` 仅含一行 `@AGENTS.md`。[^claude] |
 | ZCode | `~/.zcode/AGENTS.md` | 原生读取用户全局与当前 Workspace 的 `AGENTS.md`；不展开 `@import` / `@include`。[^zcode] |
 | MiMo Code | `<实际全局配置目录>/AGENTS.md`；Linux 通常为 `~/.config/mimocode/AGENTS.md` | 原生读取；也可在用户配置的 `instructions` 数组中显式指定共享规则文件的绝对路径。[^mimo] |
 
-`~` 表示运行该 Agent 的用户主目录。规则目录与程序安装目录是两回事；其他 Agent 也应先确认其原生指令文件名、用户配置目录和加载方式，再放置相同规则正文。
+`~` 表示运行该 Agent 的用户主目录。规则目录与程序安装目录是两回事；其他支持 `AGENTS.md` 的工具，按其实际用户配置目录放置相同规则正文。
 
 MiMo Code 的 Windows / XDG 路径应以当前版本实际解析的配置目录为准；设置 `MIMOCODE_HOME` 时使用 `<MIMOCODE_HOME>/config/AGENTS.md`，设置 `MIMOCODE_CONFIG_DIR` 时优先检查该目录下的 `AGENTS.md`。不要把项目级 `.mimocode/` 当成用户全局目录。[^mimo]
 
-同时使用多个工具时，将下方正文复制到各工具的原生入口，或使用该工具明确支持的共享文件配置。其他工具不会自动读取 Codex 的全局目录；不要仅在 ZCode、MiMo Code 的 `AGENTS.md` 中写一行 `@AGENTS.md` 代替正文。[^zcode][^mimo]
+同时使用多个工具时，将下方 `AGENTS.md` 正文放入各工具的原生入口，或使用其明确支持的共享文件配置。`CLAUDE.md` 的单行适配仅用于 Claude Code。[^claude][^zcode][^mimo]
 
 ### 全局规则正文
 
@@ -222,7 +230,7 @@ API、网络服务按需使用 VCR（录制并回放响应）或等价方案。
 
 ## 相关概念
 
-- [[wiki/agents-md-claude-md|AGENTS.md 与 CLAUDE.md 配置关系]] — CLAUDE.md 层级规则、四档配置与 `@AGENTS.md` 导入的生效条件
+- [[wiki/agents-md-claude-md|AGENTS.md 与 CLAUDE.md 配置关系]] — Claude Code 单行适配的文档依据与加载机制
 - [[wiki/Agent工具初始化配置|Agent 工具初始化配置]] — 引用本模板的两步初始化清单，本模板为其第 1 步
 - [[wiki/grill-me最小必要技能安装清单|grill-me 最小必要技能安装清单]] — 同一初始化流程第 2 步安装的技能清单
 

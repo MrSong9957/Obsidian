@@ -54,7 +54,6 @@ updated: 2026-10-20
 | [[wiki/claude-code-prompt-architecture\|Claude Code 提示词架构]] | Claude Code 10 层治理架构、系统提示词构造、自动模式分类器、消息规范化 | claude-code, prompt, architecture, system-prompt, permissions |
 | [[wiki/claude-code-setup\|Claude Code 当前配置清单]] | 本机 Claude Code 完整配置清单 + 自检清单（插件/Hooks/状态栏/MCP/技能/代理/规则/团队... | claude-code, setup, plugins, hooks, mcp, skills, agents, config, checklist |
 | [[wiki/claude-code\|Claude Code 配置与工作流]] | settings.json/CLAUDE.md/rules/记忆系统/插件/Hooks/子代理/MCP/并行工作流... | claude-code, settings, claudemd, memory, rules, hooks, subagents, mcp, workflow, plugins |
-| [[wiki/claude-md-base\|CLAUDE.md 模板（deprecated）]] | 旧模板名称的兼容入口，现行内容已迁移到 AGENTS.md 双层架构模板 | deprecated, claude-md, agents-md, template |
 | [[wiki/cli-tools-productivity\|十个提升生产力的 CLI 工具]] | 10 个提升开发生产力的 CLI 工具推荐及核心功能 — 选择提升效率的 CLI 工具时参考 | cli, productivity |
 | [[wiki/codex-memory-system\|Codex 记忆系统]] | Codex 记忆管线——两阶段提炼合并、SQLite+Markdown 双存储、摘要注入与按需文件搜索、全量配置项... | codex, agent-memory, memory, sqlite, markdown, progressive-disclosure |
 | [[wiki/container-python-setup\|Docker 容器内安装 Python 版本]] | 容器网络受限环境下安装 Python 版本的经验路线图 | docker, python, networking, experience |
