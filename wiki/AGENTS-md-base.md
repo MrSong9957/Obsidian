@@ -132,6 +132,13 @@ Agent 按需自主收集证据，记录到 `logs/*.md`。
 
 ## 3. 测试实现规范
 
+### 开发与验证流程
+
+按以下顺序执行：
+TDD → comprehensive-testing → Security Testing → code-review → 全量验证和修复。
+
+任一阶段发现错误时，使用 `diagnosing-bugs` 技能定位根因并修复。修复后复验受影响的检查，最终完成第 7 节规定的全量验证。
+
 **验证真实行为，不绑定内部写法。**
 
 - 测试彼此独立，不依赖执行顺序，不污染真实环境。
@@ -222,7 +229,7 @@ API、网络服务按需使用 VCR（录制并回放响应）或等价方案。
 
 ## 8. 参考资料
 
-- Obsidian 本地仓库：`D:\AgentLab\shared\Obsidian`。记忆文档和可沉淀的知识通过 wiki MCP 保存到此处。
+- Obsidian 仓库：宿主机 `D:\AgentLab\shared\Obsidian`，Docker 容器 `/vault`。记忆文档和可沉淀的知识通过 wiki MCP 保存到此处。
 - Obsidian GitHub 仓库：[MrSong9957/Obsidian](https://github.com/MrSong9957/Obsidian)，保存个人知识、常用技能和 Agent 代理。若缺失 SKILL 技能和 Agent 代理时，按需下载到 Agent 工具全局目录使用。
 - @`project-lessons.md`：项目经验/决策沉淀，按需加载；Agent 执行时，将与本项目直接相关、对后续执行或决策有复用价值的信息（如已确认决策、问题根因与解决方法）统一记录于此，**不得与「7. 项目信息」重复，禁止直接写入 AGENTS.md**，以避免重复踩坑、减少决策偏差。
 
