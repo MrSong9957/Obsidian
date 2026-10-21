@@ -134,6 +134,8 @@ Agent 按需自主收集证据，记录到 `logs/*.md`。
 
 ### 开发与验证流程
 
+以下流程和出错处理要求只适用于代码或程序行为变更；仅修改文档且不影响程序行为时，只检查内容、命名和链接，不执行代码检查和全量测试。
+
 按以下顺序执行：
 TDD → comprehensive-testing → Security Testing → code-review → 全量验证和修复。
 

@@ -21,7 +21,7 @@ source: self
 
 3. **安装技能**：检查并安装 [[wiki/grill-me最小必要技能安装清单|grill-me 最小必要技能安装清单]]。
 
-4. 安装 Agent 智能体代理：将根目录 `agents/` 文件夹下的智能体代理安装到 Agent 工具的全局目录。
+4. 安装 Agent 智能体代理：将 Obsidian 仓库根目录 `agents/` 文件夹下的智能体代理安装到 Agent 工具的全局目录。
 
 **完成后验证**：新建会话，确认当前 Agent 实际加载了用户全局与项目两层规则文件；Claude Code 用 `/context` 查看 Memory files 清单，其他工具按其加载日志或指令来源清单核对。技能按 [[wiki/grill-me最小必要技能安装清单|安装清单]]「四、安装后验证」执行。
 
