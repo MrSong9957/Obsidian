@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-10-20
+updated: 2026-10-24
 ---
 
 # Wiki 索引
@@ -129,7 +129,7 @@ updated: 2026-10-20
 | [[wiki/终端重复绘制：原因与备用屏方案\|终端重复绘制：原因与备用屏方案]] | 终端重复绘制的根因——旧画面擦除位置判断错误；全时备用屏、缩放清屏完整重画、退出恢复主屏的方案概要与真实终端验收要点 | cli, terminal, alternate-screen, ink, rendering, deepseek-harness, design |
 | [[wiki/自主-Agent\|自主 Agent：用 ReAct 循环动态决定下一步]] | 理解自主 Agent 如何规划、使用工具、处理失败，以及什么时候该和工作流混合使用。 | agent, autonomous-agent, react, workflow, harness, orchestration |
 | [[wiki/观察空间与动作空间决定Agent能力\|观察空间与动作空间决定 Agent 能看什么、能做什么]] | 理解 Agent 如何通过观察和行动接口连接外部世界，以及为什么扩展接口能直接提升任务能力。 | agent, observation-space, action-space, harness, tools, context |
-| [[wiki/规格文档实战法\|规格文档实战法]] | AI 时代学习编程主方法——每个功能一份规格文档，预测→实测→坑记录沉淀经验，规格是母版、代码随用随生成 | spec-driven, learning-method, programming-method, ai-era, knowledge-management |
+| [[wiki/规格文档实战法\|规格文档实战法]] | 每个功能写一份说明，交给 AI 实现，检查功能、速度和资源占用，记下问题与经验 | spec-driven, learning-method, programming-method, ai-era, knowledge-management |
 | [[wiki/让模型输出人能看懂、能验证的四种形式\|让模型输出人能看懂、能验证的四种形式]] | Karpathy 的提效思路：用受控语言、图、交互网页和定制讲解视频替代长文，把读结论变成验证结论。 | prompt-engineering, llm-output, controlled-language, visualization, explainer-video |
 | [[wiki/记忆压缩与本地日志脱敏\|记忆压缩与本地日志脱敏]] | 理解如何减少重复记忆、保留重要信息，并在日志外传或保存前隐藏敏感内容。 | agent-memory, memory-compression, log-sanitization, pii, ollama, qwen3 |
 | [[wiki/记忆能力评估\|记忆能力评估：基础回忆、多会话检索与主动服务]] | 理解三层记忆能力的区别，以及怎样测试记忆能否保留、更新并用于回答问题。 | agent-memory, memory-evaluation, methodology, locomo |
