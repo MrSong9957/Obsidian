@@ -1,0 +1,375 @@
+INFO artifact=/tmp/opencode/spec-method-2026-10-24/implementer/artifact/shortlink
+INFO logdir=/tmp/opencode/spec-method-2026-10-24/implementer/selfcheck/logs/20261024T085837Z-functional
+INFO workdir=/tmp/opencode/spec-method-2026-10-24/implementer/selfcheck/work/20261024-085837
+INFO server pid=1794235 port=43215 startup=0.006s db=/tmp/opencode/spec-method-2026-10-24/implementer/selfcheck/work/20261024-085837/functional/nested/deep/links.db
+PASS DB file auto-created with parent dirs
+== functional: startup ==
+PASS startup line parsed with real port
+PASS server process alive after startup line
+== functional: create + stats + jump ==
+PASS create minimal status
+PASS create minimal fields keys
+PASS create minimal code shape
+PASS create minimal short_url
+PASS create minimal content-type
+PASS create minimal expires_at null
+PASS stats minimal status
+PASS stats minimal keys
+PASS stats code
+PASS stats url
+PASS stats clicks 0
+PASS stats created_at format
+PASS stats expires_at null
+PASS stats expired false
+PASS jump status
+PASS jump Location exact
+PASS jump Content-Length header
+PASS jump empty body
+PASS stats after jump status
+PASS stats clicks after jump = 1
+PASS stats created_at stable
+PASS create duplicate url status
+PASS create duplicate url fields keys
+PASS create duplicate url code shape
+PASS create duplicate url short_url
+PASS create duplicate url content-type
+PASS same URL gets different code
+PASS jump unknown status
+PASS jump unknown body
+PASS stats unknown status
+PASS stats unknown body
+PASS stats missing code path status
+PASS stats missing code path body
+== functional: alias ==
+PASS create alias Abc1 status
+PASS create alias Abc1 fields keys
+PASS create alias Abc1 code shape
+PASS create alias Abc1 short_url
+PASS create alias Abc1 content-type
+PASS create alias abc1 status
+PASS create alias abc1 fields keys
+PASS create alias abc1 code shape
+PASS create alias abc1 short_url
+PASS create alias abc1 content-type
+PASS alias code Abc1
+PASS alias code abc1
+PASS alias case sensitive
+PASS duplicate alias status
+PASS duplicate alias body
+PASS reserved alias api status
+PASS reserved alias api body
+PASS reserved alias health status
+PASS reserved alias health body
+PASS invalid alias 'abc' status
+PASS invalid alias 'abc' body
+PASS invalid alias 'aaaaaaaaaaaa' status
+PASS invalid alias 'aaaaaaaaaaaa' body
+PASS invalid alias 'ab c1' status
+PASS invalid alias 'ab c1' body
+PASS invalid alias 'abc!' status
+PASS invalid alias 'abc!' body
+PASS invalid alias 'abc/1' status
+PASS invalid alias 'abc/1' body
+PASS invalid alias '中文ab' status
+PASS invalid alias '中文ab' body
+PASS valid alias 'aBc_' status
+PASS valid alias 'aBc_' fields keys
+PASS valid alias 'aBc_' code shape
+PASS valid alias 'aBc_' short_url
+PASS valid alias 'aBc_' content-type
+PASS valid alias 'a-b9' status
+PASS valid alias 'a-b9' fields keys
+PASS valid alias 'a-b9' code shape
+PASS valid alias 'a-b9' short_url
+PASS valid alias 'a-b9' content-type
+PASS valid alias 'AAAAAAAA' status
+PASS valid alias 'AAAAAAAA' fields keys
+PASS valid alias 'AAAAAAAA' code shape
+PASS valid alias 'AAAAAAAA' short_url
+PASS valid alias 'AAAAAAAA' content-type
+PASS alias null status
+PASS alias null fields keys
+PASS alias null code shape
+PASS alias null short_url
+PASS alias null content-type
+PASS alias null auto code
+== functional: Content-Type ==
+PASS content-type 'application/json; charset=utf-8' status
+PASS content-type 'application/json; charset=utf-8' fields keys
+PASS content-type 'application/json; charset=utf-8' code shape
+PASS content-type 'application/json; charset=utf-8' short_url
+PASS content-type 'application/json; charset=utf-8' content-type
+PASS content-type 'Application/JSON' status
+PASS content-type 'Application/JSON' fields keys
+PASS content-type 'Application/JSON' code shape
+PASS content-type 'Application/JSON' short_url
+PASS content-type 'Application/JSON' content-type
+PASS content-type 'application/json ;  Charset=UTF-8' status
+PASS content-type 'application/json ;  Charset=UTF-8' fields keys
+PASS content-type 'application/json ;  Charset=UTF-8' code shape
+PASS content-type 'application/json ;  Charset=UTF-8' short_url
+PASS content-type 'application/json ;  Charset=UTF-8' content-type
+PASS content-type 'APPLICATION/JSON;charset=utf-8' status
+PASS content-type 'APPLICATION/JSON;charset=utf-8' fields keys
+PASS content-type 'APPLICATION/JSON;charset=utf-8' code shape
+PASS content-type 'APPLICATION/JSON;charset=utf-8' short_url
+PASS content-type 'APPLICATION/JSON;charset=utf-8' content-type
+PASS bad content-type None status
+PASS bad content-type None body
+PASS bad content-type 'text/json' status
+PASS bad content-type 'text/json' body
+PASS bad content-type 'application/jsonx' status
+PASS bad content-type 'application/jsonx' body
+PASS bad content-type 'application/json-patch+json' status
+PASS bad content-type 'application/json-patch+json' body
+== functional: invalid JSON / fields ==
+PASS bad body empty body status
+PASS bad body empty body body
+PASS bad body truncated object status
+PASS bad body truncated object body
+PASS bad body array body status
+PASS bad body array body body
+PASS bad body null body status
+PASS bad body null body body
+PASS bad body string body status
+PASS bad body string body body
+PASS bad body trailing garbage status
+PASS bad body trailing garbage body
+PASS bad body url number status
+PASS bad body url number body
+PASS bad body url null status
+PASS bad body url null body
+PASS bad body url bool status
+PASS bad body url bool body
+PASS bad body alias number status
+PASS bad body alias number body
+PASS bad body alias bool status
+PASS bad body alias bool body
+PASS bad body ttl bool true status
+PASS bad body ttl bool true body
+PASS bad body ttl bool false status
+PASS bad body ttl bool false body
+PASS bad body ttl float status
+PASS bad body ttl float body
+PASS bad body ttl integral float status
+PASS bad body ttl integral float body
+PASS bad body ttl string status
+PASS bad body ttl string body
+PASS bad body ttl zero status
+PASS bad body ttl zero body
+PASS bad body ttl negative status
+PASS bad body ttl negative body
+PASS bad body ttl too large status
+PASS bad body ttl too large body
+PASS bad body ttl huge status
+PASS bad body ttl huge body
+PASS bad body trailing comma status
+PASS bad body trailing comma body
+PASS bad body missing brace status
+PASS bad body missing brace body
+PASS bad body single quotes status
+PASS bad body single quotes body
+PASS bad body bad escape status
+PASS bad body bad escape body
+PASS bad body short unicode escape status
+PASS bad body short unicode escape body
+PASS bad body invalid utf8 status
+PASS bad body invalid utf8 body
+PASS unknown fields ignored with nested value status
+PASS unknown fields ignored with nested value fields keys
+PASS unknown fields ignored with nested value code shape
+PASS unknown fields ignored with nested value short_url
+PASS unknown fields ignored with nested value content-type
+== functional: URL rules ==
+PASS bad url '' status
+PASS bad url '' body
+PASS bad url 'example.com' status
+PASS bad url 'example.com' body
+PASS bad url 'http://' status
+PASS bad url 'http://' body
+PASS bad url 'https://' status
+PASS bad url 'https://' body
+PASS bad url 'http:///path' status
+PASS bad url 'http:///path' body
+PASS bad url 'ftp://example.com' status
+PASS bad url 'ftp://example.com' body
+PASS bad url 'http://exa mple.com/path' status
+PASS bad url 'http://exa mple.com/path' body
+PASS bad url 'https://exa mple.com' status
+PASS bad url 'https://exa mple.com' body
+PASS bad url 'http://:80/path' status
+PASS bad url 'http://:80/path' body
+PASS bad url 'http://example.com/%2' status
+PASS bad url 'http://example.com/%2' body
+PASS bad url 'http://example.com/%zz' status
+PASS bad url 'http://example.com/%zz' body
+PASS bad url 'http://example.com/100%' status
+PASS bad url 'http://example.com/100%' body
+PASS bad url 'http://example.com/\x00' status
+PASS bad url 'http://example.com/\x00' body
+PASS bad url 'http://example.com/\x01x' status
+PASS bad url 'http://example.com/\x01x' body
+PASS bad url 'http://example.com/\x1f' status
+PASS bad url 'http://example.com/\x1f' body
+PASS bad url 'http://example.com/\x7f' status
+PASS bad url 'http://example.com/\x7f' body
+PASS bad url 'http://example.com/aaaaaaaaaaaaaaaaaaaaa' status
+PASS bad url 'http://example.com/aaaaaaaaaaaaaaaaaaaaa' body
+PASS constructed 2048-byte url
+PASS url exactly 2048 bytes status
+PASS url exactly 2048 bytes fields keys
+PASS url exactly 2048 bytes code shape
+PASS url exactly 2048 bytes short_url
+PASS url exactly 2048 bytes content-type
+PASS url 2049 bytes status
+PASS url 2049 bytes body
+PASS url path space accepted status
+PASS url path space accepted fields keys
+PASS url path space accepted code shape
+PASS url path space accepted short_url
+PASS url path space accepted content-type
+PASS stats preserves url space
+PASS Location encodes path space
+== functional: Location percent rules ==
+PASS create encoded url 'https://example.com/a%2Fb?x=' status
+PASS create encoded url 'https://example.com/a%2Fb?x=' fields keys
+PASS create encoded url 'https://example.com/a%2Fb?x=' code shape
+PASS create encoded url 'https://example.com/a%2Fb?x=' short_url
+PASS create encoded url 'https://example.com/a%2Fb?x=' content-type
+PASS jump encoded 'https://example.com/' status
+PASS Location exact for 'https://example.com/a%2Fb?x='
+PASS stats encoded 'https://example.com/' status
+PASS stats url exact for 'https://example.com/a%2Fb?x='
+PASS create encoded url 'https://example.com/a%2fb' status
+PASS create encoded url 'https://example.com/a%2fb' fields keys
+PASS create encoded url 'https://example.com/a%2fb' code shape
+PASS create encoded url 'https://example.com/a%2fb' short_url
+PASS create encoded url 'https://example.com/a%2fb' content-type
+PASS jump encoded 'https://example.com/' status
+PASS Location exact for 'https://example.com/a%2fb'
+PASS stats encoded 'https://example.com/' status
+PASS stats url exact for 'https://example.com/a%2fb'
+PASS create encoded url 'https://example.com/路径?x=中 文' status
+PASS create encoded url 'https://example.com/路径?x=中 文' fields keys
+PASS create encoded url 'https://example.com/路径?x=中 文' code shape
+PASS create encoded url 'https://example.com/路径?x=中 文' short_url
+PASS create encoded url 'https://example.com/路径?x=中 文' content-type
+PASS jump encoded 'https://example.com/' status
+PASS Location exact for 'https://example.com/路径?x=中 文'
+PASS stats encoded 'https://example.com/' status
+PASS stats url exact for 'https://example.com/路径?x=中 文'
+PASS create encoded url 'https://example.com/a?b=c&d=' status
+PASS create encoded url 'https://example.com/a?b=c&d=' fields keys
+PASS create encoded url 'https://example.com/a?b=c&d=' code shape
+PASS create encoded url 'https://example.com/a?b=c&d=' short_url
+PASS create encoded url 'https://example.com/a?b=c&d=' content-type
+PASS jump encoded 'https://example.com/' status
+PASS Location exact for 'https://example.com/a?b=c&d='
+PASS stats encoded 'https://example.com/' status
+PASS stats url exact for 'https://example.com/a?b=c&d='
+PASS create encoded url 'http://127.0.0.1:9/x' status
+PASS create encoded url 'http://127.0.0.1:9/x' fields keys
+PASS create encoded url 'http://127.0.0.1:9/x' code shape
+PASS create encoded url 'http://127.0.0.1:9/x' short_url
+PASS create encoded url 'http://127.0.0.1:9/x' content-type
+PASS jump encoded 'http://127.0.0.1:9/x' status
+PASS Location exact for 'http://127.0.0.1:9/x'
+PASS stats encoded 'http://127.0.0.1:9/x' status
+PASS stats url exact for 'http://127.0.0.1:9/x'
+== functional: TTL ==
+PASS create ttl=1 status
+PASS create ttl=1 fields keys
+PASS create ttl=1 code shape
+PASS create ttl=1 short_url
+PASS create ttl=1 content-type
+PASS create ttl=1 expires_at format
+PASS expires_at = created_at + ttl
+PASS jump before ttl expiry
+PASS ttl clicks before expiry
+PASS stats expired status
+PASS stats expired keys
+PASS stats expired true
+PASS stats clicks frozen after expiry
+PASS stats expires_at preserved
+PASS jump expired status
+PASS jump expired body
+PASS clicks unchanged after expired jump
+PASS ttl null means no expiry status
+PASS ttl null means no expiry fields keys
+PASS ttl null means no expiry code shape
+PASS ttl null means no expiry short_url
+PASS ttl null means no expiry content-type
+PASS ttl null expires_at null
+== functional: keep-alive and pipelining ==
+PASS create keepalive link status
+PASS create keepalive link fields keys
+PASS create keepalive link code shape
+PASS create keepalive link short_url
+PASS create keepalive link content-type
+PASS keep-alive request 1
+PASS keep-alive request 2
+PASS keep-alive request 3
+PASS keep-alive clicks
+PASS pipelined response 1
+PASS pipelined response 2
+== functional: concurrent alias create (20) ==
+PASS concurrent alias exactly one 201
+PASS concurrent alias nineteen 409
+PASS concurrent alias 409 body
+PASS concurrent alias stats exists
+== functional: 50 concurrent jumps ==
+PASS create 50-jump link status
+PASS create 50-jump link fields keys
+PASS create 50-jump link code shape
+PASS create 50-jump link short_url
+PASS create 50-jump link content-type
+PASS 50 concurrent jumps all 302
+PASS 50 concurrent jumps clicks exactly 50
+== functional: oversized body ==
+PASS oversize body is > 1 MiB
+PASS body over 1 MiB status
+PASS body over 1 MiB body
+PASS server alive after oversize body status
+PASS server alive after oversize body fields keys
+PASS server alive after oversize body code shape
+PASS server alive after oversize body short_url
+PASS server alive after oversize body content-type
+== functional: SIGTERM / restart / persistence ==
+PASS create persist link status
+PASS create persist link fields keys
+PASS create persist link code shape
+PASS create persist link short_url
+PASS create persist link content-type
+PASS create persist link expires_at format
+PASS persist jump 1
+PASS persist jump 2
+PASS persist clicks before restart = 2
+PASS sqlite db file exists before shutdown
+INFO SIGTERM exit rc=0 in 0.032s
+PASS SIGTERM exits within 5s
+PASS SIGTERM clean exit code
+PASS persist row present in sqlite after shutdown
+PASS sqlite code
+PASS sqlite url
+PASS sqlite clicks committed
+INFO server pid=1795482 port=40363 startup=0.002s db=/tmp/opencode/spec-method-2026-10-24/implementer/selfcheck/work/20261024-085837/functional/nested/deep/links.db
+PASS stats after restart status
+PASS restart preserves code
+PASS restart preserves url
+PASS restart preserves clicks
+PASS restart preserves created_at
+PASS restart preserves expires_at
+PASS restart preserves expired
+PASS jump after restart
+PASS Location after restart
+PASS clicks continue after restart
+PASS unknown still 404 after restart
+INFO SIGTERM exit rc=0 in 0.064s
+PASS second SIGTERM exits within 5s
+INFO server pid=1795597 port=46023 startup=0.001s db=/tmp/opencode/spec-method-2026-10-24/implementer/selfcheck/work/20261024-085837/functional/nested/deep/links.db
+PASS clicks persisted after second restart
+INFO SIGTERM exit rc=0 in 0.064s
+SUMMARY functional: 349 passed, 0 failed
+PASS final functional shutdown within 5s
+SUMMARY total: 350 passed, 0 failed; functional=ok perf=ok
+STATUS: 待验收 (implementer self-check only; not acceptance)

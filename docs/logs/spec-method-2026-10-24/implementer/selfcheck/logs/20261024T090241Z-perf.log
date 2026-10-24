@@ -1,0 +1,24 @@
+INFO artifact=/tmp/opencode/spec-method-2026-10-24/implementer/artifact/shortlink
+INFO logdir=/tmp/opencode/spec-method-2026-10-24/implementer/selfcheck/logs/20261024T090241Z-perf
+INFO workdir=/tmp/opencode/spec-method-2026-10-24/implementer/selfcheck/work/20261024-090241
+INFO server pid=1973074 port=42293 startup=0.006s db=/tmp/opencode/spec-method-2026-10-24/implementer/selfcheck/work/20261024-090241/perf/perf.db
+== perf: seed 1000 links (seed0001-seed1000) ==
+INFO seeded 1000 links in 0.124s; VmHWM=7228 KiB
+PASS seed completed
+INFO jump warmup 50 complete
+INFO jump round 1: n=500 p95=8.17ms elapsed=0.084s
+INFO jump round 2: n=500 p95=8.54ms elapsed=0.084s
+INFO jump round 3: n=500 p95=9.84ms elapsed=0.091s
+INFO jump p95 rounds=[8.17, 8.54, 9.84] median=8.54ms VmHWM=8272 KiB
+INFO create warmup 20 complete
+INFO create round 1: n=100 p95=2.52ms elapsed=0.061s
+INFO create round 2: n=100 p95=2.02ms elapsed=0.061s
+INFO create round 3: n=100 p95=2.04ms elapsed=0.059s
+INFO create p95 rounds=[2.52, 2.02, 2.04] median=2.04ms VmHWM=8276 KiB
+PASS jump p95 <= 10.00ms
+PASS create p95 <= 15.00ms
+PASS VmHWM <= 10240 KiB
+INFO SIGTERM exit rc=0 in 0.003s
+PASS True
+SUMMARY total: 5 passed, 0 failed; functional=ok perf=ok
+STATUS: 待验收 (implementer self-check only; not acceptance)

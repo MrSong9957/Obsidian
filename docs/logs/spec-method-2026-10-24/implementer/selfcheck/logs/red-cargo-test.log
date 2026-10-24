@@ -1,0 +1,67 @@
+
+running 8 tests
+test tests::create_body_invalid_request ... ok
+test tests::create_body_invalid_url_and_alias ... FAILED
+test tests::create_body_ok ... FAILED
+test tests::iso_format ... FAILED
+test tests::location_encoding ... FAILED
+test tests::url_valid_cases ... FAILED
+test tests::alias_rules ... FAILED
+test tests::url_invalid_cases ... FAILED
+
+failures:
+
+---- tests::create_body_invalid_url_and_alias stdout ----
+
+thread 'tests::create_body_invalid_url_and_alias' (1275248) panicked at src/main.rs:242:9:
+assertion failed: url_err(parse_create_body(br#"{"url":"ftp://example.com"}"#))
+
+---- tests::create_body_ok stdout ----
+
+thread 'tests::create_body_ok' (1275249) panicked at src/main.rs:183:72:
+called `Result::unwrap()` on an `Err` value: InvalidRequest
+
+---- tests::iso_format stdout ----
+
+thread 'tests::iso_format' (1275250) panicked at src/main.rs:164:9:
+assertion `left == right` failed
+  left: ""
+ right: "1970-01-01T00:00:00Z"
+
+---- tests::location_encoding stdout ----
+
+thread 'tests::location_encoding' (1275251) panicked at src/main.rs:158:13:
+assertion `left == right` failed: src="https://example.com/路径?x=中 文#片段"
+  left: "https://example.com/路径?x=中 文#片段"
+ right: "https://example.com/%E8%B7%AF%E5%BE%84?x=%E4%B8%AD%20%E6%96%87#%E7%89%87%E6%AE%B5"
+
+---- tests::url_valid_cases stdout ----
+
+thread 'tests::url_valid_cases' (1275253) panicked at src/main.rs:78:13:
+expected valid: "http://a"
+
+---- tests::alias_rules stdout ----
+
+thread 'tests::alias_rules' (1275246) panicked at src/main.rs:122:13:
+expected valid: "Abc1"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- tests::url_invalid_cases stdout ----
+
+thread 'tests::url_invalid_cases' (1275252) panicked at src/main.rs:115:9:
+assertion `left == right` failed
+  left: 2069
+ right: 2049
+
+
+failures:
+    tests::alias_rules
+    tests::create_body_invalid_url_and_alias
+    tests::create_body_ok
+    tests::iso_format
+    tests::location_encoding
+    tests::url_invalid_cases
+    tests::url_valid_cases
+
+test result: FAILED. 1 passed; 7 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

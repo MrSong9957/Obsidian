@@ -1,0 +1,21 @@
+INFO artifact=/tmp/opencode/spec-method-2026-10-24/implementer/artifact/shortlink
+INFO logdir=/tmp/opencode/spec-method-2026-10-24/implementer/selfcheck/logs/20261024T085915Z-perf
+INFO workdir=/tmp/opencode/spec-method-2026-10-24/implementer/selfcheck/work/20261024-085915
+INFO server pid=1820557 port=35425 startup=0.037s db=/tmp/opencode/spec-method-2026-10-24/implementer/selfcheck/work/20261024-085915/perf/perf.db
+== perf: seed 1000 links (seed0001-seed1000) ==
+INFO seeded 1000 links in 0.196s; VmHWM=7276 KiB
+PASS seed completed
+INFO jump warmup 50 complete
+INFO jump round 1: n=500 p95=10.43ms elapsed=0.070s
+INFO SIGTERM exit rc=0 in 0.032s
+Traceback (most recent call last):
+  File "/tmp/opencode/spec-method-2026-10-24/implementer/selfcheck/selftest.py", line 992, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/tmp/opencode/spec-method-2026-10-24/implementer/selfcheck/selftest.py", line 973, in main
+    summary = run_perf(srv, logdir, csv_path)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/opencode/spec-method-2026-10-24/implementer/selfcheck/selftest.py", line 872, in run_perf
+    csv_path.write(f"jump,{rnd + 1},{w},{j},{ms:.4f}\n")
+    ^^^^^^^^^^^^^^
+AttributeError: 'PosixPath' object has no attribute 'write'. Did you mean: 'drive'?

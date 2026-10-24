@@ -1,0 +1,12 @@
+INFO artifact=/tmp/opencode/spec-method-2026-10-24/implementer/artifact/shortlink
+INFO logdir=/tmp/opencode/spec-method-2026-10-24/implementer/selfcheck/logs/20261024T093557Z-perf
+INFO workdir=/tmp/opencode/spec-method-2026-10-24/implementer/selfcheck/work/20261024-093557
+Traceback (most recent call last):
+  File "/tmp/opencode/spec-method-2026-10-24/implementer/selfcheck/selftest.py", line 1011, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/tmp/opencode/spec-method-2026-10-24/implementer/selfcheck/selftest.py", line 986, in main
+    pdir.mkdir()
+  File "/usr/lib/python3.12/pathlib.py", line 1313, in mkdir
+    os.mkdir(self, mode)
+FileExistsError: [Errno 17] File exists: '/tmp/opencode/spec-method-2026-10-24/implementer/selfcheck/work/20261024-093557/perf'

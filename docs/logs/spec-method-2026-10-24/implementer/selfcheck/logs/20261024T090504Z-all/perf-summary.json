@@ -1,0 +1,21 @@
+{
+  "seed_seconds": 0.12857841601362452,
+  "vmhwm_after_seed_kib": 6948,
+  "jump_p95_rounds": [
+    5.83,
+    5.74,
+    6.99
+  ],
+  "jump_p95_median": 5.83,
+  "vmhwm_after_jump_kib": 8280,
+  "create_p95_rounds": [
+    1.2,
+    2.6,
+    2.44
+  ],
+  "create_p95_median": 2.44,
+  "vmhwm_final_kib": 8284,
+  "jump_pass": true,
+  "create_pass": true,
+  "memory_pass": true
+}
