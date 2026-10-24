@@ -1,0 +1,28 @@
+--- validation 1: nearest-rank p95 + rounding (frozen acc_core) ---
+PASS p95 n=20 -> 19 (expected 19.0, idx=18, sorted[idx]=19)
+PASS p95 n=100 -> 95.0 (expected 95.0, idx=94, sorted[idx]=95.0)
+PASS p95 n=500 -> 475.0 (expected 475.0, idx=474, sorted[idx]=475.0)
+PASS p95 n=20 -> 19 (expected 19.0, idx=18, sorted[idx]=19)
+PASS p95 of empty list -> None
+PASS round(3.14159, 2) -> 3.14 (expected 3.14)
+PASS round(2.71828, 2) -> 2.72 (expected 2.72)
+PASS round(9.994, 2) -> 9.99 (expected 9.99)
+PASS round(9.996, 2) -> 10.0 (expected 10.0)
+PASS round(0.125, 2) -> 0.12 (expected 0.12)
+PASS round(474.123, 2) -> 474.12 (expected 474.12)
+PASS pipeline round(p95(x,500),2) -> 474.12 (expected 474.12)
+PASS median3([1.0, 2.0, 3.0]) -> 2.0 (expected 2.0)
+PASS median3([3.0, 1.0, 2.0]) -> 2.0 (expected 2.0)
+PASS median3([13.98, 15.36, 15.5]) -> 15.36 (expected 15.36)
+--- validation 2: sleep-5ms echo, single connection, 50 serial ---
+PASS count=50 errors=0 samples=50
+PASS p50=5.534848023671657ms (required 5.0-7.0ms); mean=5.560879518743604
+PASS min=5.331241001840681ms (every request must include the 5ms sleep)
+--- validation 3: every-3rd 500+disconnect, 30 requests ---
+PASS total requests=30 (expected 30)
+PASS errors=10 (expected 10): ['2: status=500', '5: status=500', '8: status=500']...
+PASS latency samples=20 (expected 20; errors not sampled)
+PASS error positions=[2, 5, 8, 11, 14, 17, 20, 23, 26, 29] (expected [2, 5, 8, 11, 14, 17, 20, 23, 26, 29])
+PASS all errors are status=500 (no spurious exceptions)
+PASS all samples positive
+VALIDATION PASSED: 0 failure(s)
