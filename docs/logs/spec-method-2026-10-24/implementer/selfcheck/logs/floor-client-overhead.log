@@ -1,9 +1,0 @@
-floor server port=42013 (trivial fixed-302 responder, no DB)
-== 50 THREAD clients against trivial server (GIL convoy visible) ==
-[threads] round 1: n=500 p50=4.02 p95=10.01 max=20.66
-[threads] round 2: n=500 p50=4.26 p95=10.41 max=20.18
-[threads] round 3: n=500 p50=4.14 p95=10.18 max=14.79
-== 50 PROCESS clients against trivial server ==
-[processes] round 1: n=500 p50=0.07 p95=0.60 max=1.51
-[processes] round 2: n=500 p50=0.12 p95=1.11 max=3.00
-[processes] round 3: n=500 p50=0.08 p95=0.72 max=2.17
