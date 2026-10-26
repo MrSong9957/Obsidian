@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-10-24
+updated: 2026-10-26
 ---
 
 # Wiki 索引
@@ -98,6 +98,7 @@ updated: 2026-10-24
 | [[wiki/公理4：大脑只会记住有用的知识，孤立信息会被自动删除\|公理4：大脑只记住"有用"的知识，孤立信息会被自动删除]] | 大脑只保留有连接的知识，孤立信息会被删除，本文讲机制与三个实操步骤 | meaning-encoding, memory-consolidation, knowledge-connection, learning-method, first-principles |
 | [[wiki/公理5：睡眠不是浪费时间，是学习的最后一步\|公理5：睡眠不是浪费时间，是学习的最后一步]] | 清醒时学习只是打草稿，睡眠才是大脑真正把知识砌成墙的过程 | sleep-consolidation, memory, learning-method, first-principles, study-habits |
 | [[wiki/十二种深度思考训练法\|十二种深度思考训练法：从表象到本质的认知工具集]] | 提供12套可刻意练习的本质思考工具，涵盖溯源、拆解、模式识别等，助用户建立结构化洞察力。 | deep-thinking, cognitive-tools, problem-solving, mental-models, decision-making |
+| [[wiki/卡帕西推荐的拼接编程法\|卡帕西推荐的拼接编程法]] | Karpathy 拼接编程法——手写半代码半注释，注释写清每步数据类型与状态变化，由 Agent 生成具体代码；人... | karpathy, programming-method, ai-workflow, code-comments, agent-collaboration |
 | [[wiki/可执行记忆与记忆内容的三种类型\|可执行记忆与记忆内容的三种类型]] | 理解如何用代码计算和检查用户信息，并区分记忆层次、存储格式与内容类型。 | agent-memory, executable-memory, user-as-code, knowledge-representation, cognitive-science |
 | [[wiki/多厂商LLM接入架构\|多厂商LLM接入架构]] | Rust CLI 多厂商 LLM 接入方案——Harness 厂商适配器 + Codex 请求分层，五类职责划分、... | rust, llm, provider, adapter, retry, streaming, codex, deepseek-harness |
 | [[wiki/大模型API上下文结构\|Agent 调用大模型时的 API 上下文结构]] | 理解 Agent 如何把系统规则、对话历史、工具和工具结果一起发送给模型。 | ai-agent, context-engineering, llm-api, messages, tool-calling |
@@ -108,7 +109,6 @@ updated: 2026-10-24
 | [[wiki/工具定义、按需加载与提示工程消融实验\|工具定义、按需加载与提示工程消融实验]] | 设计易于正确使用的工具说明，理解按需加载如何保留缓存，并通过对照实验检验提示词效果。 | tool-use, tool-search, context-engineering, prompt-caching, ablation-study, tau-bench |
 | [[wiki/工具调用闭环：Codex复用与参考范围\|工具调用闭环：Codex复用与参考范围]] | Codex 工具定义机制（Rust 规格 → JSON 声明，自然语言写在 description）与工具调用闭环... | codex, agent, tool-calling, rust, harness |
 | [[wiki/工程化训练\|工程化训练]] | 工程化流程训练图——brainstorming 到 finishing 的全链路（含 Security Testi... | engineering, test-design, test-spec, brainstorming, workflow |
-| [[wiki/拼贴编程法\|拼贴编程法]] | Karpathy 拼贴编程法——手写半代码半注释，注释写清每步数据类型与状态变化，由 Agent 生成具体代码；人... | karpathy, programming-method, ai-workflow, code-comments, agent-collaboration |
 | [[wiki/提示词注入威胁\|提示注入：上下文安全的核心威胁]] | 理解恶意文字怎样诱使 Agent 越权，怎样分层防御，以及如何设计实验检查效果。 | prompt-injection, agent-security, context-engineering, tool-use, memory-poisoning |
 | [[wiki/时空可组合性\|时空可组合性：让动态系统安全地变化]] | 提炼 Cordis 如何用可撤销副作用和响应式依赖，让组件能够安全加入、移除、替换和重新组合。 | cordis, composability, runtime, hmr, agent-harness |
 | [[wiki/构建有效Agent\|构建有效 Agent：简单、透明、工具友好，并按真实任务选模型]] | 理解 Agent 设计的三个核心原则，以及模型选型真正该看哪些指标。 | agent, harness, aci, model-selection, reasoning, tool-calling |
