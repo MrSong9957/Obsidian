@@ -27,7 +27,7 @@ updated: 2026-10-26
 | [[wiki/Agent-工具设计\|Agent 工具设计：连接世界、扩大能力，也扩大风险]] | 理解 Agent 工具的类型、调用流程，以及通用工具和专用工具该怎么选。 | agent, tools, tool-calling, mcp, sandbox, aci |
 | [[wiki/Agent-护栏\|Agent 护栏：把安全控制下沉到模型之外]] | 用上下文、执行、数据三层护栏限制 Agent 的可见信息、可执行动作和最终数据权限。 | agent, guardrails, security, prompt-injection, human-in-the-loop, access-control |
 | [[wiki/Agent上下文布局与本地模型工具调用\|Agent 上下文布局与本地模型工具调用]] | 理解上下文如何组装、压缩和复用缓存，以及本地模型如何参与工具调用。 | ai-agent, context-engineering, kv-cache, tool-calling, local-llm |
-| [[wiki/Agent工具初始化配置\|Agent 工具初始化配置]] | 新 Agent 环境两步初始化清单——双层规则配置与 grill-me 技能安装，适用于 Codex、Claude... | agent, setup, agents-md, claude-md, checklist |
+| [[wiki/Agent工具初始化配置\|Agent 工具初始化配置]] | 新 Agent 环境五步初始化清单——定位仓库、双层规则、技能、智能体代理与项目 rules 配置 | agent, setup, agents-md, claude-md, checklist |
 | [[wiki/Agent工具结果与上下文压缩：裁剪、摘要与证据补读\|Agent 工具结果与上下文压缩：裁剪、摘要与证据补读]] | 讲清 Agent 如何处理过长工具结果和过长上下文，以及证据不足时如何可靠补查原文 | agent, context-management, tool-output, summarization, prompt-cache, rag |
 | [[wiki/Agent工具调用的API循环\|Agent 工具调用的 API 循环]] | 理解模型如何决定调用工具，以及 Harness 如何执行工具并把结果送回模型。 | ai-agent, tool-calling, react, context-engineering, llm-api |
 | [[wiki/Agent核心循环\|Agent 核心循环：上下文组装与工具执行]] | 理解如何组装请求、提取模型消息、执行工具，并将结果交回模型。 | ai-agent, context-engineering, tool-calling, python |

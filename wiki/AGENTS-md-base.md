@@ -2,7 +2,7 @@
 name: AGENTS-md
 description: 全局行为准则与项目开发规范的双层 AGENTS.md 模板；默认使用 Codex 目录，兼容 Claude Code、ZCode、MiMo Code 等 Agent 的规则入口
 type: concept
-updated: 2026-10-20
+updated: 2026-10-26
 tags: [agent, agents-md, claude-md, template, karpathy, setup]
 source: https://learn.chatgpt.com/docs/agent-configuration/agents-md
 ---
@@ -126,7 +126,7 @@ MiMo Code 的 Windows / XDG 路径应以当前版本实际解析的配置目录�
 
 ## 2. 项目文档规范
 
-@`docs\规格文档实战法.md`，详细内容查看文档。
+开发前读取 `rules/规格文档实战法.md`；代码审查前读取 `rules/REVIEW.md`，按对应文档执行。
 
 功能规格和验证日志与代码同仓库，统一放在 `docs/`：
 
@@ -247,8 +247,8 @@ API、网络服务按需使用 VCR（录制并回放响应）或等价方案。
 ## 相关概念
 
 - [[wiki/agents-md-claude-md|AGENTS.md 与 CLAUDE.md 配置关系]] — Claude Code 单行适配的文档依据与加载机制
-- [[wiki/Agent工具初始化配置|Agent 工具初始化配置]] — 引用本模板的两步初始化清单，本模板为其第 1 步
-- [[wiki/grill-me最小必要技能安装清单|grill-me 最小必要技能安装清单]] — 同一初始化流程第 2 步安装的技能清单
+- [[wiki/Agent工具初始化配置|Agent 工具初始化配置]] — 引用本模板的五步初始化清单，本模板为其第 2 步
+- [[wiki/grill-me最小必要技能安装清单|grill-me 最小必要技能安装清单]] — 同一初始化流程第 3 步安装的技能清单
 
 ## 引用索引
 

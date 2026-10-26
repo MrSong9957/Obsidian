@@ -2,7 +2,7 @@
 name: grill-me 最小必要技能安装清单
 description: Matt Pocock 技能库最小必要 9 技能的跨 Agent 安装指令——目录确认、Git 克隆复制、安装验证与执行约束 — 给任意 Agent（Claude Code / Codex / ZCode 等）新环境安装 grill 系与工程系技能时使用
 type: concept
-updated: 2026-10-20
+updated: 2026-10-26
 tags: [agent-skills, grill-me, matt-skills, installation, checklist]
 source: self
 ---
@@ -105,8 +105,8 @@ code-review                  → 按规格审查改动
 
 ## 相关概念
 
-- [[wiki/Agent工具初始化配置|Agent 工具初始化配置]] — 新 Agent 环境初始化清单，本清单是其第 2 步
-- [[wiki/AGENTS-md-base|AGENTS.md 双层架构模板]] — 同一初始化流程第 1 步的规则模板
+- [[wiki/Agent工具初始化配置|Agent 工具初始化配置]] — 新 Agent 环境初始化清单，本清单是其第 3 步
+- [[wiki/AGENTS-md-base|AGENTS.md 双层架构模板]] — 同一初始化流程第 2 步的规则模板
 - [[wiki/大脑模型-v4|大脑模型-v4]] — 这套技能组（Matt Skills）在大脑模型 v4 中作为工程执行层被调度
 - [[wiki/Agent Skills|Agent Skills]] — Skill 的三层加载方式、触发条件与缓存成本
 - [[wiki/claude-code-setup|Claude Code 当前配置清单]] — 本机 Claude Code 侧的完整配置与技能安装记录
