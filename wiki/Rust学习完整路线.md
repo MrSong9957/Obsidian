@@ -4,7 +4,7 @@ description: AI 时代 Rust 精简入门——装环境、啃核心概念、重�
 type: concept
 updated: 2026-10-27
 tags: [rust, learning-roadmap, ai-era, ai-workflow]
-source: "https://rustwiki.org/en/book/"
+source: "https://doc.rust-lang.org/book/"
 ---
 
 # Rust学习完整路线
@@ -44,7 +44,7 @@ AI 省的是"写语法"的时间，省不了"读懂"的功课——每一步都�
 | **4.1 所有权** | 一个值归谁管，什么时候释放。用 `String` 搞懂：赋值和传参为什么会转移所有权；`Copy` 是自动复制，`clone()` 是主动复制。[^rust-ownership] |
 | **4.2 引用与借用** | `&T` 是借来读，`&mut T` 是借来改。对同一份数据，借用重叠时可以有多个只读借用，或一个可变借用；引用不能指向已释放的数据。[^rust-ownership] |
 | **4.3 切片** | 切片是借用一段数据。分清 `String`（拥有字符串）与 `&str`（借用字符串片段），认得 `&[T]`（借用一段元素）。[^rust-ownership] |
-| **6.1–6.3 枚举与匹配** | `enum` 表示几种可能的情况，每种还能带数据。`Option<T>` 用 `Some` / `None` 表示“有 / 没有”；`match` 处理所有情况，`if let` 只关心其中一种。[^rust-enums] |
+| **6.1–6.3 枚举与匹配** | `enum` 表示几种可能的情况，每种还能带数据。`Option<T>` 用 `Some` / `None` 表示“有 / 没有”；`match` 处理所有情况，`if let` 只关心其中一种；认得 `let...else` 在不匹配时提前返回的写法。[^rust-enums] |
 | **9.2 Result 与错误处理** | `Result<T, E>` 用 `Ok` / `Err` 表示“成功 / 失败”；会用 `match` 分别处理、用 `?` 把错误交给调用者。知道 `unwrap` / `expect` 遇到错误会触发 `panic`，别靠它们绕过错误处理。9.1、9.3 快读即可。[^rust-errors] |
 | **10.1 泛型、10.2 trait** | 泛型 `<T>` 让同一套代码支持不同类型；trait 规定“这个类型要会做什么”。认得 `impl Trait for Type`、`T: Trait` 和 `where`，能读懂简单的实现与限制。[^rust-generics] |
 | **10.3 生命周期** | 引用不能比它指向的数据活得久。看懂 `longest` 示例、`'a` 和省略规则；标注是在说明引用之间的关系，**不会延长数据寿命**。`'static` 先认得含义，不钻复杂写法。[^rust-lifetimes] |
@@ -53,7 +53,7 @@ AI 省的是"写语法"的时间，省不了"读懂"的功课——每一步都�
 
 **过关再进第2步**：能解释一个值归谁、函数是拿走还是借用、借用何时结束、数据何时释放；能处理 `Option` 的两种情况、用 `Result` 和 `?` 传递错误；能读懂简单的泛型、trait 和生命周期签名。
 
-第 7、8、11–14 章留到第2步用时查；智能指针、并发、宏、`unsafe` 等进阶内容暂缓，异步也等项目需要时再补。模式匹配先掌握第 6 章，不提前通读第 18 章。
+第 7、8、11–14 章留到第2步用时查；智能指针、并发、宏、`unsafe` 等进阶内容暂缓，异步也等项目需要时再补。模式匹配先掌握第 6 章，不提前通读第 19 章。[^rust-patterns]
 
 ### 第2步 · 重写旧脚本（2–4 周，主菜）
 
@@ -125,9 +125,10 @@ AI 省的是"写语法"的时间，省不了"读懂"的功课——每一步都�
 
 整体学习安排来自用户确定的路线；第1步的章节内容依据以下书籍原文整理。
 
-[^rust-basics]: [第 3 章：常见编程概念](https://rustwiki.org/en/book/ch03-00-common-programming-concepts.html)、[5.1 定义结构体](https://rustwiki.org/en/book/ch05-01-defining-structs.html)、[5.3 方法语法](https://rustwiki.org/en/book/ch05-03-method-syntax.html) — 精读前需要认得的语法和数据结构。
-[^rust-ownership]: [4.1 所有权](https://rustwiki.org/en/book/ch04-01-what-is-ownership.html)、[4.2 引用与借用](https://rustwiki.org/en/book/ch04-02-references-and-borrowing.html)、[4.3 切片](https://rustwiki.org/en/book/ch04-03-slices.html) — 所有权转移、复制、借用规则与切片。
-[^rust-enums]: [6.1 枚举与 Option](https://rustwiki.org/en/book/ch06-01-defining-an-enum.html)、[6.2 match](https://rustwiki.org/en/book/ch06-02-match.html)、[6.3 if let](https://rustwiki.org/en/book/ch06-03-if-let.html) — 用类型表达不同情况，并逐一处理。
-[^rust-errors]: [9.2 Result 与错误传播](https://rustwiki.org/en/book/ch09-02-recoverable-errors-with-result.html)、[9.1 panic](https://rustwiki.org/en/book/ch09-01-unrecoverable-errors-with-panic.html)、[9.3 如何选择错误处理方式](https://rustwiki.org/en/book/ch09-03-to-panic-or-not-to-panic.html) — 成功与失败、`?`、解包和 panic 的用途。
-[^rust-generics]: [10.1 泛型](https://rustwiki.org/en/book/ch10-01-syntax.html)、[10.2 trait](https://rustwiki.org/en/book/ch10-02-traits.html) — 复用代码，以及限制类型需要具备的能力。
-[^rust-lifetimes]: [10.3 生命周期](https://rustwiki.org/en/book/ch10-03-lifetime-syntax.html) — 引用有效期、生命周期标注与省略规则。
+[^rust-basics]: [第 3 章：常见编程概念](https://doc.rust-lang.org/book/ch03-00-common-programming-concepts.html)、[5.1 定义结构体](https://doc.rust-lang.org/book/ch05-01-defining-structs.html)、[5.3 方法语法](https://doc.rust-lang.org/book/ch05-03-method-syntax.html) — 精读前需要认得的语法和数据结构。
+[^rust-ownership]: [4.1 所有权](https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html)、[4.2 引用与借用](https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html)、[4.3 切片](https://doc.rust-lang.org/book/ch04-03-slices.html) — 所有权转移、复制、借用规则与切片。
+[^rust-enums]: [6.1 枚举与 Option](https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html)、[6.2 match](https://doc.rust-lang.org/book/ch06-02-match.html)、[6.3 if let 与 let...else](https://doc.rust-lang.org/book/ch06-03-if-let.html) — 用类型表达不同情况，并逐一处理。
+[^rust-errors]: [9.2 Result 与错误传播](https://doc.rust-lang.org/book/ch09-02-recoverable-errors-with-result.html)、[9.1 panic](https://doc.rust-lang.org/book/ch09-01-unrecoverable-errors-with-panic.html)、[9.3 如何选择错误处理方式](https://doc.rust-lang.org/book/ch09-03-to-panic-or-not-to-panic.html) — 成功与失败、`?`、解包和 panic 的用途。
+[^rust-generics]: [10.1 泛型](https://doc.rust-lang.org/book/ch10-01-syntax.html)、[10.2 trait](https://doc.rust-lang.org/book/ch10-02-traits.html) — 复用代码，以及限制类型需要具备的能力。
+[^rust-lifetimes]: [10.3 生命周期](https://doc.rust-lang.org/book/ch10-03-lifetime-syntax.html) — 引用有效期、生命周期标注与省略规则。
+[^rust-patterns]: [第 19 章：模式与匹配](https://doc.rust-lang.org/book/ch19-00-patterns.html) — 进阶模式匹配在当前官方版本中的章节位置。
