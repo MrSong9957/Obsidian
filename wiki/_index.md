@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-10-26
+updated: 2026-10-27
 ---
 
 # Wiki 索引
@@ -46,6 +46,7 @@ updated: 2026-10-26
 | [[wiki/Obsidian-AI-Skill-实测清单\|Obsidian AI Skill 实测清单：9大Agent联动工具与本地知识库安全实践]] | 提供9个高星Obsidian AI Skill实测排名、安装命令及Git安全回滚策略，解决本地知识库AI自动化与安... | obsidian, ai-skill, agent, knowledge-management, tool-list, local-first, git-safety |
 | [[wiki/Obsidian仓库大脑模型\|Obsidian仓库大脑模型]] | 网页版 ChatGPT 的 Obsidian 仓库管理大脑提示词——三层管理、ADD/UPDATE/NOOP/CO... | brain-model, decision-control, agent-orchestration, obsidian, wiki-management, goal |
 | [[wiki/ReAct-循环\|ReAct 循环：Agent 如何通过轨迹持续思考和行动]] | 理解 Agent 如何把模型、上下文和工具串成“想→做→看”的执行闭环。 | agent, react, trajectory, harness, tool-calling, context |
+| [[wiki/Rust学习完整路线\|Rust学习完整路线]] | AI 时代 Rust 精简入门——装环境、啃核心概念、重写旧脚本、给真实项目贡献四步，以「能读懂」为验收标准 | rust, learning-roadmap, ai-era, ai-workflow |
 | [[wiki/Skill 编写方法、上下文位置与缓存成本\|Skill 编写方法、上下文位置与缓存成本]] | 把经验写成可执行、可检验的 Skill，并理解加载位置、上下文占用和缓存费用。 | agent-skills, prompt-engineering, context-engineering, prompt-caching |
 | [[wiki/Skills 与工具的协作方式及实验设计\|Skills 与工具的协作方式及实验设计]] | 分清 Skill、工具和脚本的职责，并通过论文转 PPT、个人写作两个实验检查效果。 | agent-skills, tool-use, progressive-disclosure, skill-evaluation |
 | [[wiki/agent-arch\|Agent 架构核心]] | Agent 循环、多智能体框架、Harness 工程方法论的核心概念与关键要点 | agent, architecture, multi-agent, harness, system-prompts |
