@@ -2,7 +2,7 @@
 name: AGENTS-md
 description: 全局行为准则与项目开发规范的双层 AGENTS.md 模板；默认使用 Codex 目录，兼容 Claude Code、ZCode、MiMo Code 等 Agent 的规则入口
 type: concept
-updated: 2026-10-26
+updated: 2026-10-27
 tags: [agent, agents-md, claude-md, template, karpathy, setup]
 source: https://learn.chatgpt.com/docs/agent-configuration/agents-md
 ---
@@ -144,9 +144,9 @@ MiMo Code 的 Windows / XDG 路径应以当前版本实际解析的配置目录�
 以下流程和出错处理要求只适用于代码或程序行为变更；仅修改文档且不影响程序行为时，只检查内容、命名和链接，不执行代码检查和全量测试。
 
 按以下顺序执行：
-TDD → comprehensive-testing → Security Testing → code-review → 全量验证和修复。
+TDD → comprehensive-testing → Security Testing → ce-code-review → 全量验证和修复。
 
-任一阶段发现错误时，使用 `diagnosing-bugs` 技能定位根因并修复。修复后复验受影响的检查，最终完成第 7 节规定的全量验证。
+任一阶段发现错误时，使用 `ce-debug` 技能定位根因并修复。修复后复验受影响的检查，最终完成第 7 节规定的全量验证。
 
 **验证真实行为，不绑定内部写法。**
 
@@ -248,7 +248,7 @@ API、网络服务按需使用 VCR（录制并回放响应）或等价方案。
 
 - [[wiki/agents-md-claude-md|AGENTS.md 与 CLAUDE.md 配置关系]] — Claude Code 单行适配的文档依据与加载机制
 - [[wiki/Agent工具初始化配置|Agent 工具初始化配置]] — 引用本模板的五步初始化清单，本模板为其第 2 步
-- [[wiki/grill-me最小必要技能安装清单|grill-me 最小必要技能安装清单]] — 同一初始化流程第 3 步安装的技能清单
+- [[wiki/ce + last30days 技能组合|ce + last30days 技能组合]] — 同一初始化流程第 3 步安装的技能组合
 
 ## 引用索引
 

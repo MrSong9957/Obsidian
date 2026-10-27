@@ -113,6 +113,7 @@ updated: 2026-10-27
 | [[wiki/提示词注入威胁\|提示注入：上下文安全的核心威胁]] | 理解恶意文字怎样诱使 Agent 越权，怎样分层防御，以及如何设计实验检查效果。 | prompt-injection, agent-security, context-engineering, tool-use, memory-poisoning |
 | [[wiki/时空可组合性\|时空可组合性：让动态系统安全地变化]] | 提炼 Cordis 如何用可撤销副作用和响应式依赖，让组件能够安全加入、移除、替换和重新组合。 | cordis, composability, runtime, hmr, agent-harness |
 | [[wiki/构建有效Agent\|构建有效 Agent：简单、透明、工具友好，并按真实任务选模型]] | 理解 Agent 设计的三个核心原则，以及模型选型真正该看哪些指标。 | agent, harness, aci, model-selection, reasoning, tool-calling |
+| [[wiki/浮点数精度与二进制小数\|浮点数精度与二进制小数]] | 从“每一位都有单位”解释二进制小数与十进制换算，说明 0.1 写不成有限二进制位、f32/f64 为何必须舍入 | rust, floating-point, binary, precision, ieee754 |
 | [[wiki/混合检索与重排序：合并候选，再细排相关性\|混合检索与重排序：合并候选，再细排相关性]] | 理解两路检索、RRF 融合、跨编码器重排序的分工，以及检索质量指标。 | hybrid-search, bm25, rrf, cross-encoder, reranking, evaluation |
 | [[wiki/用户记忆与知识库\|用户记忆与知识库：让 Agent 跨会话记住信息]] | 理解用户记忆与知识库的区别，以及如何从对话中提取、保存和使用有价值的信息。 | agent-memory, knowledge-base, rag, memory-extraction |
 | [[wiki/用第一性原理学数学\|用第一性原理学数学：告别题海战术，从定义出发构建逻辑体系]] | 从定义出发理解数学底层逻辑，替代背公式和盲目刷题 | math-learning, first-principles, definition-driven, logical-thinking, active-learning |
