@@ -109,5 +109,4 @@ code-review                  → 按规格审查改动
 - [[wiki/AGENTS-md-base|AGENTS.md 双层架构模板]] — 同一初始化流程第 2 步的规则模板
 - [[wiki/大脑模型-v4|大脑模型-v4]] — 这套技能组（Matt Skills）在大脑模型 v4 中作为工程执行层被调度
 - [[wiki/Agent Skills|Agent Skills]] — Skill 的三层加载方式、触发条件与缓存成本
-- [[wiki/claude-code-setup|Claude Code 当前配置清单]] — 本机 Claude Code 侧的完整配置与技能安装记录
 - [[wiki/dev-practice|开发实践]] — `tdd` / `code-review` / `diagnosing-bugs` 技能对应方法论的知识入口

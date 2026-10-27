@@ -9,7 +9,7 @@ source: https://example.com
 
 # Claude Code 配置清单详细参考
 
-> 入口文档：[[wiki/claude-code-setup.md|Claude Code 当前配置清单]]
+> 入口文档：[[wiki/Claude-Code-Statusline-部署与故障恢复.md|Claude Code Statusline 部署与故障恢复]]（本文件其余内容为旧环境配置的详细存档）
 
 ---
 

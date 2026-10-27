@@ -53,7 +53,6 @@ updated: 2026-10-27
 | [[wiki/agents-md-claude-md\|AGENTS.md 与 CLAUDE.md 配置关系]] | Claude Code 指令文件四层级放置规则、AGENTS.md 默认替补逻辑、四档"项目说明"配置与 impo... | claude-code, claude-md, agents-md, memory |
 | [[wiki/architecture-migration-semantic-boundary\|架构迁移语义边界准则]] | 从"renderer 控制视觉"迁移到"message store 控制语义"时,必须区分视觉控制指令与真实数据,... | architecture, migration, semantic-boundary, tui, message-store, renderer, anti-pattern |
 | [[wiki/claude-code-prompt-architecture\|Claude Code 提示词架构]] | Claude Code 10 层治理架构、系统提示词构造、自动模式分类器、消息规范化 | claude-code, prompt, architecture, system-prompt, permissions |
-| [[wiki/claude-code-setup\|Claude Code 当前配置清单]] | 本机 Claude Code 完整配置清单 + 自检清单（插件/Hooks/状态栏/MCP/技能/代理/规则/团队... | claude-code, setup, plugins, hooks, mcp, skills, agents, config, checklist |
 | [[wiki/claude-code\|Claude Code 配置与工作流]] | settings.json/CLAUDE.md/rules/记忆系统/插件/Hooks/子代理/MCP/并行工作流... | claude-code, settings, claudemd, memory, rules, hooks, subagents, mcp, workflow, plugins |
 | [[wiki/cli-tools-productivity\|十个提升生产力的 CLI 工具]] | 10 个提升开发生产力的 CLI 工具推荐及核心功能 — 选择提升效率的 CLI 工具时参考 | cli, productivity |
 | [[wiki/codex-memory-system\|Codex 记忆系统]] | Codex 记忆管线——两阶段提炼合并、SQLite+Markdown 双存储、摘要注入与按需文件搜索、全量配置项... | codex, agent-memory, memory, sqlite, markdown, progressive-disclosure |
