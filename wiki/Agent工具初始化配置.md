@@ -24,7 +24,7 @@ source: self
 
 4. **安装智能体代理**：读取仓库 `agents/` 中的代理定义，按当前 Agent 支持的用户级代理目录与格式安装。Claude Code 使用 `~/.claude/agents/` 下带 frontmatter 的 Markdown；Codex 使用 `~/.codex/agents/` 下的 TOML 定义，需转换为其支持的字段。其他工具先确认目录和格式；不支持自定义代理时记录跳过及其对项目流程的影响。[^claude-agents][^codex-agents]
 
-5. **配置项目 `rules/`**：将仓库 `rules/` 文件夹复制到目标项目根目录，得到 `rules/规格文档实战法.md`、`rules/REVIEW.md` 等文件。在项目级 `AGENTS.md` 中写明：开发前读取 `rules/规格文档实战法.md`，代码审查前读取 `rules/REVIEW.md` 并按其执行。仅复制文件不足以确认规则已生效；两份“规格文档实战法”的维护约定见 [[wiki/规格文档实战法|规格文档实战法]]。
+5. **配置项目 `rules/`**：将 `Obsidian` 仓库 `rules/` 文件夹复制到目标项目根目录。
 
 6. 安装 SKILL 技能：将 `Obsidian` 仓库目录下 `skills/` 子目录中的技能按需安装到 Agent 全局目录，仅安装：
 	- comprehensive-testing
