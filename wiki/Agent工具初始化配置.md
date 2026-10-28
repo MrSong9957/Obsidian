@@ -28,7 +28,7 @@ source: self
 
 6. 安装 SKILL 技能：将 `Obsidian` 仓库目录下 `skills/` 子目录中的技能按需安装到 Agent 全局目录，仅安装：
 	- comprehensive-testing
-	- security-review
+	- security-review：Claude Code 有同名内置技能，无需安装此技能
 
 **完成后验证**：新建会话，确认当前 Agent 实际加载了用户全局与项目两层规则文件；Claude Code 用 `/context` 查看 Memory files 清单，其他工具按其加载日志或指令来源清单核对。技能按 [[wiki/ce + last30days 技能组合|ce + last30days 技能组合]]「安装后验证」执行，并确认补充技能已被识别。核对代理的实际安装路径、名称和识别结果；检查项目 `rules/` 文件齐全、项目级 `AGENTS.md` 中的路径正确，并让 Agent 按开发或审查场景实际读取对应规则。报告各项通过、失败或跳过及原因；尚有必需项未就绪时，不能报告初始化全部完成。
 
