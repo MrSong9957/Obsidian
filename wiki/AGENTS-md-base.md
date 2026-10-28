@@ -144,7 +144,7 @@ MiMo Code 的 Windows / XDG 路径应以当前版本实际解析的配置目录�
 以下流程和出错处理要求只适用于代码或程序行为变更；仅修改文档且不影响程序行为时，只检查内容、命名和链接，不执行代码检查和全量测试。
 
 按以下顺序执行：
-TDD → comprehensive-testing → Security Testing → ce-code-review → 全量验证和修复。
+TDD → `comprehensive-testing` → `Security Testing` → `ce-code-review` → 全量验证和修复 → `ce-compound`。
 
 任一阶段发现错误时，使用 `ce-debug` 技能定位根因并修复。修复后复验受影响的检查，最终完成第 7 节规定的全量验证。
 
