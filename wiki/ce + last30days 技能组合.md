@@ -2,7 +2,7 @@
 name: ce + last30days 技能组合
 description: Compound Engineering 与 last30days 的安装、常用技能和日常流程 — 调研、规划、实现、调试、审查与经验沉淀
 type: concept
-updated: 2026-10-27
+updated: 2026-10-30
 tags: [agent-skills, compound-engineering, last30days, installation, workflow]
 source: https://github.com/EveryInc/compound-engineering-plugin
 ---
@@ -43,7 +43,7 @@ source: https://github.com/EveryInc/compound-engineering-plugin
 2. 在目标项目运行 `/ce-setup`，检查配置结果；其他 Agent 使用其支持的技能调用方式。
 3. 用一个明确的话题调用 `/last30days 话题或问题`，检查实际可用来源、报告及引用；首次运行按提示完成配置，缺少来源或运行条件时记录原因。[^last30days][^last30days-runtime]
 
-### 二、7 个常用技能速查
+### 二、8 个常用技能速查
 
 #### 1. /last30days —— 先看大家怎么说
 
@@ -78,13 +78,20 @@ source: https://github.com/EveryInc/compound-engineering-plugin
 - **敲**：`/ce-debug 现象描述`，比如 `/ce-debug 支付回调有时候会创建重复的发票`
 - **啥时候用**：遇到失败测试、报错、行为回归或可复现的性能问题时。[^ce-debug]
 
-#### 6. /ce-code-review —— 提交前把关
+#### 6. /ce-simplify-code —— 审查前先瘦身
+
+- **干啥**：对当前改动并行跑复用、质量、效率、测试价值、注释等专项审查，自动简化代码并清理无价值的测试和注释，行为保持不变，改完跑类型检查、lint 和测试。[^ce-simplify]
+- **敲**：`/ce-simplify-code`，默认取当前分支改动；也可指定文件或描述，如 `/ce-simplify-code src/billing`
+- **啥时候用**：实现或修复告一段落、进入审查之前；`/ce-work`、`/ce-debug` 也可能在完成节点自动调用它。[^ce-simplify]
+- **备注**：格式化、依赖升级这类机械改动或只有几行的 diff 不用跑；它只做瘦身，不做深度审查——那是 `/ce-code-review` 的事。[^ce-simplify]
+
+#### 7. /ce-code-review —— 提交前把关
 
 - **干啥**：按改动选择不同审查角色，合并检查结果；默认只出报告，不改代码。[^ce-review]
 - **敲**：`/ce-code-review`
 - **啥时候用**：实现或 bug 修复完成后，检查最终改动；若当前流程已完成同范围审查，不重复运行。
 
-#### 7. /ce-compound —— 记住这次的坑
+#### 8. /ce-compound —— 记住这次的坑
 
 - **干啥**：把这次的症状、根因、失败尝试和最终方案写进 `docs/solutions/`。[^ce]
 - **敲**：`/ce-compound`
@@ -95,9 +102,9 @@ source: https://github.com/EveryInc/compound-engineering-plugin
 ### 三、三条日常流水线
 
 ```text
-想法模糊：/ce-brainstorm → /ce-plan → /ce-work → /ce-code-review → /ce-compound
-想法清楚：/ce-plan → /ce-work → /ce-code-review → /ce-compound
-修 bug：/ce-debug → /ce-code-review → /ce-compound
+想法模糊：/ce-brainstorm → /ce-plan → /ce-work → /ce-simplify-code → /ce-code-review → /ce-compound
+想法清楚：/ce-plan → /ce-work → /ce-simplify-code → /ce-code-review → /ce-compound
+修 bug：/ce-debug → /ce-simplify-code → /ce-code-review → /ce-compound
 ```
 
 日常约定：按需先用 `/last30days` 调研，再进入对应流程；实现或修复后完成审查，有可复用经验时再沉淀。项目要求的测试、安全检查和全量验证仍按项目规则执行。
@@ -137,4 +144,5 @@ source: https://github.com/EveryInc/compound-engineering-plugin
 [^ce-plan]: https://github.com/EveryInc/compound-engineering-plugin/blob/main/docs/guides/ce-plan.md — 计划内容、输出方式与默认保存目录。
 [^ce-work]: https://github.com/EveryInc/compound-engineering-plugin/blob/main/docs/guides/ce-work.md — 执行计划、进度记录、恢复与更换实现工具。
 [^ce-debug]: https://github.com/EveryInc/compound-engineering-plugin/blob/main/docs/guides/ce-debug.md — 根因诊断、测试先行修复及只诊断模式。
+[^ce-simplify]: https://github.com/EveryInc/compound-engineering-plugin/blob/main/docs/guides/ce-simplify-code.md — 行为保持的代码简化与测试/注释清理，实现落定后、审查提交前运行。
 [^ce-review]: https://github.com/EveryInc/compound-engineering-plugin/blob/main/docs/guides/ce-code-review.md — 按改动选择审查角色，默认仅报告。
