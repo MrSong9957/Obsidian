@@ -175,7 +175,7 @@ npx @z_ai/coding-helper
 
 ### OpenCode
 
-编辑 `~/.config/opencode/opencode.json`，在 `mcp` 字段中配置。格式与 Claude Code 不同：本地 MCP 使用 `"type": "local"` + `"command"` 数组，远程 MCP 使用 `"type": "remote"` + `"url"`，详见 [[sources/opencode.md|OpenCode 配置指南]]。
+编辑 `~/.config/opencode/opencode.json`，在 `mcp` 字段中配置。格式与 Claude Code 不同：本地 MCP 使用 `"type": "local"` + `"command"` 数组，远程 MCP 使用 `"type": "remote"` + `"url"`，详见 [[sources/tools/opencode.md|OpenCode 配置指南]]。
 
 ### Cursor
 

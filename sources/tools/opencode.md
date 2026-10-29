@@ -196,7 +196,7 @@ AWS_BEARER_TOKEN_BEDROCK=XXX opencode
 
 ### 智谱 AI 4 个 MCP 的 OpenCode 配置
 
-将 [[sources/zhipu-mcp.md|智谱 MCP]] 转换为 OpenCode 格式：
+将 [[sources/claude-code/zhipu-mcp.md|智谱 MCP]] 转换为 OpenCode 格式：
 
 ```jsonc
 {

@@ -109,18 +109,18 @@ agentMetadata:
 
 ### 引用索引
 
-[^1]: [[sources/learn-shareai/s01-Agent循环]] `L9-19` — Agent Loop 核心模式定义
-[^2]: [[sources/claude-code-system-prompts/README]] `L46-57` — 多片段组合的设计理由
-[^3]: [[sources/learn-shareai/s01-Agent循环]] `L124-155` — agent_loop 完整代码
-[^4]: [[sources/claude-code-system-prompts/README]] `L154-220` — System Prompt 片段列表
-[^5]: [[sources/learn-shareai/s02-工具调用]] `L10-20` — TOOL_HANDLERS 分发机制
-[^6]: [[sources/claude-code-system-prompts/README]] `L265-343` — Tool Descriptions 完整列表
-[^7]: [[sources/learn-shareai/s06-上下文压缩]] `L12-40` — 三层压缩架构图
-[^8]: [[sources/claude-code-system-prompts/system-prompts/system-prompt-context-compaction-summary]] `L1-28` — 生产版压缩摘要 prompt
-[^9]: [[sources/learn-shareai/s04-子代理]] `L10-29` — 子代理的独立上下文设计
-[^10]: [[sources/claude-code-system-prompts/system-prompts/agent-prompt-explore]] `L12-26` — Explore 代理的元数据和工具限制
-[^11]: [[sources/learn-shareai/s05-技能系统]] `L9-18` — 两层按需加载设计
-[^12]: [[sources/claude-code-system-prompts/README]] `L123-153` — Data 系列参考文档列表
+[^1]: [[sources/agent/learn-claude-code/s01-Agent循环]] `L9-19` — Agent Loop 核心模式定义
+[^2]: [[sources/claude-code/claude-code-system-prompts/README]] `L46-57` — 多片段组合的设计理由
+[^3]: [[sources/agent/learn-claude-code/s01-Agent循环]] `L124-155` — agent_loop 完整代码
+[^4]: [[sources/claude-code/claude-code-system-prompts/README]] `L154-220` — System Prompt 片段列表
+[^5]: [[sources/agent/learn-claude-code/s02-工具调用]] `L10-20` — TOOL_HANDLERS 分发机制
+[^6]: [[sources/claude-code/claude-code-system-prompts/README]] `L265-343` — Tool Descriptions 完整列表
+[^7]: [[sources/agent/learn-claude-code/s06-上下文压缩]] `L12-40` — 三层压缩架构图
+[^8]: [[sources/claude-code/claude-code-system-prompts/system-prompts/system-prompt-context-compaction-summary]] `L1-28` — 生产版压缩摘要 prompt
+[^9]: [[sources/agent/learn-claude-code/s04-子代理]] `L10-29` — 子代理的独立上下文设计
+[^10]: [[sources/claude-code/claude-code-system-prompts/system-prompts/agent-prompt-explore]] `L12-26` — Explore 代理的元数据和工具限制
+[^11]: [[sources/agent/learn-claude-code/s05-技能系统]] `L9-18` — 两层按需加载设计
+[^12]: [[sources/claude-code/claude-code-system-prompts/README]] `L123-153` — Data 系列参考文档列表
 
 ---
 
@@ -906,19 +906,19 @@ docs/test-artifacts/
 
 ### 引用索引
 
-[^0]: [[sources/learn-shareai/s01-Agent循环]] `L1-10` — 核心问题和解决方案概述
-[^1]: [[sources/learn-shareai/s01-Agent循环]] `L9-19` — Agent Loop 的 while 循环模式
-[^2]: [[sources/learn-shareai/s02-工具调用]] `L1-20` — 工具分发表的设计
-[^3]: [[sources/learn-shareai/s03-进度追踪]] `L1-30` — TodoWrite 进度追踪机制
-[^4]: [[sources/learn-shareai/s04-子代理]] `L1-30` — 子代理的独立上下文设计
-[^5]: [[sources/learn-shareai/s05-技能系统]] `L1-20` — 两层按需加载架构
-[^6]: [[sources/learn-shareai/s06-上下文压缩]] `L1-45` — 三层压缩策略
-[^7]: [[sources/learn-shareai/s17-自主代理]] `L1-30` — 任务持久化设计（概念融入自主代理章节）
-[^8]: [[sources/learn-shareai/s13-后台任务]] `L1-30` — 后台线程执行
-[^9]: [[sources/learn-shareai/s15-Agent团队]] `L1-30` — 持久化 teammate 设计
-[^10]: [[sources/learn-shareai/s16-团队协议]] `L1-30` — 自然语言团队协议
-[^11]: [[sources/learn-shareai/s17-自主代理]] `L1-30` — 任务看板与自动认领
-[^12]: [[sources/learn-shareai/s18-Worktree隔离]] `L1-30` — git worktree 隔离机制
+[^0]: [[sources/agent/learn-claude-code/s01-Agent循环]] `L1-10` — 核心问题和解决方案概述
+[^1]: [[sources/agent/learn-claude-code/s01-Agent循环]] `L9-19` — Agent Loop 的 while 循环模式
+[^2]: [[sources/agent/learn-claude-code/s02-工具调用]] `L1-20` — 工具分发表的设计
+[^3]: [[sources/agent/learn-claude-code/s03-进度追踪]] `L1-30` — TodoWrite 进度追踪机制
+[^4]: [[sources/agent/learn-claude-code/s04-子代理]] `L1-30` — 子代理的独立上下文设计
+[^5]: [[sources/agent/learn-claude-code/s05-技能系统]] `L1-20` — 两层按需加载架构
+[^6]: [[sources/agent/learn-claude-code/s06-上下文压缩]] `L1-45` — 三层压缩策略
+[^7]: [[sources/agent/learn-claude-code/s17-自主代理]] `L1-30` — 任务持久化设计（概念融入自主代理章节）
+[^8]: [[sources/agent/learn-claude-code/s13-后台任务]] `L1-30` — 后台线程执行
+[^9]: [[sources/agent/learn-claude-code/s15-Agent团队]] `L1-30` — 持久化 teammate 设计
+[^10]: [[sources/agent/learn-claude-code/s16-团队协议]] `L1-30` — 自然语言团队协议
+[^11]: [[sources/agent/learn-claude-code/s17-自主代理]] `L1-30` — 任务看板与自动认领
+[^12]: [[sources/agent/learn-claude-code/s18-Worktree隔离]] `L1-30` — git worktree 隔离机制
 
 ---
 
@@ -1005,31 +1005,31 @@ agentMetadata:                ← 子代理元数据（仅 agent 类型有）
 
 ### 引用索引
 
-[^1]: [[sources/claude-code-system-prompts/README]] `L30-57` — 多系统提示词的设计理由和构成
-[^2]: [[sources/claude-code-system-prompts/README]] `L169-181` — 行为约束类 system prompt
-[^3]: [[sources/claude-code-system-prompts/README]] `L169-181` — 任务执行类 system prompt
-[^4]: [[sources/claude-code-system-prompts/README]] `L182-184` — Fork 和子代理管理
-[^5]: [[sources/claude-code-system-prompts/README]] `L160-164` — 记忆系统相关 prompt
-[^6]: [[sources/claude-code-system-prompts/README]] `L192-194` — 模式控制相关 prompt
-[^7]: [[sources/claude-code-system-prompts/README]] `L265-289` — 核心工具描述
-[^8]: [[sources/claude-code-system-prompts/README]] `L271-287` — 高级工具描述
-[^9]: [[sources/claude-code-system-prompts/README]] `L280-286` — 团队工具描述
-[^10]: [[sources/claude-code-system-prompts/README]] `L269-339` — Bash sandbox 子规则
-[^11]: [[sources/claude-code-system-prompts/README]] `L78-79` — Explore 和 Plan 子代理
-[^12]: [[sources/claude-code-system-prompts/README]] `L83-86` — 创建助手类
-[^13]: [[sources/claude-code-system-prompts/README]] `L89-94` — Slash 命令类
-[^14]: [[sources/claude-code-system-prompts/README]] `L97-119` — AI 工具函数类
-[^15]: [[sources/claude-code-system-prompts/README]] `L127-136` — SDK 参考类
-[^16]: [[sources/claude-code-system-prompts/README]] `L147-153` — 概念文档类
-[^17]: [[sources/claude-code-system-prompts/README]] `L350-353` — 核心技能
-[^18]: [[sources/claude-code-system-prompts/README]] `L353-354` — API 构建技能
-[^19]: [[sources/claude-code-system-prompts/README]] `L355-358` — 验证技能
-[^20]: [[sources/claude-code-system-prompts/README]] `L362-363` — 配置技能
-[^21]: [[sources/claude-code-system-prompts/README]] `L229-235` — 文件事件类
-[^22]: [[sources/claude-code-system-prompts/README]] `L250-254` — 模式切换类
-[^23]: [[sources/claude-code-system-prompts/README]] `L257-258` — 团队协调类
-[^24]: [[sources/claude-code-system-prompts/README]] `L256-262` — 工具提醒类
-[^25]: [[sources/claude-code-system-prompts/system-prompts/agent-prompt-explore]] `L1-27` — frontmatter 格式示例
-[^26]: [[sources/claude-code-system-prompts/README]] `L49-55` — 条件组合设计
-[^27]: [[sources/claude-code-system-prompts/system-prompts/agent-prompt-explore]] `L48-49` — 模板变量示例
-[^28]: [[sources/claude-code-system-prompts/README]] `L37-39` — 版本追踪说明
+[^1]: [[sources/claude-code/claude-code-system-prompts/README]] `L30-57` — 多系统提示词的设计理由和构成
+[^2]: [[sources/claude-code/claude-code-system-prompts/README]] `L169-181` — 行为约束类 system prompt
+[^3]: [[sources/claude-code/claude-code-system-prompts/README]] `L169-181` — 任务执行类 system prompt
+[^4]: [[sources/claude-code/claude-code-system-prompts/README]] `L182-184` — Fork 和子代理管理
+[^5]: [[sources/claude-code/claude-code-system-prompts/README]] `L160-164` — 记忆系统相关 prompt
+[^6]: [[sources/claude-code/claude-code-system-prompts/README]] `L192-194` — 模式控制相关 prompt
+[^7]: [[sources/claude-code/claude-code-system-prompts/README]] `L265-289` — 核心工具描述
+[^8]: [[sources/claude-code/claude-code-system-prompts/README]] `L271-287` — 高级工具描述
+[^9]: [[sources/claude-code/claude-code-system-prompts/README]] `L280-286` — 团队工具描述
+[^10]: [[sources/claude-code/claude-code-system-prompts/README]] `L269-339` — Bash sandbox 子规则
+[^11]: [[sources/claude-code/claude-code-system-prompts/README]] `L78-79` — Explore 和 Plan 子代理
+[^12]: [[sources/claude-code/claude-code-system-prompts/README]] `L83-86` — 创建助手类
+[^13]: [[sources/claude-code/claude-code-system-prompts/README]] `L89-94` — Slash 命令类
+[^14]: [[sources/claude-code/claude-code-system-prompts/README]] `L97-119` — AI 工具函数类
+[^15]: [[sources/claude-code/claude-code-system-prompts/README]] `L127-136` — SDK 参考类
+[^16]: [[sources/claude-code/claude-code-system-prompts/README]] `L147-153` — 概念文档类
+[^17]: [[sources/claude-code/claude-code-system-prompts/README]] `L350-353` — 核心技能
+[^18]: [[sources/claude-code/claude-code-system-prompts/README]] `L353-354` — API 构建技能
+[^19]: [[sources/claude-code/claude-code-system-prompts/README]] `L355-358` — 验证技能
+[^20]: [[sources/claude-code/claude-code-system-prompts/README]] `L362-363` — 配置技能
+[^21]: [[sources/claude-code/claude-code-system-prompts/README]] `L229-235` — 文件事件类
+[^22]: [[sources/claude-code/claude-code-system-prompts/README]] `L250-254` — 模式切换类
+[^23]: [[sources/claude-code/claude-code-system-prompts/README]] `L257-258` — 团队协调类
+[^24]: [[sources/claude-code/claude-code-system-prompts/README]] `L256-262` — 工具提醒类
+[^25]: [[sources/claude-code/claude-code-system-prompts/system-prompts/agent-prompt-explore]] `L1-27` — frontmatter 格式示例
+[^26]: [[sources/claude-code/claude-code-system-prompts/README]] `L49-55` — 条件组合设计
+[^27]: [[sources/claude-code/claude-code-system-prompts/system-prompts/agent-prompt-explore]] `L48-49` — 模板变量示例
+[^28]: [[sources/claude-code/claude-code-system-prompts/README]] `L37-39` — 版本追踪说明

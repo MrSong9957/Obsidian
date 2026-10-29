@@ -103,7 +103,7 @@ Safety Net 是被动式拦截插件，防止执行危险命令（如 `rm -rf`、
 
 ## 5. 智谱 GLM MCP 服务器
 
-📋 **参考独立文档**：`wiki/zhipu-mcp.md`（速查）/ `sources/zhipu-mcp.md`（完整安装指南）
+📋 **参考独立文档**：`wiki/zhipu-mcp.md`（速查）/ `sources/claude-code/zhipu-mcp.md`（完整安装指南）
 
 包含 4 个 MCP 服务器：视觉理解、联网搜索、网页读取、开源仓库查询。
 

@@ -9,7 +9,7 @@ source: https://code.claude.com/docs/en/memory
 
 # Claude Code 配置详细参考
 
-> 入口文档：[[sources/claude-code/claude-code.md|Claude Code 配置核心]]
+> 入口文档：[[wiki/claude-code|Claude Code 配置核心]]
 
 ---
 
