@@ -19,7 +19,11 @@ obsidian/
 │   ├── projects/                    # 项目规划、进度记录
 │   ├── security/                    # 安全实践、密钥管理
 │   └── tools/                       # CLI 工具、编辑器配置
-├── skills/                          # 技能定义（17 个）
+├── docs/                            # 修复日志与验收材料（docs/logs/）
+├── mcp/                             # wiki-query MCP server（Rust）
+├── rules/                           # 项目规则复制源（初始化时复制到目标项目）
+├── scripts/                         # 运维脚本（git-token-check.sh）
+├── skills/                          # 技能定义（5 个）
 └── templates/                       # 页面模板（4 个）
 ```
 
@@ -32,7 +36,7 @@ obsidian/
 | 文档 | 说明 |
 |------|------|
 | [[wiki/claude-code.md\|配置与工作流]] | settings.json、CLAUDE.md、rules、记忆系统、插件、Hooks、子代理、MCP |
-| [[wiki/claude-code-setup.md\|当前配置清单]] | 本机完整配置 + 自检清单 + 缓存优化 + cc switch 模板 |
+| [[wiki/Claude-Code-Statusline-部署与故障恢复\|Statusline 部署与故障恢复]] | 状态栏运维手册——部署结构、容器实测流程、边界验证与排障 |
 | [[wiki/AGENTS-md-base.md\|AGENTS.md 模板]] | 双层架构模板（全局 + 项目级） |
 | [[wiki/agents-md-claude-md.md\|AGENTS.md 与 CLAUDE.md 配置关系]] | 四层级放置规则、AGENTS.md 默认替补逻辑、四档配置、import 共存方案 |
 
@@ -88,18 +92,10 @@ obsidian/
 | 技能 | 用途 |
 |------|------|
 | [[skills/agent-builder/SKILL.md\|agent-builder]] | 构建 AI Agent |
-| [[skills/ai-era-fundamentals-learning/SKILL.md\|ai-era-fundamentals-learning]] | AI 时代底层原理学习法辅助学习编程语言 |
 | [[skills/auto-optimize/SKILL.md\|auto-optimize]] | 自动优化技能 |
-| [[skills/claude-code-config-health/SKILL.md\|claude-code-config-health]] | Claude Code 配置健康检查 |
 | [[skills/comprehensive-testing/SKILL.md\|comprehensive-testing]] | 系统性回归强化测试 |
-| [[skills/docker-dev-container/SKILL.md\|docker-dev-container]] | Docker 容器开发 |
-| [[skills/obsidian-link/SKILL.md\|obsidian-link]] | Obsidian 仓库链接 |
-| [[skills/obsidian-remember/SKILL.md\|obsidian-remember]] | 知识仓库管理 |
-| [[skills/pdf/SKILL.md\|pdf]] | PDF 处理 |
 | [[skills/playwright-cli/SKILL.md\|playwright-cli]] | 浏览器自动化测试 |
-| [[skills/plain-language-knowledge/SKILL.md\|plain-language-knowledge]] | 大白话知识萃取与通俗改写 |
 | [[skills/skill-creator/SKILL.md\|skill-creator]] | 创建与优化技能 |
-| [[skills/wiki-mcp/SKILL.md\|wiki-mcp]] | wiki-query MCP 知识库操作 |
 
 ---
 

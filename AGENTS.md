@@ -86,7 +86,6 @@
 正文由 Agent 的文件工具读写；wiki-query 读取 Markdown 并维护派生的 SQLite 索引。查重报告只提示相似文档，不自动合并。
 
 - 知识检索使用 `wiki_search`；代码片段、具体文本、文件名模式和非 Markdown 文件检索使用 `rg` / glob。
-- 使用 wiki-query 时读取 [wiki-mcp Skill](skills/wiki-mcp/SKILL.md)，获取工具调用与首次接入流程。
 - 构建、启动和 CLI 运维按需查阅 [wiki-query README](mcp/wiki-query/README.md)。
 - 根目录 [MEMORY.md](MEMORY.md) 是文件记忆入口：服务通过 Junction/链接把本 vault 用作项目记忆的场景，仅维护少量长期有效的偏好与知识指针。涉及入口或引用的变更、发现失效引用时检查更新该文件；知识库操作以本文件为准，该入口不替代外部项目自身的规则。
 

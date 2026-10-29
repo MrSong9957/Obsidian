@@ -9,12 +9,12 @@ source: self
 
 # Agent 工具初始化配置
 
-新 Agent 工具环境的初始化清单，共五步：定位仓库、配置双层规则、安装技能、安装智能体代理、配置项目 `rules/`。
+新 Agent 工具环境的初始化清单，共六步：定位仓库、配置双层规则、安装技能、安装智能体代理、配置项目 `rules/`、安装仓库 SKILL 技能。
 
 ### 初始化步骤
 
 1. **定位配置来源**：优先找到本地 Obsidian 仓库，没有则从远程 GitHub 仓库获取。
-   - 本地默认路径：宿主机 `D:\AgentLab\shared\Obsidian` / Docker 容器 `/vault`。
+   - 本地默认路径：宿主机 `E:\Files\Obsidian` / Docker 容器 `/vault`。
    - GitHub 仓库：[MrSong9957/Obsidian](https://github.com/MrSong9957/Obsidian)。
    - 后续“项目根目录”指待初始化的目标项目；已有规则、技能或同名文件时先比较再合并，保留项目已有配置。
 
