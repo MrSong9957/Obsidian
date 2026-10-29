@@ -149,7 +149,7 @@ MiMo Code 的 Windows / XDG 路径应以当前版本实际解析的配置目录�
 ### 开发与验证流程
 
 - 修改前阅读相关实现、邻近测试、测试说明和 CI 配置，复用现有框架、夹具及工具，确认预期行为和第 8 节的检查命令。行为变更、缺陷修复或重构前，运行最小相关测试确认基线。
-- 按顺序执行：`ce-work` → `comprehensive-testing` → `Security Testing` → `ce-code-review` → 全量验证和修复 → `ce-compound`。
+- 按顺序执行：`ce-work` → `comprehensive-testing` → `Security Testing` → `ce-simplify-code` → `ce-code-review` → 全量验证和修复 → `ce-compound`。
 - 任一阶段发现错误时，使用 `ce-debug` 定位根因，修复本次引入或与任务直接有关的问题；无关已有问题单独报告，不顺手修复。修复后复验受影响的检查，最终完成第 8 节规定的全量验证。
 
 ### 验证范围与完成条件
