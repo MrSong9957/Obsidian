@@ -37,7 +37,7 @@ source: self
 - [[wiki/AGENTS-md-base|AGENTS.md 双层架构模板]] — 第 2 步使用的双层规则模板
 - [[wiki/ce + last30days 技能组合|ce + last30days 技能组合]] — 第 3 步执行的技能安装指令
 - [[wiki/agents-md-claude-md|AGENTS.md 与 CLAUDE.md 配置关系]] — `@AGENTS.md` 导入方案的层级规则与四档配置
-- [[wiki/规格文档实战法|规格文档实战法]] — 第 5 步复制的规则正文及同步维护约定
+- [[wiki/规格文档|规格文档]] — 第 5 步复制的规则正文及同步维护约定
 
 ### 引用索引
 

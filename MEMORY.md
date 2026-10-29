@@ -11,7 +11,7 @@
 - 调试：先观察再修改，三段式可观测性 → [[wiki/dev-practice.md|详情]]([wiki/dev-practice.md](wiki/dev-practice.md))
 - 方法论：Harness Engineering → [[wiki/agent-arch.md|详情]]([wiki/agent-arch.md](wiki/agent-arch.md))
 - 子代理：可并行或需隔离时用；简单操作直接做
-- 学习/编程主方法：规格文档实战法——每个功能一份规格文档，预测→实测→坑记录沉淀经验 → [[wiki/规格文档实战法.md|详情]]([wiki/规格文档实战法.md](wiki/规格文档实战法.md))
+- 学习/编程主方法：规格文档——每个功能一份规格提示词，预测→实测验收，规格是母版、代码随用随生成 → [[wiki/规格文档.md|详情]]([wiki/规格文档.md](wiki/规格文档.md))
 - 技术栈：原型 HTML/CSS/JS，正式 Flutter，后端 Python/Rust → [[wiki/frontend.md|详情]]([wiki/frontend.md](wiki/frontend.md))
 - 开发方法：默认 TDD，代码质量由 AI 发现最佳实践 → [[wiki/dev-practice.md|详情]]([wiki/dev-practice.md](wiki/dev-practice.md))
 

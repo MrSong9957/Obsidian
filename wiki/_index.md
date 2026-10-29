@@ -102,9 +102,7 @@ updated: 2026-10-27
 | [[wiki/可执行记忆与记忆内容的三种类型\|可执行记忆与记忆内容的三种类型]] | 理解如何用代码计算和检查用户信息，并区分记忆层次、存储格式与内容类型。 | agent-memory, executable-memory, user-as-code, knowledge-representation, cognitive-science |
 | [[wiki/多厂商LLM接入架构\|多厂商LLM接入架构]] | Rust CLI 多厂商 LLM 接入方案——Harness 厂商适配器 + Codex 请求分层，五类职责划分、... | rust, llm, provider, adapter, retry, streaming, codex, deepseek-harness |
 | [[wiki/大模型API上下文结构\|Agent 调用大模型时的 API 上下文结构]] | 理解 Agent 如何把系统规则、对话历史、工具和工具结果一起发送给模型。 | ai-agent, context-engineering, llm-api, messages, tool-calling |
-| [[wiki/大脑模型-v3\|大脑模型-v3]] | Superpowers + goal 版大脑模型——S/A/B/C 任务分级、Skill 调度、返回门禁、L1/L... | brain-model, decision-control, agent-orchestration, superpowers, testing-gates, goal |
-| [[wiki/大脑模型-v4-规格驱动版\|大脑模型-v4-规格驱动版]] | 规格驱动版大脑模型——统一流程（规格→分支→/goal→用户批准→交付）、五节规格模板、4 个保留 Skill、/... | brain-model, decision-control, agent-orchestration, spec-driven, goal, supervisor |
-| [[wiki/大脑模型-v4\|大脑模型-v4]] | grill-me + goal 版大脑模型——Supervisor 职责边界、Matt Skills 地图、/go... | brain-model, decision-control, agent-orchestration, grill-me, goal, matt-skills, supervisor |
+| [[wiki/大脑模型-v5-规格驱动版\|大脑模型-v5-规格驱动版]] | 规格驱动版大脑模型——统一流程（计划前调研→ce-plan 规格→分支→/goal→用户批准→交付）、Skill 链条与验证分级、/goal 完成条件与返回门禁 | brain-model, decision-control, agent-orchestration, spec-driven, goal, supervisor |
 | [[wiki/工作流编排\|工作流编排：用确定性流程控制 LLM 与工具]] | 判断什么时候该用单次调用、固定工作流，什么时候才需要自主 Agent。 | agent, workflow, orchestration, harness, llm, adaptation-layer |
 | [[wiki/工具定义、按需加载与提示工程消融实验\|工具定义、按需加载与提示工程消融实验]] | 设计易于正确使用的工具说明，理解按需加载如何保留缓存，并通过对照实验检验提示词效果。 | tool-use, tool-search, context-engineering, prompt-caching, ablation-study, tau-bench |
 | [[wiki/工具调用闭环：Codex复用与参考范围\|工具调用闭环：Codex复用与参考范围]] | Codex 工具定义机制（Rust 规格 → JSON 声明，自然语言写在 description）与工具调用闭环... | codex, agent, tool-calling, rust, harness |
@@ -130,7 +128,7 @@ updated: 2026-10-27
 | [[wiki/终端重复绘制：原因与备用屏方案\|终端重复绘制：原因与备用屏方案]] | 终端重复绘制的根因——旧画面擦除位置判断错误；全时备用屏、缩放清屏完整重画、退出恢复主屏的方案概要与真实终端验收要点 | cli, terminal, alternate-screen, ink, rendering, deepseek-harness, design |
 | [[wiki/自主-Agent\|自主 Agent：用 ReAct 循环动态决定下一步]] | 理解自主 Agent 如何规划、使用工具、处理失败，以及什么时候该和工作流混合使用。 | agent, autonomous-agent, react, workflow, harness, orchestration |
 | [[wiki/观察空间与动作空间决定Agent能力\|观察空间与动作空间决定 Agent 能看什么、能做什么]] | 理解 Agent 如何通过观察和行动接口连接外部世界，以及为什么扩展接口能直接提升任务能力。 | agent, observation-space, action-space, harness, tools, context |
-| [[wiki/规格文档实战法\|规格文档实战法]] | 每个功能写一份说明，交给 AI 实现，检查功能、速度和资源占用，记下问题与经验 | spec-driven, learning-method, programming-method, ai-era, knowledge-management |
+| [[wiki/规格文档\|规格文档]] | 每个功能写一份规格提示词，交给 AI 实现，检查功能、速度和资源占用 | spec-driven, learning-method, programming-method, ai-era, knowledge-management |
 | [[wiki/让模型输出人能看懂、能验证的四种形式\|让模型输出人能看懂、能验证的四种形式]] | Karpathy 的提效思路：用受控语言、图、交互网页和定制讲解视频替代长文，把读结论变成验证结论。 | prompt-engineering, llm-output, controlled-language, visualization, explainer-video |
 | [[wiki/记忆压缩与本地日志脱敏\|记忆压缩与本地日志脱敏]] | 理解如何减少重复记忆、保留重要信息，并在日志外传或保存前隐藏敏感内容。 | agent-memory, memory-compression, log-sanitization, pii, ollama, qwen3 |
 | [[wiki/记忆能力评估\|记忆能力评估：基础回忆、多会话检索与主动服务]] | 理解三层记忆能力的区别，以及怎样测试记忆能否保留、更新并用于回答问题。 | agent-memory, memory-evaluation, methodology, locomo |
