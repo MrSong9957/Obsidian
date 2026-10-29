@@ -150,7 +150,7 @@ volumes:
 | 字段 | 用途 |
 |------|------|
 | `image` | 优先使用本地镜像，本地无则从 Docker Hub 拉取 |
-| `build.context` | 本地源码构建兜底（两级均不可用时，用 `/docker-dev-container` 技能重建并推送 Hub） |
+| `build.context` | 本地源码构建兜底（两级均不可用时，本地构建镜像并推送 Hub） |
 | `user: "0:0"` | 以 root 运行，entrypoint 自动处理权限 |
 | `extra_hosts` | 确保 `host.docker.internal` 可解析（Docker Desktop 部分版本不自动注入） |
 | `environment` | 代理配置 + `NO_PROXY` 排除国内域名（`open.bigmodel.cn`）避免直连请求绕代理 |
@@ -222,7 +222,7 @@ claude --version  # 能启动即连通
 
 ## 步骤 4：Obsidian 记忆链接 [容器内]
 
-使用 `obsidian-link` 技能，将项目记忆目录 symlink 到 Obsidian 仓库。
+将项目记忆目录 symlink 到 Obsidian 仓库（原 `obsidian-link` 技能已移除，按 4.2 手动执行）。
 
 ### 4.1 验证挂载
 
@@ -230,25 +230,40 @@ claude --version  # 能启动即连通
 ls /home/app/obsidian/MEMORY.md  # 确认 Obsidian 仓库已挂载
 ```
 
-### 4.2 执行 obsidian-link 技能
+### 4.2 建立记忆链接
 
-在 Claude Code 中调用：
+原 `obsidian-link` 技能已移除，改为手动执行以下命令（vault 路径以 `/home/app/obsidian` 为例，下称 `$VAULT_PATH`）：
 
+```bash
+# 定位项目记忆目录
+MEMORY_DIR=$(dirname "$(find /home/app/.claude/projects -name "memory" -type d 2>/dev/null | head -1)")/memory
+
+cd "$MEMORY_DIR"
+# 已有同名文件（非 symlink）时先备份
+[ -f MEMORY.md ] && [ ! -L MEMORY.md ] && mv MEMORY.md MEMORY.md.bak
+
+ln -sf "$VAULT_PATH/MEMORY.md" MEMORY.md
+ln -sf "$VAULT_PATH/README.md" README.md
+ln -sf "$VAULT_PATH/wiki" wiki
+ln -sf "$VAULT_PATH/sources" sources
+ln -sf "$VAULT_PATH/skills" skills
+ln -sf "$VAULT_PATH/templates" templates
 ```
-/obsidian-link
-```
 
-技能自动完成：
-1. 检测运行环境（Docker 容器内）
-2. 扫描 `/home/app/obsidian` 找到含 MEMORY.md 的 vault
-3. 在项目记忆目录创建 symlink：
-   - `MEMORY.md` → `/home/app/obsidian/MEMORY.md`
-   - `wiki/` → `/home/app/obsidian/wiki/`
-   - `sources/` → `/home/app/obsidian/sources/`
-   - `skills/` → `/home/app/obsidian/skills/`
-   - `templates/` → `/home/app/obsidian/templates/`
-   - 以及 vault 中存在的其他目录/文件
-4. 验证所有 symlink 可读
+只链接 vault 中实际存在的目录和文件，不创建不存在的链接。逐项验证每个 symlink 是否可用：
+
+```bash
+cd "$MEMORY_DIR"
+echo "=== 验证 symlink ==="
+for link in $(find . -maxdepth 1 -type l); do
+    target=$(readlink -f "$link")
+    if [ -e "$target" ]; then
+        echo "  ✓ $link → $target"
+    else
+        echo "  ✗ $link → $target (BROKEN)"
+    fi
+done
+```
 
 完成后，Obsidian 侧编辑的内容实时同步到项目，Claude Code 直接读写 MEMORY.md。
 
@@ -334,5 +349,5 @@ mkdir -p docs/superpowers/plans
 - [ ] `.claude/rules/ecc/` 包含 common + 对应语言 rules
 - [ ] `docs/superpowers/specs/` 和 `plans/` 目录存在
 - [ ] `/home/app/obsidian/MEMORY.md` 可读（Obsidian 仓库已挂载）
-- [ ] 项目记忆目录 symlink 指向 Obsidian 仓库内容（`obsidian-link` 技能已完成）
+- [ ] 项目记忆目录 symlink 指向 Obsidian 仓库内容（记忆链接已建立）
 - [ ] `claude` 能正常连接 API 并响应
