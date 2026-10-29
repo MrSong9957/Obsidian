@@ -2,7 +2,7 @@
 name: AGENTS-md
 description: 全局行为准则与项目开发规范的双层 AGENTS.md 模板；默认使用 Codex 目录，兼容 Claude Code、ZCode、MiMo Code 等 Agent 的规则入口
 type: concept
-updated: 2026-10-27
+updated: 2026-10-30
 tags: [agent, agents-md, claude-md, template, karpathy, setup]
 source: https://learn.chatgpt.com/docs/agent-configuration/agents-md
 ---
@@ -50,8 +50,6 @@ MiMo Code 的 Windows / XDG 路径应以当前版本实际解析的配置目录�
 
 ````markdown
 # AGENTS.md
-
----
 
 ## Karpathy 编码准则
 
@@ -117,7 +115,7 @@ MiMo Code 的 Windows / XDG 路径应以当前版本实际解析的配置目录�
 项目层放**开发规范 + 项目配置**。每个项目独立定制。
 
 ```markdown
-# AGENTS.md
+# 项目规则
 
 ## 1. 项目原则
 
@@ -132,7 +130,6 @@ MiMo Code 的 Windows / XDG 路径应以当前版本实际解析的配置目录�
 
 - `docs/specs/`：功能规格。一个功能一份，不合并不同功能。文件名采用 `编号-功能英文名.md`，如 `001-daily-checkin.md`。
 - `docs/logs/`：证据记录。Agent 按需自主收集并记录证据，只保留关键设计依据、测试要点、失败原因和验证结果。最终报告引用同一份证据，不重复抄写。
-- 可提炼复用到其他项目的经验和决策（含关键判断、坑记录）按第 9 节统一记录到 `project-lessons.md`；规格和日志按需引用，不重复抄写。
 - 局部实现原因写在对应代码附近的注释中。
 - 代码变更影响文档或注释时，同步更新对应内容。
 - 临时草稿中的有效结论应按上述分工提炼进正式文档。
@@ -140,7 +137,7 @@ MiMo Code 的 Windows / XDG 路径应以当前版本实际解析的配置目录�
 ## 3. 调研与计划
 
 - 调研：@`rules\计划前调研.md`，在编写计划前，结合任务及规格文档进行计划前的调研。调用结束后，规格文档中必须要有指向汇总文档和各专家原始输出的链接.
-- 计划：使用 `ce-plan` 技能，结合规格文档、调研产物、`project-lessons.md` 等任务相关文档编写计划。
+- 计划：使用 `ce-plan` 技能，结合规格文档、调研产物等任务相关文档编写计划。
 
 ## 4. 测试与验证流程
 
@@ -224,10 +221,8 @@ E2E 覆盖关键用户流程，不替代低层测试。主要检查用户最终�
 
 ## 9. 参考资料
 
-- Obsidian 仓库：宿主机 `D:\AgentLab\shared\Obsidian`，Docker 容器 `/vault`。记忆文档和可沉淀的知识通过 wiki MCP 保存到此处。
+- Obsidian 仓库：宿主机 `E:\Files\Obsidian`，Docker 容器 `/vault`。记忆文档和可沉淀的知识通过 wiki MCP 保存到此处。
 - Obsidian GitHub 仓库：[MrSong9957/Obsidian](https://github.com/MrSong9957/Obsidian)，保存个人知识、常用技能和 Agent 代理。若缺失 SKILL 技能和 Agent 代理时，按需下载到 Agent 工具全局目录使用。
-- @`project-lessons.md`：项目经验/决策沉淀，按需加载；Agent 执行时，将与本项目直接相关、对后续执行或决策有复用价值的信息（如已确认决策、问题根因与解决方法）统一记录于此，**不得与「8. 项目信息」重复，禁止直接写入 AGENTS.md**，以避免重复踩坑、减少决策偏差。
-
 
 ```
 
