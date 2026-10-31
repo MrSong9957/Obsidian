@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-10-30
+updated: 2026-10-31
 ---
 
 # Wiki 索引
@@ -102,6 +102,7 @@ updated: 2026-10-30
 | [[wiki/十二种深度思考训练法\|十二种深度思考训练法：从表象到本质的认知工具集]] | 提供12套可刻意练习的本质思考工具，涵盖溯源、拆解、模式识别等，助用户建立结构化洞察力。 | deep-thinking, cognitive-tools, problem-solving, mental-models, decision-making |
 | [[wiki/卡帕西推荐的拼接编程法\|卡帕西推荐的拼接编程法]] | Karpathy 拼接编程法——手写半代码半注释，注释写清每步数据类型与状态变化，由 Agent 生成具体代码；人... | karpathy, programming-method, ai-workflow, code-comments, agent-collaboration |
 | [[wiki/可执行记忆与记忆内容的三种类型\|可执行记忆与记忆内容的三种类型]] | 理解如何用代码计算和检查用户信息，并区分记忆层次、存储格式与内容类型。 | agent-memory, executable-memory, user-as-code, knowledge-representation, cognitive-science |
+| [[wiki/吴恩达：程序员最贵的能力，已经不是写代码\|吴恩达：程序员最贵的能力，已经不是写代码]] | AI 让写代码降价后的七重判断——任务替代、工作流差距、全栈化、学习外包风险、上下文护城河、产品管理瓶颈与主动性招聘 | ai, developer-workflow, learning, agentic-coding, career |
 | [[wiki/多厂商LLM接入架构\|多厂商LLM接入架构]] | Rust CLI 多厂商 LLM 接入方案——Harness 厂商适配器 + Codex 请求分层，五类职责划分、... | rust, llm, provider, adapter, retry, streaming, codex, deepseek-harness |
 | [[wiki/大模型API上下文结构\|Agent 调用大模型时的 API 上下文结构]] | 理解 Agent 如何把系统规则、对话历史、工具和工具结果一起发送给模型。 | ai-agent, context-engineering, llm-api, messages, tool-calling |
 | [[wiki/大脑模型-v5-规格驱动版\|大脑模型-v5-规格驱动版]] | 规格驱动版大脑模型——统一流程（计划前调研→ce-plan 规格→分支→/goal→用户批准→交付）、Skill 链条与验证分级、/goal 完成条件与返回门禁 | brain-model, decision-control, agent-orchestration, spec-driven, goal, supervisor |

@@ -65,10 +65,10 @@ source: "https://github.com/anthropics/claude-code/releases/tag/v2.1.154"
 
 ## 引用索引
 
-[^1]: [[~/.claude/cache/changelog.md]] `L198-206` — 2.1.154 版本更新：引入动态工作流、Opus 4.8
+[^1]: [[~/.claude/cache/changelog.md]] `L5557-5558` — 2.1.154 版本更新：引入动态工作流、Opus 4.8
 [^2]: [[~/.claude/cache/changelog.md]] `L148` — 2.1.157 版本：触发词从 workflow 改为 ultracode
-[^3]: [[~/.claude/cache/changelog.md]] `L192` — 2.1.157 版本：添加 Workflow keyword trigger 设置
+[^3]: [[~/.claude/cache/changelog.md]] `L5549` — 2.1.157 版本：添加 Workflow keyword trigger 设置
 [^4]: [[~/.claude/cache/changelog.md]] `L2084` — 2.1.165 版本：/plan 命令支持附加描述参数
-[^5]: [[~/.claude/cache/changelog.md]] `L139` — 2.1.160 版本：修复 /effort ultracode 错误提示
-[^6]: [[~/.claude/cache/changelog.md]] `L102` — 2.1.162 版本：修复工作流动画 motion 设置
+[^5]: [[~/.claude/cache/changelog.md]] `L5496` — 2.1.160 版本：修复 /effort ultracode 错误提示
+[^6]: [[~/.claude/cache/changelog.md]] `L5459` — 2.1.162 版本：修复工作流动画 motion 设置
 [^7]: [[~/.claude/cache/changelog.md]] `L111` — 2.1.163 版本：修复 worktree 隔离问题

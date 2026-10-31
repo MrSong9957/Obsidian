@@ -19,6 +19,7 @@ tags:
   - 渐进式披露
   - Markdown
   - SQLite
+source: https://github.com/openai/codex
 ---
 
 # Codex 记忆系统：框架、源码实现与 Agent 执行手册
