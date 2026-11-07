@@ -2,7 +2,7 @@
 name: rust
 description: Rust 语言安装、环境配置、工具链使用、核心概念（枚举/模式匹配/错误处理/宏）、内存管理与堆漏洞利用安全分析、查阅类型与文档的六种方法
 type: reference
-updated: 2026-06-22
+updated: 2026-11-07
 tags: rust, toolchain, installation, cargo, heap-exploitation, memory-safety, enum, pattern-matching, error-handling, macros, ownership, borrowing, lifetime, rust-analyzer, cargo-doc, documentation, docs.rs
 source: https://example.com
 source_memory: ~/.claude/projects/E--Files-Obsidian/memory/rust-gnu-toolchain-setup.md
@@ -87,6 +87,33 @@ cargo 1.95.0 (f2d3ce0bd 2026-03-21)
 
 > [!info] Rust 的 Windows 安装器会自动检测本机的 C 编译环境。MSVC 是官方推荐方案，兼容性最好。
 
+> [!tip] 实测 2026-11-07：`rustup-init.exe` 本体直连下载正常，但工具链直连下载仅 ~50 KB/s。安装前设 USTC 镜像环境变量，实测约 3.7 MB/s：
+>
+> ```powershell
+> $env:RUSTUP_DIST_SERVER = "https://mirrors.ustc.edu.cn/rust-static"
+> $env:RUSTUP_UPDATE_ROOT = "https://mirrors.ustc.edu.cn/rust-static/rustup"
+> ```
+>
+> 安装中断后直接重跑 `rustup-init.exe -y`，会自动恢复半装状态（`recovering from a partially installed toolchain`），无需手动清理目录。这两个变量只影响当次会话，长期更新走镜像可写入用户环境变量。
+
+#### 自定义安装目录（可选）
+
+`rustup-init.exe` 无 `--prefix` 参数。改目录的唯一途径：先设环境变量，再运行安装器。两个变量**都要设**，只设一个会造成工具链与缓存分离在不同位置（见 [rustup book: Environment variables](https://rust-lang.github.io/rustup/environment-variables.html)）：
+
+- `RUSTUP_HOME`：工具链与 rustup 元数据，占用大头，单工具链 1–2 GB（默认 `%USERPROFILE%\.rustup`）
+- `CARGO_HOME`：cargo 本体、`bin` 代理、registry 缓存（默认 `%USERPROFILE%\.cargo`）
+
+```powershell
+# 永久写入用户级环境变量（路径按需调整，含空格须加引号）
+setx RUSTUP_HOME "D:\Program Files (x86)\rust\rustup"
+setx CARGO_HOME  "D:\Program Files (x86)\rust\cargo"
+
+# 新开终端确认生效（setx 对已开进程无效），再运行 rustup-init.exe。
+# 安装器自动装到新目录，PATH 指向 D:\Program Files (x86)\rust\cargo\bin
+```
+
+> [!warning] 已装在默认位置时不要直接搬目录：`.cargo\bin` 里的 `cargo`/`rustc` 是指向 `.rustup\toolchains` 的硬链接，PATH 与环境变量需联动。官方建议 `rustup self uninstall` 后按上述步骤重装；不想重装可用 junction（`mklink /J`）把两个目录指到新盘。
+
 #### GNU 工具链轻量化安装（免 Visual Studio）
 
 > [!tip] 适用场景：不想安装几个 GB 的 Visual Studio，只想轻量化搭建 Rust 开发环境。采用 GNU 工具链（`x86_64-pc-windows-gnu`）替代默认的 MSVC 工具链。
@@ -135,7 +162,7 @@ cargo run
 > ```powershell
 > winget install BrechtSanders.WinLibs.MCF.UCRT
 > ```
-> 安装后需**重启 shell**，或手动添加 PATH：
+> winget 会自动把上述 `bin` 目录写入用户 PATH（实测 2026-11-07），**重启 shell** 即生效；未生效时手动添加：
 > ```
 > C:\Users\<用户名>\AppData\Local\Microsoft\WinGet\Packages\BrechtSanders.WinLibs.MCF.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\mingw64\bin
 > ```
