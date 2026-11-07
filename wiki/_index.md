@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-10-31
+updated: 2026-11-07
 ---
 
 # Wiki 索引
@@ -33,6 +33,7 @@ updated: 2026-10-31
 | [[wiki/Agent核心循环\|Agent 核心循环：上下文组装与工具执行]] | 理解如何组装请求、提取模型消息、执行工具，并将结果交回模型。 | ai-agent, context-engineering, tool-calling, python |
 | [[wiki/Agent的5个通用设计模式与第一章总框架\|Agent 的 5 个通用设计模式与第一章总框架]] | 用 5 个可复用模式理解 Agent 如何审查、加载信息、保存状态、验证修改和安全演进。 | agent, harness, design-patterns, react, guardrails, context-engineering |
 | [[wiki/Agent驱动Rust学习\|Agent驱动Rust学习：以Codex为地图构建Coding Agent Runtime能力]] | 面向Agent/Coding Agent工程师的Codex源码学习路线，强调“用Codex学架构，让Rust被迫升级” | codex, rust, agent-runtime, coding-agent, just-in-time-learning, mini-codex, openai |
+| [[wiki/C 盘空间治理补充篇：用户目录、根目录与休眠处理\|C 盘空间治理补充篇：用户目录、根目录与休眠处理]] | C 盘治理增量篇——用户目录 AppData 诊断与清理判读、根目录系统文件判读、休眠关闭决策与结算，配合前篇使用 | windows, disk-cleanup, powershell, hibernation |
 | [[wiki/CLI 备用屏架构设计\|CLI 备用屏架构设计]] | DeepSeek Harness CLI 备用屏架构设计——启动即备用屏、职责划分与受限布局、聊天数据与画面分离、... | cli, terminal, alternate-screen, ink, rendering, deepseek-harness, design |
 | [[wiki/Claude-Code-Statusline-部署与故障恢复\|Claude Code Statusline 部署与故障恢复]] | 状态栏运维手册——在新 Claude Code 环境恢复状态栏或排障：canonical 源为准的部署结构、Lin... | claude-code, statusline, ops |
 | [[wiki/Docker容器开发方案\|Docker 容器开发方案]] | Windows 使用 Docker Desktop WSL2 开发容器，将主要开发数据放到 D 盘，并让多个项目共... | Docker, WSL2, Agent, 缓存管理 |
@@ -50,6 +51,7 @@ updated: 2026-10-31
 | [[wiki/Rust学习完整路线\|Rust学习完整路线]] | AI 时代 Rust 精简入门——装环境、啃核心概念、重写旧脚本、给真实项目贡献四步，以「能读懂」为验收标准 | rust, learning-roadmap, ai-era, ai-workflow |
 | [[wiki/Skill 编写方法、上下文位置与缓存成本\|Skill 编写方法、上下文位置与缓存成本]] | 把经验写成可执行、可检验的 Skill，并理解加载位置、上下文占用和缓存费用。 | agent-skills, prompt-engineering, context-engineering, prompt-caching |
 | [[wiki/Skills 与工具的协作方式及实验设计\|Skills 与工具的协作方式及实验设计]] | 分清 Skill、工具和脚本的职责，并通过论文转 PPT、个人写作两个实验检查效果。 | agent-skills, tool-use, progressive-disclosure, skill-evaluation |
+| [[wiki/Windows C 盘空间治理：手动操作与验证指导\|Windows C 盘空间治理：手动操作与验证指导]] | C 盘治理手动操作手册——基线诊断、传递优化与更新缓存清理、WinSxS 维护与验证结算 | windows, disk-cleanup, powershell, wiztree |
 | [[wiki/agent-arch\|Agent 架构核心]] | Agent 循环、多智能体框架、Harness 工程方法论的核心概念与关键要点 | agent, architecture, multi-agent, harness, system-prompts |
 | [[wiki/agents-md-claude-md\|AGENTS.md 与 CLAUDE.md 配置关系]] | Claude Code 指令文件四层级放置规则、AGENTS.md 默认替补逻辑、四档"项目说明"配置与 impo... | claude-code, claude-md, agents-md, memory |
 | [[wiki/architecture-migration-semantic-boundary\|架构迁移语义边界准则]] | 从"renderer 控制视觉"迁移到"message store 控制语义"时,必须区分视觉控制指令与真实数据,... | architecture, migration, semantic-boundary, tui, message-store, renderer, anti-pattern |

@@ -1,3 +1,12 @@
+---
+name: Windows C 盘空间治理：手动操作与验证指导
+description: Windows C 盘空间治理手动操作手册——基线诊断、传递优化与更新缓存清理、WinSxS 维护与验证结算
+type: reference
+updated: 2026-11-07
+tags: [windows, disk-cleanup, powershell, wiztree]
+source: self
+---
+
 # Windows C 盘空间治理：手动操作与验证指导
 
 **文档标准**：ASD-STE100 简化技术英语原则（中文执行版）
