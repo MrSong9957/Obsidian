@@ -14,7 +14,7 @@ source: self
 ### 初始化步骤
 
 1. **定位配置来源**：优先找到本地 Obsidian 仓库，没有则从远程 GitHub 仓库获取。
-   - 本地默认路径：宿主机 `E:\Files\Obsidian` / Docker 容器 `/vault`。
+   - 本地默认路径（仅参考，以实际路径为准）：宿主机 `E:\Files\Obsidian` / Docker 容器 `/vault`。
    - GitHub 仓库：[MrSong9957/Obsidian](https://github.com/MrSong9957/Obsidian)。
    - 后续“项目根目录”指待初始化的目标项目；已有规则、技能或同名文件时先比较再合并，保留项目已有配置。
 
