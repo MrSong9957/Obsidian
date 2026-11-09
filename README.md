@@ -9,7 +9,6 @@ obsidian/
 ├── CLAUDE.md / AGENTS.md            # Schema 层（LLM 行为规则 + 分类规则）
 ├── MEMORY.md                        # 文件记忆入口（少量偏好与知识指针）
 ├── README.md                        # 知识库导航索引
-├── LLM-WIKI-ARCHITECTURE.md         # 架构决策记录（ADR）
 ├── wiki/                            # Wiki 层（按领域组织）
 ├── sources/                         # 原始资料层（按子目录分类）
 │   ├── agent/                       # Agent 架构、多代理系统
@@ -115,4 +114,4 @@ obsidian/
 
 根目录 [MEMORY.md](MEMORY.md) 是**文件记忆入口**：仅服务通过 Junction/链接把本 vault 用作项目记忆的场景，维护少量长期有效的偏好与知识指针，不承担全库检索。
 
-详见 [[LLM-WIKI-ARCHITECTURE.md|架构决策记录]]
+详见 [[sources/projects/LLM-WIKI-ARCHITECTURE.md|架构决策记录]]

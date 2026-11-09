@@ -1,3 +1,12 @@
+---
+name: LLM Wiki 架构决策记录
+description: LLM 长期知识库三层架构的设计决策与演进记录——背景、借鉴取舍、演进史与当前权威入口
+type: reference
+updated: 2026-11-09
+tags: [adr, knowledge-management, architecture]
+source: self
+---
+
 # 架构决策记录（ADR）
 
 > **本文是设计决策与演进记录，不是操作规范。** 当前可执行规则以 [§6 当前权威入口](#6-当前权威入口) 所列文档为准。
