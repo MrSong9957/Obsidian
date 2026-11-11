@@ -126,7 +126,7 @@ MiMo Code 的 Windows / XDG 路径应以当前版本实际解析的配置目录�
 
 ## 2. 项目文档
 
-写计划前，读取并遵守 `rules/规格文档.md`。代码审查前，读取并遵守 `rules/REVIEW.md`。
+写计划前，读取并遵守 `rules/规格文档模板.md`。代码审查前，读取并遵守 `rules/REVIEW.md`。
 
 功能规格和证据记录与代码同仓，统一存放在 `docs/`：
 
