@@ -2,12 +2,15 @@
 name: new-project-setup
 description: 新项目初始化统一入口——Docker 容器启动、镜像配置验证、首次配置、Obsidian 记忆链接、项目级配置补充；镜像更新命令与故障排查见详细参考
 type: reference
-updated: 2026-10-20
+updated: 2026-11-16
 tags: docker, setup, claude-md, ecc, superpowers, configuration
 source: [[sources/claude-code/new-project-setup-references.md]]
 ---
 
 # 新项目开发环境初始化
+
+> [!WARNING]
+> **本文档描述的容器架构已废弃（2026-11-16）。** 基础镜像方案已迁移为本地构建的 `agentlab-base`（Ubuntu 24.04，官方安装 Claude Code / Codex，挂载约定 `/workspace` 与 `/vault`），设计与启动流程见 [[wiki/Docker容器开发方案]]。文中提到的 `docker/docker-compose.yml`（已删除，见 git 历史）、Docker Hub 镜像 `s7620605/claude-code-opencode`、`D:\Files\...` 旧路径均已失效。**仍然适用**的部分：步骤 5 的项目级配置（Git 初始化、CLAUDE.md、ECC rules、Superpowers 目录）与 [[wiki/AGENTS-md-base.md|AGENTS.md 模板]]。
 
 > 相关文档：[[wiki/AGENTS-md-base.md|AGENTS.md 模板]] | [[wiki/claude-code.md|Claude Code 配置与工作流]]
 >

@@ -2,7 +2,7 @@
 name: Docker 容器开发方案
 description: Windows 使用 Docker Desktop WSL2 开发容器，将主要开发数据放到 D 盘，并让多个项目共享 Obsidian 仓库。
 type: reference
-updated: 2026-10-15
+updated: 2026-11-16
 tags: [Docker, WSL2, Agent, 缓存管理]
 source: self
 ---
@@ -257,6 +257,15 @@ Windows 只保留一份 `D:\AgentLab\shared\Obsidian`，所有容器统一通过
 - Git pull、commit、push 由明确的 Agent 统一处理；
 - 长期知识、经验和文档放进 Obsidian；
 - 构建缓存、索引和原始运行数据留在开发环境。
+
+### 构建与挂载踩坑教训
+
+继承自早期 MiMo-Code 容器实践（2026-11-16 从 `docker/` 目录归档，原始细节见 git 历史）：
+
+- **构建参数代理泄漏**：compose 中 `args: HTTP_PROXY: "${HTTP_PROXY:-}"` 不是安全的"默认为空"——宿主机环境变量优先级更高，会让构建走不可达代理。要禁用代理就硬编码空值。
+- **Windows CRLF 行尾**：宿主机编辑过的 `.sh` 复制进镜像前必须 `sed -i 's/\r$//'`，否则 entrypoint 报语法错误。
+- **PATH 污染**：compose `environment` 里写 `PATH=...:$PATH` 会在宿主机展开，把 Windows PATH 注入容器导致 `command not found`。容器 PATH 一律在 Dockerfile `ENV` 中定死，不从 compose 注入。
+- **slim 镜像缺包**：`*-slim` 基础镜像不预装 `unzip` 等工具，Bun 等官方安装脚本会失败；安装前按脚本依赖核对 apt 包列表。
 
 ## 5. Agent 接入
 
