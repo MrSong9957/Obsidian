@@ -2,7 +2,7 @@
 name: Windows C 盘空间治理：手动操作与验证指导
 description: Windows C 盘空间治理手动操作手册——基线诊断、传递优化与更新缓存清理、WinSxS 维护与验证结算
 type: reference
-updated: 2026-11-07
+updated: 2026-11-16
 tags: [windows, disk-cleanup, powershell, wiztree]
 source: self
 ---
@@ -10,7 +10,8 @@ source: self
 # Windows C 盘空间治理：手动操作与验证指导
 
 **文档标准**：ASD-STE100 简化技术英语原则（中文执行版）
-**版本**：1.0　**日期**：2026-11-07　**验证环境**：Windows 11，WizTree 4.33
+**版本**：1.1　**日期**：2026-11-16　**验证环境**：Windows 11，WizTree 4.33
+**增量篇**：用户目录、根目录文件与休眠决策见[[wiki/C 盘空间治理补充篇：用户目录、根目录与休眠处理|《C 盘空间治理补充篇：用户目录、根目录与休眠处理》]]。
 
 ---
 
@@ -131,7 +132,7 @@ net start wuauserv
 
 ### 2.3 可选清理
 
-1. 不用休眠功能时，执行第 1 条命令，回收约 6 GB：
+1. 不用休眠功能时，执行第 1 条命令，回收约 6 GB。台式机与笔记本的完整决策表见增量篇第 7 节：
 
 ```cmd
 powercfg /h off
@@ -252,6 +253,7 @@ Dism.exe /online /Cleanup-Image /StartComponentCleanup
 | 日期 | 基线已用 | 清理后已用 | ServiceProfiles | SoftwareDistribution | 执行的步骤 | 验证结果 |
 |---|---|---|---|---|---|---|
 | 2026-11-07 | 101.9 GB | 75.2 GB | 13.7→0.05 GB | 7.8→0.07 GB | 2.1、2.2、5 | 4.1~4.3 通过 |
+| 2026-11-16 | 52.3 GB | 39.9 GB | 0（免清） | 2.35→0.00 GB | 2.2、7（DISM）、5；另清 `Windows\Temp` 0.79 GB（范围外） | 4.2、4.3 通过 |
 | | | | | | | |
 
 ---

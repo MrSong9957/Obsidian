@@ -2,7 +2,7 @@
 name: C 盘空间治理补充篇：用户目录、根目录与休眠处理
 description: C 盘治理增量篇——用户目录 AppData 诊断与清理判读、根目录系统文件判读、休眠关闭决策与结算
 type: reference
-updated: 2026-11-07
+updated: 2026-11-16
 tags: [windows, disk-cleanup, powershell, hibernation]
 source: self
 ---
@@ -10,7 +10,7 @@ source: self
 # C 盘空间治理补充篇：用户目录、根目录与休眠处理
 
 **文档标准**：ASD-STE100 简化技术英语原则（中文执行版）
-**版本**：1.1　**日期**：2026-11-07　**定位**：本文只写增量内容。基础流程见前篇[[wiki/Windows C 盘空间治理：手动操作与验证指导|《Windows C 盘空间治理：手动操作与验证指导》]]。
+**版本**：1.2　**日期**：2026-11-16　**定位**：本文只写增量内容。基础流程见前篇[[wiki/Windows C 盘空间治理：手动操作与验证指导|《Windows C 盘空间治理：手动操作与验证指导》]]。
 **验证环境**：Windows 11，WizTree 4.33，管理员账户 `Administrator`
 
 ---
@@ -194,10 +194,10 @@ powercfg /h /type reduced
 5. 验证休眠文件已删除：
 
 ```powershell
-Test-Path C:\hiberfil.sys
+[System.IO.File]::Exists('C:\hiberfil.sys')
 ```
 
-6. 通过标准：输出 `False`。
+6. 通过标准：输出 `False`。该文件带系统与隐藏属性，PowerShell 的 `Test-Path` 对它误报 `False`——文件存在时也如此（2026-11-16 实测确认）。故不用 `Test-Path`，用 .NET 的 `Exists` 方法。
 
 ---
 
@@ -237,6 +237,7 @@ Test-Path C:\hiberfil.sys
 | 日期 | 基线 | 本篇操作 | 结算值 | 验证结果 |
 |---|---|---|---|---|
 | 2026-11-07 | 70.9 GB | 豆包两项 + 关休眠 | 63.5 GB | 通过 |
+| 2026-11-16 | 52.3 GB | 用户目录第 1 批 + 关休眠（回收 7.2 GB） | 39.9 GB（与前篇同日合并结算） | 通过 |
 | | | | | |
 
 ---
