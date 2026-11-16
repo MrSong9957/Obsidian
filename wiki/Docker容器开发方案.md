@@ -392,6 +392,58 @@ Docker 数据迁到 D 盘后，C 盘旧缓存不会自动消失。删除虚拟�
 → 必要时再处理虚拟磁盘缩容
 ```
 
+### 虚拟磁盘缩容
+
+`docker_data.vhdx` 只增不减：删除镜像、容器、卷、构建缓存后，空间只在虚拟磁盘内部标记为可复用，文件体积不变。判断依据：`docker system df` 的存活数据远小于 `.vhdx` 体积（如差距超过 2~3 倍）时执行缩容。实测 191 GB → 4.2 GB，压缩约 90 秒。
+
+```powershell
+# 1. Docker 内部先清空，缩容才有空间可还
+docker builder prune -a -f     # 构建缓存全清，下次构建自动重建
+docker images                   # 只保留 agentlab-base:latest 和 ubuntu:24.04，其余 docker rmi
+
+# 2. 停止 Docker Desktop 与 WSL
+docker desktop stop
+wsl --shutdown
+```
+
+diskpart 脚本（如 `compact.txt`）：
+
+```text
+select vdisk file="D:\AgentLab\docker-data\DockerDesktopWSL\disk\docker_data.vhdx"
+attach vdisk readonly
+compact vdisk
+detach vdisk
+```
+
+本机没有 Hyper-V 模块（`Optimize-VHD` 不可用），用 diskpart 压缩，需要管理员权限。当前 shell 非管理员时，先写 runner.ps1（内容为 `diskpart /s "<compact.txt 路径>" > "<日志路径>" 2>&1`），再提权运行：
+
+```powershell
+Start-Process powershell -Verb RunAs -Wait -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-File','<runner.ps1 路径>'
+```
+
+执行时确认 UAC 弹窗。`wsl --shutdown` 会停止所有 WSL 发行版，先保存工作（第 1 节规则）。
+
+```powershell
+# 3. 重启并验收
+docker desktop start
+docker images                   # agentlab-base、ubuntu:24.04 完好
+```
+
+### 清理基准
+
+全量清理并缩容后，`D:\AgentLab` 的正常基线约 6.3 GB，以下内容必须保留：
+
+| 路径 | 占用 | 内容 |
+| --- | --- | --- |
+| `docker-data\...\disk\docker_data.vhdx` | ~4.3 GB | 存活镜像 `agentlab-base:latest`、`ubuntu:24.04` 与 overlay2 元数据 |
+| `wsl-data\swap.vhdx` | ~1.9 GB | WSL swap（第 3 节配置） |
+| `docker-data\...\main\ext4.vhdx` | ~96 MB | Docker Desktop 系统发行版盘 |
+| `shared\Obsidian` | ~136 MB | 共享知识库（git 仓库） |
+| `base-image\Dockerfile` | — | 基础镜像定义源文件 |
+| `projects\`、`backups\` | — | 项目与备份目录 |
+
+注意：`docker system df` 中镜像的 RECLAIMABLE 只表示"没有容器在用"，保留镜像显示可回收是正常的，不作为清理依据。清理对象只看：构建缓存、无标签镜像、确认废弃的项目镜像与卷。
+
 ## 7. 完成标准
 
 Agent 最终报告必须包含：
