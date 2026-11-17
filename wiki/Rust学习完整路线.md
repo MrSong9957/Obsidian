@@ -2,7 +2,7 @@
 name: Rust学习完整路线
 description: AI 时代 Rust 精简入门——装环境、啃核心概念、重写旧脚本、给真实项目贡献四步，以「能读懂」为每步验收标准 — 需要规划 Rust 入门学习时参考
 type: concept
-updated: 2026-10-27
+updated: 2026-11-17
 tags: [rust, learning-roadmap, ai-era, ai-workflow]
 source: "https://doc.rust-lang.org/book/"
 ---
@@ -23,7 +23,7 @@ AI 省的是"写语法"的时间，省不了"读懂"的功课——每一步都�
 
 ### 第0步 · 装环境（半天）
 
-- 装 Rust（rustup）
+- 装 Rust（rustup）——安装步骤见[[wiki/Rust 环境搭建与工具链|《Rust 环境搭建与工具链》]]
 - 编辑器任选：VS Code / Zed / NeoVim
 - 装官方 **rust-analyzer** 插件
 - 把保存时检查命令从 `check` 改成 **`clippy`**

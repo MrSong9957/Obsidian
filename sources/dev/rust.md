@@ -2,11 +2,13 @@
 name: rust
 description: Rust 语言安装、环境配置、工具链使用、核心概念（枚举/模式匹配/错误处理/宏）、内存管理与堆漏洞利用安全分析、查阅类型与文档的六种方法
 type: reference
-updated: 2026-11-07
+updated: 2026-11-17
 tags: rust, toolchain, installation, cargo, heap-exploitation, memory-safety, enum, pattern-matching, error-handling, macros, ownership, borrowing, lifetime, rust-analyzer, cargo-doc, documentation, docs.rs
 source: https://example.com
 source_memory: ~/.claude/projects/E--Files-Obsidian/memory/rust-gnu-toolchain-setup.md
 ---
+
+> 入口文档：[[wiki/Rust 环境搭建与工具链.md|《Rust 环境搭建与工具链》]]
 
 # Rust 基础内容
 
@@ -136,6 +138,18 @@ setx CARGO_HOME  "D:\Program Files (x86)\rust\cargo"
 3. **确认安装**：确认 `default host triple: x86_64-pc-windows-gnu` 后，输入 `1`（Proceed with selected options）
 
 当看到 `Rust is installed now. Great!` 时，安装成功。
+
+> [!tip] 实测 2026-11-17：脚本化安装可跳过全部交互问答，一条命令完成（本机 MSVC 未装，装出 rustc 1.100.0）
+>
+> ```powershell
+> # 下载慢先设镜像（当次会话有效）
+> $env:RUSTUP_DIST_SERVER = "https://mirrors.ustc.edu.cn/rust-static"
+> $env:RUSTUP_UPDATE_ROOT = "https://mirrors.ustc.edu.cn/rust-static/rustup"
+>
+> .\rustup-init.exe -y --default-host x86_64-pc-windows-gnu --default-toolchain stable --profile default
+> ```
+>
+> `-y` 跳过问答并直接安装；`--default-host` 等价于交互流程里手输 `x86_64-pc-windows-gnu` 那一步。已按上文 `setx` 设好 `RUSTUP_HOME`/`CARGO_HOME` 时（setx 后新开终端再执行），安装器自动落到自定义目录，并把 `%CARGO_HOME%\bin` 写入用户 PATH。安装后验证：`rustc --version` + `cargo new` + `cargo run` 输出 `Hello, world!`。
 
 **配置 VS Code：**
 
