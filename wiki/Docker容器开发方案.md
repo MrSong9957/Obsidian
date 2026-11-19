@@ -266,6 +266,7 @@ Windows 只保留一份 `D:\AgentLab\shared\Obsidian`，所有容器统一通过
 - **Windows CRLF 行尾**：宿主机编辑过的 `.sh` 复制进镜像前必须 `sed -i 's/\r$//'`，否则 entrypoint 报语法错误。
 - **PATH 污染**：compose `environment` 里写 `PATH=...:$PATH` 会在宿主机展开，把 Windows PATH 注入容器导致 `command not found`。容器 PATH 一律在 Dockerfile `ENV` 中定死，不从 compose 注入。
 - **slim 镜像缺包**：`*-slim` 基础镜像不预装 `unzip` 等工具，Bun 等官方安装脚本会失败；安装前按脚本依赖核对 apt 包列表。
+- **基础镜像无 xz**：`agentlab-base`（继承 ubuntu:24.04）不预装 `xz-utils`，`tar -xJ` 解压 `.tar.xz` 会失败（实测 2026-11-18 装 Node 时踩到）。官方二进制发布一般同时有 `.tar.gz`，优先用 tar.gz；确需 xz 再 `apt-get install xz-utils`。
 
 ## 5. Agent 接入
 
