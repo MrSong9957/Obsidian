@@ -1,6 +1,6 @@
 ---
 type: index
-updated: 2026-11-17
+updated: 2026-11-22
 ---
 
 # Wiki 索引
@@ -53,6 +53,7 @@ updated: 2026-11-17
 | [[wiki/Skill 编写方法、上下文位置与缓存成本\|Skill 编写方法、上下文位置与缓存成本]] | 把经验写成可执行、可检验的 Skill，并理解加载位置、上下文占用和缓存费用。 | agent-skills, prompt-engineering, context-engineering, prompt-caching |
 | [[wiki/Skills 与工具的协作方式及实验设计\|Skills 与工具的协作方式及实验设计]] | 分清 Skill、工具和脚本的职责，并通过论文转 PPT、个人写作两个实验检查效果。 | agent-skills, tool-use, progressive-disclosure, skill-evaluation |
 | [[wiki/Windows C 盘空间治理：手动操作与验证指导\|Windows C 盘空间治理：手动操作与验证指导]] | C 盘治理手动操作手册——基线诊断、传递优化与更新缓存清理、WinSxS 维护与验证结算 | windows, disk-cleanup, powershell, wiztree |
+| [[wiki/Windows 台式机 FlClash 高延迟排查与调优\|Windows 台式机 FlClash 高延迟排查与调优]] | 台式机使用 FlClash 延迟偏高（400 ms 起）的分层排查命令、界面覆写路径与低延迟配置方案 | windows, networking, flclash, clash, vpn, ipv6, troubleshooting |
 | [[wiki/agent-arch\|Agent 架构核心]] | Agent 循环、多智能体框架、Harness 工程方法论的核心概念与关键要点 | agent, architecture, multi-agent, harness, system-prompts |
 | [[wiki/agents-md-claude-md\|AGENTS.md 与 CLAUDE.md 配置关系]] | Claude Code 指令文件四层级放置规则、AGENTS.md 默认替补逻辑、四档"项目说明"配置与 impo... | claude-code, claude-md, agents-md, memory |
 | [[wiki/architecture-migration-semantic-boundary\|架构迁移语义边界准则]] | 从"renderer 控制视觉"迁移到"message store 控制语义"时,必须区分视觉控制指令与真实数据,... | architecture, migration, semantic-boundary, tui, message-store, renderer, anti-pattern |
